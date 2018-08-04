@@ -1,7 +1,10 @@
 <?php
 namespace app\models\db;
 
-use yii\db\ActiveRecord;
+use Yii;
+use yii\base\Model;
+
+//use yii\db\ActiveRecord;
 use app\models\enums\TaskStatus;
 use app\models\enums\WorkerProfiles;
 /**
@@ -38,8 +41,9 @@ use app\models\enums\WorkerProfiles;
  * @property Project $project
  * @property Imputetype $imputetype
  */
-class UserProjectTask extends ActiveRecord {
-      public $id;
+class UserProjectTask extends Model {
+    
+     public $id;
      public $user_id;
      public $project_id;
      public $imputetype_id;
@@ -61,6 +65,7 @@ class UserProjectTask extends ActiveRecord {
      public $managerName;
      public $workerCost;
      public $imputetypeName;
+
     public $totalhours;
     public $projectManager;
     public $firstUserProjectTask;
@@ -80,6 +85,7 @@ class UserProjectTask extends ActiveRecord {
     public $frm_date_end;
     public $frm_hour_ini;
     public $frm_hour_end;
+    //public $frm_customer_name;
     // Internal for detecting profile change
     private $oldTaskProfile;
     // For custom searchs
@@ -87,13 +93,13 @@ class UserProjectTask extends ActiveRecord {
     public $custom2;
     
     // For searching
-   /* public $companyName;
+    /*public $companyName;
     public $projectName;
     public $workerName;
     public $managerName;
     public $workerCost;
-    public $imputetypeName;*/
-    
+    public $imputetypeName;
+    */
 
     /**
      * @return string the associated database table name
@@ -118,7 +124,7 @@ class UserProjectTask extends ActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('user_id, project_id, imputetype_id, status, profile_id, frm_date_ini, frm_hour_ini, frm_date_end, frm_hour_end', 'required'),
+           /* array('user_id, project_id, imputetype_id, status, profile_id, frm_date_ini, frm_hour_ini, frm_date_end, frm_hour_end', 'required'),
             array('user_id, project_id, imputetype_id, ticket_id', 'numerical', 'integerOnly' => true),
             array('user_id', 'exist', 'className' => 'User', 'attributeName' => 'id'),
             array('project_id', 'exist', 'className' => 'Project', 'attributeName' => 'id'),
@@ -135,7 +141,7 @@ class UserProjectTask extends ActiveRecord {
             array('is_extra, is_billable', 'boolean'),
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.
-                array( 'status, frm_date_ini, task_description, ticket_id', 'safe', 'on' => 'search' ),
+                array( 'status, frm_date_ini, task_description, ticket_id', 'safe', 'on' => 'search' ),*/
         );
     }
 

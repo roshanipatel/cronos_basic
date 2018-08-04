@@ -1,14 +1,14 @@
 
 <?php
-$cs = Yii::$app->clientScript;
-$cs->registerScriptFile( 'js/date.js', CClientScript::POS_BEGIN );
-$cs->registerScriptFile( 'js/ajax_loading_image.js', CClientScript::POS_HEAD );
+use yii\helpers\Json;
+$this->registerJsFile( 'js/date.js' );
+$this->registerJsFile( 'js/ajax_loading_image.js');
 ?>
 <script type="text/javascript">
     // Ticket preview
     function testTicket()
     {
-        var baseUrl = "<?php echo Yii::$app->params->ticket_url ?>";
+        var baseUrl = "<?php echo Yii::$app->params['ticket_url'] ?>";
         var ticketId = jQuery('#UserProjectTask_ticket_id').val().trim();
         if( ticketId == '' )
             alert('Introduzca un ticket válido');
@@ -151,16 +151,16 @@ foreach( $customers as $customer ) {
 }
 
 ?>      
-        var companyColors = <?php echo CJSON::encode( $aColorCompanies ); ?>;
+        var companyColors = <?php echo Json::encode( $aColorCompanies ); ?>;
         var customersAutocomplete = {
-            names: <?php echo CJSON::encode( $customerNames ); ?>
+            names: <?php echo Json::encode( $customerNames ); ?>
         };
         // Company autocomplete
         jQuery('#company_name').autocomplete({
             source: customersAutocomplete.names,
             select: function(event,ui)
             {
-                var url = '<?php echo $this->createUrl( 'AJAX/retrieveOpenProjectsFromCustomerNameAsListOptions' ) ?>';
+                var url = '<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveOpenProjectsFromCustomerNameAsListOptions' ) ?>';
                 var data = { customerName: ui.item.value };
                 populateProjectsSelect(url,data,false);
             }
@@ -168,7 +168,7 @@ foreach( $customers as $customer ) {
         
         $('#customer_projects').change(function(event,ui)
             {
-                var url = '<?php echo $this->createUrl( 'AJAX/retrieveImputetypesFromProjectAsListOptions' ) ?>';
+                var url = '<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveImputetypesFromProjectAsListOptions' ) ?>';
                 var data = { projectId: $('#customer_projects').val() };
                 populateImputetypeSelect(url,data,false);
             }
