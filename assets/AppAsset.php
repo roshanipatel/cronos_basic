@@ -24,21 +24,18 @@ class AppAsset extends AssetBundle
         'css/bootstrap.min.css',
         'css/metisMenu.min.css',
         'css/sb-admin-2.css',
-        'css/morris.css',
+       // 'css/morris.css',
         'css/jquery-ui.min.css',
         'css/site.css',
     ];
     public $js = [
         'js/bootstrap.min.js',
         'js/sb-admin-2.js',
-        'js/morris.min.js',
+        //'js/morris.min.js',
         'js/metisMenu.min.js',
-        'js/morris-data.js',
+        //'js/morris-data.js',
         'js/raphael.min.js',
-       // 'js/jquery.min.js',
-        'js/jquery-ui.min.js',
-        
-
+        'js/jquery-ui.min.js'
     ];
     public $depends = [
         'yii\web\YiiAsset',

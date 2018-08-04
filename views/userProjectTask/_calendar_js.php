@@ -16,10 +16,10 @@ use app\models\enums\ProjectStatus;
  */
 
 //$cs = Yii::$app->clientScript;
-$this->registerCssFile( 'css/plugins/jquery.weekcalendar.css' );
-$this->registerCssFile( 'css/plugins/timePicker.css' );
-$this->registerJsFile( 'js/plugins/jquery.weekcalendar.js');
-$this->registerJsFile( 'js/plugins/jquery.timePicker.min.js');
+$this->registerCssFile(Yii::$app->request->BaseUrl . '/css/plugins/jquery.weekcalendar.css');
+$this->registerCssFile( Yii::$app->request->BaseUrl .'/css/plugins/timePicker.css');
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/plugins/jquery.weekcalendar.js', ['position' => '\yii\web\View::POS_BEGIN']);
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/plugins/jquery.timePicker.min.js', ['position' => '\yii\web\View::POS_BEGIN']);
 ?>
 
 <script type="text/javascript">
