@@ -99,7 +99,7 @@ class ProjectExpenseService implements CronosService {
         if ($this->ensureCanRefuseCost($user, $oProjectExpense, $expenseId) === false)
             return false;
 
-        $connection = Yii::app()->db;
+        $connection = Yii::$app->db;
         $transaction = $connection->beginTransaction();
         try {
             // Save task record
@@ -147,7 +147,7 @@ class ProjectExpenseService implements CronosService {
                     'order' => 't.date_ini asc',
                     'together' => true,
                 ));
-        $isManager = (!Yii::app()->user->hasDirectorPrivileges()) && (!Yii::app()->user->hasCommercialPrivileges());
+        $isManager = (!Yii::$app->user->hasDirectorPrivileges()) && (!Yii::$app->user->hasCommercialPrivileges());
 
         if (!$isManager) {
             $criteria->with[] = 'managers';
@@ -185,7 +185,7 @@ class ProjectExpenseService implements CronosService {
             $criteria->compare('t.close_time', '<=' . PhpUtils::convertStringToDBDateTime($model->close_time));
         }
         if ($isManager) {
-            $userId = Yii::app()->user->id;
+            $userId = Yii::$app->user->id;
             ServiceFactory::createProjectExpenseService()->addCriteriaForProjectManagers($criteria, $userId);
         }
         return $criteria;
@@ -251,7 +251,7 @@ class ProjectExpenseService implements CronosService {
             $model->pdffile = file_get_contents($file->tempName);
             if (strtolower($file->getExtensionName()) != "pdf") {
                 Yii::log('File format : ' . $file->getExtensionName() . " Not supported. Only PDF", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
-                Yii::app()->user->setFlash(Constants::FLASH_ERROR_MESSAGE, 'File format : ' . $file->getExtensionName() . " Not supported. Only PDF");
+                Yii::$app->user->setFlash(Constants::FLASH_ERROR_MESSAGE, 'File format : ' . $file->getExtensionName() . " Not supported. Only PDF");
                 return false;
             }
             

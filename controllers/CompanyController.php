@@ -47,7 +47,7 @@ class CompanyController extends CronosController
             $model->attributes = $_POST['Company'];
             if( $model->save() )
             {
-                Yii::app()->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Empresa ' . $model->name . ' guardada con éxito' );
+                Yii::$app->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Empresa ' . $model->name . ' guardada con éxito' );
                 $this->redirect( array( 'update', 'id' => $model->id ) );
             }
         }
@@ -74,7 +74,7 @@ class CompanyController extends CronosController
             $model->attributes = $_POST['Company'];
             if( $model->save() )
             {
-                Yii::app()->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Empresa ' . $model->name . ' guardada con éxito' );
+                Yii::$app->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Empresa ' . $model->name . ' guardada con éxito' );
                 $this->redirect( array( 'update', 'id' => $model->id ) );
             }
         }
@@ -91,7 +91,7 @@ class CompanyController extends CronosController
      */
     public function actionDelete( $id )
     {
-        if( Yii::app()->request->isPostRequest )
+        if( Yii::$app->request->isPostRequest )
         {
             // we only allow deletion via POST request
             $this->loadModel( $id )->delete();
@@ -140,7 +140,7 @@ class CompanyController extends CronosController
 						array(
 							'criteria' => $criteria,
 							'pagination' => array(
-								'pageSize' => Yii::app()->params->default_page_size,
+								'pageSize' => Yii::$app->params->default_page_size,
 							),
 							'sort' => $sort,
 				));
@@ -173,7 +173,7 @@ class CompanyController extends CronosController
         if( isset( $_POST['ajax'] ) && $_POST['ajax'] === 'company-form' )
         {
             echo CActiveForm::validate( $model );
-            Yii::app()->end();
+            Yii::$app->end();
         }
     }
 

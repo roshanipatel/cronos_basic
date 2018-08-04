@@ -15,7 +15,7 @@ class AJAXController extends CronosController {
     protected function beforeAction( $action ) {
         if( !parent::beforeAction( $action ) )
             return false;
-        if( !Yii::app()->request->isAjaxRequest )
+        if( !Yii::$app->request->isAjaxRequest )
             throw new CHttpException( 403, 'Invalid request' );
         return true;
     }
@@ -45,8 +45,8 @@ class AJAXController extends CronosController {
     public function actionRetrieveOpenProjectsFromCustomerNameAsListOptions( $customerName ) {
         
         $sFilterUser = "";
-        if (!Yii::app()->user->isAdmin()) {
-            $sFilterUser = (int) Yii::app()->user->id;
+        if (!Yii::$app->user->isAdmin()) {
+            $sFilterUser = (int) Yii::$app->user->id;
         }
         
         $projects = ServiceFactory::createProjectService()->findOpenProjectsFromCustomerByCustomerName( $customerName,  $sFilterUser);
@@ -65,8 +65,8 @@ class AJAXController extends CronosController {
     public function actionRetrieveImputetypesFromProjectAsListOptions( $projectId ) {
         
         $sFilterUser = "";
-        if (!Yii::app()->user->isAdmin()) {
-            $sFilterUser = (int) Yii::app()->user->id;
+        if (!Yii::$app->user->isAdmin()) {
+            $sFilterUser = (int) Yii::$app->user->id;
         }
         
         $aImputetypes = ServiceFactory::createImputetypeService()->findImputetypes( $projectId );
@@ -112,7 +112,7 @@ class AJAXController extends CronosController {
 	
         $onlyManagedByUser = (bool)$onlyManagedByUser;
         $projects = ServiceFactory::createProjectService()->findProjectsFromCustomerByCustomerId( $customerId, 
-                        Yii::app()->user, 
+                        Yii::$app->user, 
                         $projectCriteria, 
                         $onlyManagedByUser,
                         $startFilter,
@@ -200,11 +200,11 @@ class AJAXController extends CronosController {
         // Build a task search object and set 'creator' and dateIni-dateEnd range
         $creatorId = -1;
         // If not admin, searching is based on current user
-        if( Yii::app()->user->hasDirectorPrivileges() && User::model()->isValidID( $userId ) ) {
+        if( Yii::$app->user->hasDirectorPrivileges() && User::model()->isValidID( $userId ) ) {
             $creatorId = (int)$userId;
         }
         else {
-            $creatorId = (int)Yii::app()->user->id;
+            $creatorId = (int)Yii::$app->user->id;
         }
         // Check date is valid. If not, take current
         if( $date !== NULL ) {
@@ -219,7 +219,7 @@ class AJAXController extends CronosController {
         $tasksArray = array( );
         foreach( $tasks as $task ) {
             $adminFields = array( );
-            if( Yii::app()->user->hasDirectorPrivileges() ) {
+            if( Yii::$app->user->hasDirectorPrivileges() ) {
                 $adminFields = array(
                     'status' => $task->status,
                     'profile' => $task->profile_id,
@@ -240,10 +240,10 @@ class AJAXController extends CronosController {
                 'customer_id' => $task->project->company_id,
 				'is_extra' => $task->is_extra,
 				'is_billable' => $task->is_billable,
-                'readonly' => ( ! Yii::app()->user->hasDirectorPrivileges() ) && ( $task->status != TaskStatus::TS_NEW ),
+                'readonly' => ( ! Yii::$app->user->hasDirectorPrivileges() ) && ( $task->status != TaskStatus::TS_NEW ),
             );
             // If admin then pass status and profile so they can be edited
-            $canEditProfileAndStatus = Yii::app()->user->hasDirectorPrivileges();
+            $canEditProfileAndStatus = Yii::$app->user->hasDirectorPrivileges();
             if( $canEditProfileAndStatus ){
                 $currentTask['status'] = $task->status;
                 $currentTask['profile_id'] = $task->profile_id;

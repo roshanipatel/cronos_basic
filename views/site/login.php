@@ -17,7 +17,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         <h3 class="panel-title"><?= $this->title ?></h3>
                     </div>
                     <div class="panel-body">
-                        <p>Please fill out the following fields to login:</p>
                         <?php $form = ActiveForm::begin([
                                             'id' => 'login-form',
                                             //'layout' => 'horizontal',

@@ -95,7 +95,7 @@ class ProjectController extends CronosController {
                     }
 
                     // Set flash if operation was successfull
-                    Yii::app()->user->setFlash(Constants::FLASH_OK_MESSAGE, "Proyecto $model->name guardado con éxito");
+                    Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, "Proyecto $model->name guardado con éxito");
                     $this->redirect(array('update', 'id' => $model->id));
                 }
             } else {
@@ -164,7 +164,7 @@ class ProjectController extends CronosController {
                         ));
                     }
 
-                    Yii::app()->user->setFlash(Constants::FLASH_OK_MESSAGE, "Proyecto $model->name guardado con éxito");
+                    Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, "Proyecto $model->name guardado con éxito");
                     $this->refresh();
                 }
             }
@@ -234,7 +234,7 @@ class ProjectController extends CronosController {
      * @param integer $id the ID of the model to be deleted
      */
     public function actionDelete($id) {
-        if (Yii::app()->request->isPostRequest) {
+        if (Yii::$app->request->isPostRequest) {
             // we only allow deletion via POST request
             $this->loadModel($id)->delete();
 
@@ -301,7 +301,7 @@ class ProjectController extends CronosController {
     protected function performAjaxValidation($model) {
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'project-form') {
             echo CActiveForm::validate($model);
-            Yii::app()->end();
+            Yii::$app->end();
         }
     }
 
@@ -326,7 +326,7 @@ class ProjectController extends CronosController {
         $projectsCriteria->order = 't.id desc';
         if (!empty($model->company_id)) {
             $projectsProvider = ServiceFactory::createProjectService()
-                    ->findProjectsFromCustomerByCustomerId($model->company_id, Yii::app()->user, $projectsCriteria, !Yii::app()->user->hasDirectorPrivileges(), $model->open_time, $model->close_time);
+                    ->findProjectsFromCustomerByCustomerId($model->company_id, Yii::$app->user, $projectsCriteria, !Yii::$app->user->hasDirectorPrivileges(), $model->open_time, $model->close_time);
         } else {
             $projectsProvider = array();
         }
@@ -354,7 +354,7 @@ class ProjectController extends CronosController {
             $content = utf8_decode($content);
         }
         $filename = 'projects_' . date('Ymd') . '.csv';
-        Yii::app()->getRequest()->sendFile($filename, $content, "text/csv", true);
+        Yii::$app->getRequest()->sendFile($filename, $content, "text/csv", true);
     }
 
 }

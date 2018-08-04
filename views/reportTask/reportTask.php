@@ -2,7 +2,7 @@
 <?php /* * ********** SEARCH FORM  ****************** */ ?>
 <?php
 // Required fields
-$showManager = Yii::app()->user->hasDirectorPrivileges();
+$showManager = Yii::$app->user->hasDirectorPrivileges();
 $form = $this->beginWidget('CActiveForm', array(
     //'action' => $actionURL,
     'method' => 'get',

@@ -17,7 +17,7 @@ class UserProjectTaskService implements CronosService {
         $dbDateIni = PHPUtils::convertPHPDateTimeToDBDateTime($dateIni);
         $dbDateEnd = PHPUtils::convertPHPDateTimeToDBDateTime($dateEnd);
 
-        $dbCommand = Yii::app()->db->createCommand()
+        $dbCommand = Yii::$app->db->createCommand()
                 ->select('count(*)')
                 ->from(UserProjectTask::model()->tableName())
                 ->where('user_id = :user'
@@ -308,7 +308,7 @@ class UserProjectTaskService implements CronosService {
             $newOrphanTask->status = TaskStatus::TS_ORPHAN;
             //$newOrphanTask->refreshHoursFromTimestamps();
         }
-        $transaction = Yii::app()->db->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
             $task->save(false);
             // Save it after the "original" so it appears after in listings
@@ -401,7 +401,7 @@ class UserProjectTaskService implements CronosService {
                     $results[] = $row->is_billable ? "X" : "";
                     return $results;
                 };
-        $sep = ( empty(Yii::app()->params['csv_separator']) ) ? ',' : Yii::app()->params['csv_separator'];
+        $sep = ( empty(Yii::$app->params['csv_separator']) ) ? ',' : Yii::$app->params['csv_separator'];
         return $csv->toCSV(null, $sep);
     }
 
@@ -543,7 +543,7 @@ class UserProjectTaskService implements CronosService {
         if ($this->ensureCustomerCanRefuseTask($user, $task, $taskId) === false)
             return false;
 
-        $connection = Yii::app()->db;
+        $connection = Yii::$app->db;
         $transaction = $connection->beginTransaction();
         try {
             // Save task record

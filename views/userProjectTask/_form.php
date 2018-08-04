@@ -144,7 +144,7 @@ echo $form->dropDownList( $model, 'project_id', CHtml::listData( array(), 'id', 
 			) ); ?>
             <?php echo $form->error( $model, 'is_extra' ); ?>
         </div>
-<?php if( Yii::app()->user->isAdmin() ) { ?>
+<?php if( Yii::$app->user->isAdmin() ) { ?>
         <div class="row">
 			<?php echo $form->checkBox( $model, 'is_billable' ); ?>
 			<?php echo $form->labelEx( $model, 'is_billable', array(

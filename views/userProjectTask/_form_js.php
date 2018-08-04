@@ -1,6 +1,6 @@
 
 <?php
-$cs = Yii::app()->clientScript;
+$cs = Yii::$app->clientScript;
 $cs->registerScriptFile( 'js/date.js', CClientScript::POS_BEGIN );
 $cs->registerScriptFile( 'js/ajax_loading_image.js', CClientScript::POS_HEAD );
 ?>
@@ -8,7 +8,7 @@ $cs->registerScriptFile( 'js/ajax_loading_image.js', CClientScript::POS_HEAD );
     // Ticket preview
     function testTicket()
     {
-        var baseUrl = "<?php echo Yii::app()->params->ticket_url ?>";
+        var baseUrl = "<?php echo Yii::$app->params->ticket_url ?>";
         var ticketId = jQuery('#UserProjectTask_ticket_id').val().trim();
         if( ticketId == '' )
             alert('Introduzca un ticket válido');

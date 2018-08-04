@@ -42,8 +42,8 @@ class UserController extends CronosController {
                     // We have the userid. Let's save the role
                     if (AuthAssignment::saveRoles($model->id, $model->role)) {
                         $transaction->commit();
-                        Yii::app()->user->setFlash(Constants::FLASH_OK_MESSAGE, 'Usuario ' . $model->username . ' guardado con éxito');
-                        Yii::app()->user->setFlash('oldUser', $model);
+                        Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, 'Usuario ' . $model->username . ' guardado con éxito');
+                        Yii::$app->user->setFlash('oldUser', $model);
                         $this->refresh();
                     }
                 }
@@ -85,7 +85,7 @@ class UserController extends CronosController {
      * @param integer $id the ID of the model to be deleted
      */
     public function actionDelete($id) {
-        if (Yii::app()->request->isPostRequest) {
+        if (Yii::$app->request->isPostRequest) {
             // we only allow deletion via POST request
             $model = $this->loadModel($id);
             if (!isset($model))
@@ -151,7 +151,7 @@ class UserController extends CronosController {
 						array(
 							'criteria' => $criteria,
 							'pagination' => array(
-								'pageSize' => Yii::app()->params->default_page_size,
+								'pageSize' => Yii::$app->params->default_page_size,
 							),
 							'sort' => $sort,
 				));
@@ -180,7 +180,7 @@ class UserController extends CronosController {
     protected function performAjaxValidation($model) {
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'user-form') {
             echo CActiveForm::validate($model);
-            Yii::app()->end();
+            Yii::$app->end();
         }
     }
 
