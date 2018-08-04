@@ -12,9 +12,9 @@
 
     <?php echo $form->errorSummary( $model ); ?>
 
-    <?php if( Yii::app()->user->hasFlash( Constants::FLASH_OK_MESSAGE ) )
+    <?php if( Yii::$app->user->hasFlash( Constants::FLASH_OK_MESSAGE ) )
     { ?>
-        <div class="resultOk"><p><?php echo Yii::app()->user->getFlash( Constants::FLASH_OK_MESSAGE ) ?></p></div>
+        <div class="resultOk"><p><?php echo Yii::$app->user->getFlash( Constants::FLASH_OK_MESSAGE ) ?></p></div>
         <?php } ?>
 
     <div class="row">

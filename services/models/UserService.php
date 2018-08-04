@@ -55,9 +55,9 @@ class UserService {
             
             //Retrieve its role and down to them.
             if ($sSqlFilter != "") {
-                $criteria->addCondition(' t.id IN ( SELECT userid FROM ' . AuthAssignment::model()->tableName() . " WHERE itemname in (".$sSqlFilter.") ) or t.id = '".Yii::app()->user->id."'");
+                $criteria->addCondition(' t.id IN ( SELECT userid FROM ' . AuthAssignment::model()->tableName() . " WHERE itemname in (".$sSqlFilter.") ) or t.id = '".Yii::$app->user->id."'");
             } else {
-                $criteria->addCondition(" t.id = '".Yii::app()->user->id."'");
+                $criteria->addCondition(" t.id = '".Yii::$app->user->id."'");
             }
         } else {
                 $criteria->addCondition(' t.id IN ( SELECT userid FROM ' . AuthAssignment::model()->tableName() . 

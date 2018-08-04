@@ -336,7 +336,7 @@ class ProjectService implements CronosService {
         }
         
         //Only when the user is involved
-        if ($onlyUserEnvolved && !Yii::app()->user->isAdmin()) {
+        if ($onlyUserEnvolved && !Yii::$app->user->isAdmin()) {
             $criteria->addCondition('
                 (exists (select * from ' . ProjectManager::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.') OR 
                 exists (select * from ' . ProjectWorker::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.') OR
@@ -672,7 +672,7 @@ class ProjectService implements CronosService {
     public function getCriteriaFromModel(Project $model) {
 
         $criteria = new CDbCriteria();
-//        $isManager = (!Yii::app()->user->hasDirectorPrivileges()) && (!Yii::app()->user->hasCommercialPrivileges());
+//        $isManager = (!Yii::$app->user->hasDirectorPrivileges()) && (!Yii::$app->user->hasCommercialPrivileges());
 //
 //        if (!$isManager) {
 //            $criteria->with[] = 'managers';
@@ -730,7 +730,7 @@ class ProjectService implements CronosService {
         }
         
 //        if ($isManager) {
-//            $userId = Yii::app()->user->id;
+//            $userId = Yii::$app->user->id;
 //            
 //            ServiceFactory::createProjectService()->addCriteriaForProjectManagers($criteria, $userId);
 //        }
@@ -799,7 +799,7 @@ class ProjectService implements CronosService {
                     $results[] = $row->hours_warn_threshold;
                     return $results;
                 };
-        $sep = ( empty(Yii::app()->params['csv_separator']) ) ? ',' : Yii::app()->params['csv_separator'];
+        $sep = ( empty(Yii::$app->params['csv_separator']) ) ? ',' : Yii::$app->params['csv_separator'];
         return $csv->toCSV(null, $sep);
     }
     

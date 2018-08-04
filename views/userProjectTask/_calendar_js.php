@@ -8,7 +8,7 @@
  * @param array[] $workers
  */
 
-$cs = Yii::app()->clientScript;
+$cs = Yii::$app->clientScript;
 $cs->registerCssFile( 'css/plugins/jquery.weekcalendar.css' );
 $cs->registerCssFile( 'css/plugins/timePicker.css' );
 $cs->registerScriptFile( 'js/plugins/jquery.weekcalendar.js', CClientScript::POS_BEGIN );
@@ -335,7 +335,7 @@ if( $showExtendedFields ) {
 <?php
 	// By default
 	if($isWorker) {
-		$userIdStr = Yii::app()->user->id;
+		$userIdStr = Yii::$app->user->id;
 	} else {
 		$userIdStr = 'jQuery("#user_selector").val()';
 	}
@@ -486,7 +486,7 @@ if( $showExtendedFields ) {
 // Show users dropdown if admin
 if( ! $isWorker ) {
 	if($showUser == NULL){
-		$userIdStr = Yii::app()->user->id;
+		$userIdStr = Yii::$app->user->id;
 	} else{
 		$userIdStr = $showUser;
 	}
