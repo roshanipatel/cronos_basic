@@ -2,7 +2,7 @@
 namespace app\models\db;
 
 use Yii;
-use yii\base\Model;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "company".
@@ -17,7 +17,7 @@ use yii\base\Model;
  * @property Project[] $projects
  * @property User[] $users
  */
-class Company extends Model
+class Company extends ActiveRecord
 {
     public $totalhours;
     const MY_LOG_CATEGORY = 'models.Company';
@@ -29,7 +29,7 @@ class Company extends Model
     /**
      * @return string the associated database table name
      */
-    public function tableName()
+    public static function tableName()
     {
         return 'company';
     }
@@ -85,7 +85,7 @@ class Company extends Model
      * Make sure the admin company doesn't get deleted
      * @return <type>
      */
-    protected function beforeDelete()
+    public function beforeDelete()
     {
         if( $this->id == self::OPEN3S_ID )
             return false;

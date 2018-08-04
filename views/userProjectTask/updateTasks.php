@@ -9,8 +9,8 @@ $form = $this->beginWidget( 'CActiveForm', array(
                 ) );
 
 /* SEARCH FORM */
-$this->renderPartial( '_searchForm',
-        array(
+Yii::$app->controller->renderPartial( '/userProjectTask/_searchForm',
+        [
             'taskSearch' => $taskSearch,
             'projectsProvider' => $projectsProvider,
             'searchFieldsToHide' => $searchFieldsToHide,
@@ -20,7 +20,7 @@ $this->renderPartial( '_searchForm',
             'onlyManagedByUser' => $onlyManagedByUser,
             'projectImputetypes' => $projectImputetypes,
             'form' => $form,
-        ) );
+        ]);
 
 /* END SEARCH FORM */
 

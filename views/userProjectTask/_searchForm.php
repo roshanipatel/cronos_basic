@@ -335,12 +335,12 @@ if($hasToDefineForm) {
 	}));
 </script>
 <?php
-$this->renderPartial('_projectsFromCustomerAutocomplete', array(
+Yii::$app->controller->renderPartial('/userProjectTask/_projectsFromCustomerAutocomplete', [
 	'projectStatus' => (!isset($projectStatus))?NULL : $projectStatus,
         'projectStatusCom' => (!isset($projectStatusCom))?NULL : $projectStatusCom,
 	'onlyManagedByUser' => false, //$onlyManagedByUser,
         'onlyUserEnvolved' => true
-));
+]);
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function(){

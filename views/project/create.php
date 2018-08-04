@@ -1,7 +1,7 @@
 <h1>Crear Proyecto</h1>
 
 <?php
-echo $this->renderPartial( '_form', array(
+echo Yii::$app->controller->renderPartial( '_form',[
     'model' => $model,
     'companies' => $companies,
     'projectManagers' => $projectManagers,
@@ -10,5 +10,5 @@ echo $this->renderPartial( '_form', array(
     'projectCommercials' => $projectCommercials,
     'projectImputetypes' => $projectImputetypes,
     'projectTargets' => $projectTargets
-) );
+] );
 ?>

@@ -3,8 +3,8 @@
 <?php
 /* SEARCH FORM */
 
-$this->renderPartial( '_searchForm',
-        array(
+Yii::$app->controller->renderPartial( '/userProjectTask/_searchForm',
+        [
             'taskSearch' => $taskSearch,
             'projectsProvider' => $projectsProvider,
             'usersProvider' => $usersProvider,
@@ -14,7 +14,7 @@ $this->renderPartial( '_searchForm',
             'actionURL' => $actionURL,
 			'projectStatus' => NULL,
 			'onlyManagedByUser' => FALSE,
-        ) );
+        ] );
 
 /* END SEARCH FORM */
 

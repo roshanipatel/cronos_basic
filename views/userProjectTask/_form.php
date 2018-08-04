@@ -1,21 +1,29 @@
+<?php
+use yii\widgets\ActiveForm;    
+?>
 <div id="task-calendar"></div>
 
 <div id="task-input-form" style="display:none">
     <div class="form">
 
         <?php
-        $form = $this->beginWidget( 'CActiveForm', array(
+        print_r($model);die;
+        $form = ActiveForm::begin([
+                    'id' => 'user-project-task-form',
+                   // 'focus' => array( $model, 'frm_customer_name' ),// this is redundant because it's true by default
+                ]);
+       /* $form = $this->beginWidget( 'CActiveForm', array(
                     'id' => 'user-project-task-form',
                     'focus' => array( $model, 'frm_customer_name' ),
-                ) );
+                ) );*/
         ?>
 
         <p class="note">Los campos con <span class="required">*</span> son obligatorios.</p>
 
         <div id="user-task-result"></div>
 
-        <?php echo $form->hiddenField($model, 'id' ); ?>
-        <?php echo $form->hiddenField($model, 'user_id' ) ?>
+        <?php echo $form->field($model, 'id')->hiddenInput(['value'=>$model->id])->label(false); ?>
+        <?php echo $form->field($model, 'user_id')->hiddenInput()->label(false);  ?>
         <div class="row">
             <?php echo $form->labelEx( $model, 'frm_customer_name' ); ?>
             <?php
@@ -144,17 +152,17 @@ echo $form->dropDownList( $model, 'project_id', CHtml::listData( array(), 'id', 
         </div>
 
         <br>
-<?php $this->endWidget(); ?>
+<?php ActiveForm::end(); ?>
     </div>
 </div><!-- form -->
 
 <?php
-$this->renderPartial('_form_js', array(
+Yii::$app->controller->renderPartial('/userProjectTask/_form_js',[
     'customers' => $customers,
-));
+]);
 ?>
 <?php
-$this->renderPartial('_calendar_js', array(
+Yii::$app->controller->renderPartial('/userProjectTask/_calendar_js',[
     'model' => $model,
     'workers' => $workers,
     'customers' => $customers,
@@ -162,5 +170,5 @@ $this->renderPartial('_calendar_js', array(
     'isWorker' => $isWorker,
     'showDate' => $showDate,
     'showUser' => $showUser,
-));
+]);
 ?>

@@ -1,5 +1,8 @@
 <?php
+namespace app\models;
 
+use Yii;
+use yii\base\Model;
 /**
  * This is the model class for table "task_history".
  *
@@ -15,18 +18,10 @@
  * @property User $user
  * @property UserProjectTask $userProjectTask
  */
-class TaskHistory extends CActiveRecord
+class TaskHistory extends Model
 {
 
-    /**
-     * Returns the static model of the specified AR class.
-     * @return TaskHistory the static model class
-     */
-    public static function model( $className=__CLASS__ )
-    {
-        return parent::model( $className );
-    }
-
+    
     /**
      * @return string the associated database table name
      */
