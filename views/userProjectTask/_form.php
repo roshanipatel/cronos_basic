@@ -9,13 +9,13 @@ use yii\widgets\ActiveForm;
 
         <?php
         $form = ActiveForm::begin([
-                    'id' => 'user-project-task-form',
-                    'fieldConfig' => [
-                                        'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",
-                                       // 'labelOptions' => ['class' => 'form-control'],
-                                    ],
-                   // 'focus' => array( $model, 'frm_customer_name' ),// this is redundant because it's true by default
-                ]);
+                                            'id' => 'user-project-task-form',
+                                            'fieldConfig' => [
+                                                'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",
+                                               // 'labelOptions' => ['class' => 'form-control'],
+                                            ],
+                                        ]); 
+       
        /* $form = $this->beginWidget( 'CActiveForm', array(
                     'id' => 'user-project-task-form',
                     'focus' => array( $model, 'frm_customer_name' ),
@@ -37,6 +37,7 @@ use yii\widgets\ActiveForm;
             }
         ?>
         <div class="row">
+            <?= $form->field($model, 'username')->textInput(['autofocus' => true,'class'=>"form-control"]) ?>
             <?= $form->field($model, 'frm_customer_name')->textInput(['class'=>"form-control",'id' => 'company_name','value'=>$model->frm_customer_name]) ?>
            
 <?php
