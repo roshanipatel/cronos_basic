@@ -39,7 +39,28 @@ use app\models\enums\WorkerProfiles;
  * @property Imputetype $imputetype
  */
 class UserProjectTask extends ActiveRecord {
-
+      public $id;
+     public $user_id;
+     public $project_id;
+     public $imputetype_id;
+     public $status;
+     public $date_ini;
+     public $date_end;
+     public $hour_ini;
+     public $hour_end;
+     public $frm_customer_name;
+     public $task_description;
+     public $ticket_id;
+     public $price_per_hour;
+     public $profile_id;
+     public $is_extra;
+     public $is_billable;
+     public $companyName;
+     public $projectName;
+     public $workerName;
+     public $managerName;
+     public $workerCost;
+     public $imputetypeName;
     public $totalhours;
     public $projectManager;
     public $firstUserProjectTask;
@@ -59,7 +80,6 @@ class UserProjectTask extends ActiveRecord {
     public $frm_date_end;
     public $frm_hour_ini;
     public $frm_hour_end;
-    public $frm_customer_name;
     // Internal for detecting profile change
     private $oldTaskProfile;
     // For custom searchs
@@ -67,14 +87,13 @@ class UserProjectTask extends ActiveRecord {
     public $custom2;
     
     // For searching
-    public $companyName;
+   /* public $companyName;
     public $projectName;
     public $workerName;
     public $managerName;
     public $workerCost;
-    public $imputetypeName;
-    protected static $table;
-
+    public $imputetypeName;*/
+    
 
     /**
      * @return string the associated database table name
@@ -116,7 +135,7 @@ class UserProjectTask extends ActiveRecord {
             array('is_extra, is_billable', 'boolean'),
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.
-                //array( 'status, frm_date_ini, task_description, ticket_id', 'safe', 'on' => 'search' ),
+                array( 'status, frm_date_ini, task_description, ticket_id', 'safe', 'on' => 'search' ),
         );
     }
 

@@ -110,7 +110,8 @@ class UserProjectTaskController extends CronosController {
         } else {
             $model = $this->loadModel($taskId);
         }
-       
+        /*echo "<pre/>";
+        print_r($model);die();*/
         // Don't convert to int: not enough with 32 bits
         $date = ( isset($_REQUEST['timestamp']) && is_numeric($_REQUEST['timestamp'])) ? $_REQUEST['timestamp'] : null;
         $userId = ( isset($_REQUEST['user']) && User::isValidID($_REQUEST['user'])) ? (int) $_REQUEST['user'] : null;
