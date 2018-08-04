@@ -25,7 +25,7 @@ class ExpenseSearchService {
                 'ProjectExpense', array(
             'criteria' => $tasksCriteria,
             'pagination' => array(
-                'pageSize' => Yii::app()->params->default_page_size,
+                'pageSize' => Yii::$app->params->default_page_size,
             ),
             'sort' => $this->getSort(),
         ));
@@ -70,7 +70,7 @@ class ExpenseSearchService {
             return $results;
         };
         
-        $sep = ( empty(Yii::app()->params['csv_separator']) ) ? ',' : Yii::app()->params['csv_separator'];
+        $sep = ( empty(Yii::$app->params['csv_separator']) ) ? ',' : Yii::$app->params['csv_separator'];
         return $csv->toCSV(null, $sep);
     }
 

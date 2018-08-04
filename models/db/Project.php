@@ -249,7 +249,7 @@ class Project extends ActiveRecord {
         return new CActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                     'pagination' => array(
-                        'pageSize' => Yii::app()->params->default_page_size,
+                        'pageSize' => Yii::$app->params->default_page_size,
                     ),
                     'sort' => $this->getSort(),
                 ));

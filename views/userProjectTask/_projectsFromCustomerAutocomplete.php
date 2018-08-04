@@ -7,7 +7,7 @@
 
 assert(isset($onlyManagedByUser));
 
-Yii::app()->clientScript->registerScriptFile(
+Yii::$app->clientScript->registerScriptFile(
         'js/ajax_loading_image.js',
         CClientScript::POS_HEAD );
 

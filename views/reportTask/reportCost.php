@@ -2,7 +2,7 @@
 <?php /* * ********** SEARCH FORM  ****************** */ ?>
 <?php
 // Required fields
-$showManager = Yii::app()->user->hasDirectorPrivileges();
+$showManager = Yii::$app->user->hasDirectorPrivileges();
 $onlyManagedByUser = !$showManager;
 
 $managersProvider = ServiceFactory::createUserService()->findProjectWorkers(true);

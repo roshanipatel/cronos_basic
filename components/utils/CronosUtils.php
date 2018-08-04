@@ -16,7 +16,7 @@ class CronosUtils {
 		if(empty($ticketId)) {
 			return "";
 		} else {
-			return str_replace("{ticket_id}", $ticketId, Yii::app()->params->ticket_url);
+			return str_replace("{ticket_id}", $ticketId, Yii::$app->params->ticket_url);
 		}
 	}
         
@@ -24,7 +24,7 @@ class CronosUtils {
 		if(empty($ticketId)) {
 			return "";
 		} else {
-			$tickedId = str_replace("{ticket_id}", $ticketId, Yii::app()->params->ticket_url);
+			$tickedId = str_replace("{ticket_id}", $ticketId, Yii::$app->params->ticket_url);
                         return CHTML::link("<img src='/images/gbjbifbh.png'></img>", $tickedId, array( "target" => "_blank"));
 		}
 	}

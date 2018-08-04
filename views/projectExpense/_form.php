@@ -5,7 +5,7 @@
     if (!isset($model->id)) {
         $aFocus = array($model, 'date_ini');
     }
-    $isProjectManagerRole = Yii::app()->user->hasProjectManagerPrivileges();    
+    $isProjectManagerRole = Yii::$app->user->hasProjectManagerPrivileges();    
     $form = $this->beginWidget('CActiveForm', array(
         'id' => 'project-form',
         'enableAjaxValidation' => false,
@@ -15,12 +15,12 @@
     ?>
     <p class="note">Los campos con <span class="required">*</span> son obligatorios.</p>
     <?php echo $form->errorSummary($model); ?>
-    <?php if (Yii::app()->user->hasFlash(Constants::FLASH_OK_MESSAGE)) { ?>
-        <div class="resultOk"><p><?php echo Yii::app()->user->getFlash(Constants::FLASH_OK_MESSAGE) ?></p></div>
+    <?php if (Yii::$app->user->hasFlash(Constants::FLASH_OK_MESSAGE)) { ?>
+        <div class="resultOk"><p><?php echo Yii::$app->user->getFlash(Constants::FLASH_OK_MESSAGE) ?></p></div>
     <?php }
     ?>
-    <?php if (Yii::app()->user->hasFlash(Constants::FLASH_ERROR_MESSAGE)) { ?>
-        <div class="errorSummary-short"><p><?php echo Yii::app()->user->getFlash(Constants::FLASH_ERROR_MESSAGE) ?></p></div>
+    <?php if (Yii::$app->user->hasFlash(Constants::FLASH_ERROR_MESSAGE)) { ?>
+        <div class="errorSummary-short"><p><?php echo Yii::$app->user->getFlash(Constants::FLASH_ERROR_MESSAGE) ?></p></div>
     <?php }
     ?>
     <?php echo $form->hiddenField($model, 'id'); ?>

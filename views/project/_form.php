@@ -11,12 +11,12 @@
     <p class="note">Los campos con <span class="required">*</span> son obligatorios.</p>
 
     <?php echo $form->errorSummary( $model ); ?>
-    <?php if( Yii::app()->user->hasFlash(Constants::FLASH_OK_MESSAGE) ) { ?>
-        <div class="resultOk"><p><?php echo Yii::app()->user->getFlash(Constants::FLASH_OK_MESSAGE)?></p></div>
+    <?php if( Yii::$app->user->hasFlash(Constants::FLASH_OK_MESSAGE) ) { ?>
+        <div class="resultOk"><p><?php echo Yii::$app->user->getFlash(Constants::FLASH_OK_MESSAGE)?></p></div>
     <?php } 
     
     $aAttributes = array();
-    if( Yii::app()->user->hasCommercialPrivileges() ) { 
+    if( Yii::$app->user->hasCommercialPrivileges() ) { 
         $aAttributes = array('readonly'=>"readonly");
     }
     ?>
@@ -28,7 +28,7 @@
         ?>
     </div>
         <?php 
-        if( Yii::app()->user->hasCommercialPrivileges() ) { 
+        if( Yii::$app->user->hasCommercialPrivileges() ) { 
                 echo $form->hiddenField( $model, 'company_id'); 
             } else {
                 ?>
@@ -46,11 +46,11 @@
         </div>
         &nbsp;&nbsp;&nbsp;
         <small><?php 
-            if( !Yii::app()->user->hasCommercialPrivileges() ) { 
+            if( !Yii::$app->user->hasCommercialPrivileges() ) { 
             echo CHtml::link( '(Crear nueva empresa)', array( 'company/create' ) ); 
             } ?></small>
         <?php echo $form->error( $model, 'company_id' ); ?>
-    <?php if( !Yii::app()->user->hasCommercialPrivileges() ) {  ?>
+    <?php if( !Yii::$app->user->hasCommercialPrivileges() ) {  ?>
     <div class="row">
         <?php 
         echo $form->labelEx( $model, 'status' ); 
@@ -66,7 +66,7 @@
         <?php echo $form->dropDownList( $model, 'statuscommercial', ProjectStatus::getDataForDropDown() ); ?>
         <?php echo $form->error( $model, 'statuscommercial' ); ?>
     </div>    
-    <?php if( !Yii::app()->user->hasCommercialPrivileges() ) { ?>
+    <?php if( !Yii::$app->user->hasCommercialPrivileges() ) { ?>
     <div class="row">
         <?php echo $form->labelEx( $model, 'cat_type' ); ?>
         <?php echo $form->dropDownList( $model, 'cat_type', ProjectCategories::getDataForDropDown(),
@@ -98,7 +98,7 @@
         ?>
         <?php echo $form->error($model, 'open_time'); ?>
     </div>
-    <?php if( Yii::app()->user->isAdmin() ) { ?>
+    <?php if( Yii::$app->user->isAdmin() ) { ?>
     <div class="row">
         <label for="project_profiles_prices" style="margin-bottom: 3px">Precios por perfil
                 &nbsp;&nbsp;&nbsp;
@@ -168,7 +168,7 @@
     ?>
     <?php echo $form->error( $model, 'imputetypes' ); ?>
     </div>
-    <?php if( !Yii::app()->user->hasCommercialPrivileges() ) { ?>
+    <?php if( !Yii::$app->user->hasCommercialPrivileges() ) { ?>
         <div class="row">
         <?php echo $form->labelEx( $model, 'commercials' ); ?>
         <?php
@@ -247,12 +247,12 @@
             
             
             <!-- Multiselect -->
-            <script type="text/javascript" src="<?php echo Yii::app()->request->baseUrl; ?>/js/multiselect/plugins/localisation/jquery.localisation-min.js"></script>
-            <script type="text/javascript" src="<?php echo Yii::app()->request->baseUrl; ?>/js/multiselect/plugins/tmpl/jquery.tmpl.1.1.1.js"></script>
-            <script type="text/javascript" src="<?php echo Yii::app()->request->baseUrl; ?>/js/multiselect/plugins/blockUI/jquery.blockUI.js"></script>
-            <script type="text/javascript" src="<?php echo Yii::app()->request->baseUrl; ?>/js/multiselect/ui-multiselect.js"></script>
-            <script type="text/javascript" src="<?php echo Yii::app()->request->baseUrl; ?>/js/multiselect/locale/ui-multiselect-es.js"></script>
-            <script type="text/javascript" src="<?php echo Yii::app()->request->baseUrl; ?>/js/plugins/jquery.numeric.js"></script>
+            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/plugins/localisation/jquery.localisation-min.js"></script>
+            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/plugins/tmpl/jquery.tmpl.1.1.1.js"></script>
+            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/plugins/blockUI/jquery.blockUI.js"></script>
+            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/ui-multiselect.js"></script>
+            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/locale/ui-multiselect-es.js"></script>
+            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/plugins/jquery.numeric.js"></script>
             <script type="text/javascript">
                 function makeMultiselect( selector )
                 {
@@ -271,8 +271,8 @@
                     'ui-multiselect',
                     'es',
                     true,
-                    ['<?php echo Yii::app()->request->baseUrl; ?>/js/multiselect/',
-                        '<?php echo Yii::app()->request->baseUrl; ?>/js/multiselect/locale/']
+                    ['<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/',
+                        '<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/locale/']
                     );
                     makeMultiselect( "#Project_managers" );
                     makeMultiselect( "#Project_customers" );

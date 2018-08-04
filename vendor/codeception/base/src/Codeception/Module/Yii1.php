@@ -211,7 +211,7 @@ class Yii1 extends Framework implements PartedModule
         $_POST = [];
         $_COOKIE = [];
         $_REQUEST = [];
-        Yii::app()->session->close();
+        Yii::$app->session->close();
         parent::_after($test);
     }
 
@@ -245,10 +245,10 @@ class Yii1 extends Framework implements PartedModule
      */
     public function getInternalDomains()
     {
-        $domains = [$this->getDomainRegex(Yii::app()->request->getHostInfo())];
-        if (Yii::app()->urlManager->urlFormat === 'path') {
-            $parent = Yii::app()->urlManager instanceof \CUrlManager ? '\CUrlManager' : null;
-            $rules = ReflectionHelper::readPrivateProperty(Yii::app()->urlManager, '_rules', $parent);
+        $domains = [$this->getDomainRegex(Yii::$app->request->getHostInfo())];
+        if (Yii::$app->urlManager->urlFormat === 'path') {
+            $parent = Yii::$app->urlManager instanceof \CUrlManager ? '\CUrlManager' : null;
+            $rules = ReflectionHelper::readPrivateProperty(Yii::$app->urlManager, '_rules', $parent);
             foreach ($rules as $rule) {
                 if ($rule->hasHostInfo === true) {
                     $domains[] = $this->getDomainRegex($rule->template, $rule->params);

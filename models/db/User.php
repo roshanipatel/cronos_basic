@@ -161,7 +161,7 @@ class User extends ActiveRecord {
             array('startcontract', 'type', 'type' => 'date', 'dateFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha invÃ¡lido'),
             array('endcontract', 'type', 'type' => 'date', 'dateFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha invÃ¡lido'),
             // Enum
-            array('role', 'in', 'range' => User::getPriorityUserIds(Yii::app()->user->role)),
+            array('role', 'in', 'range' => User::getPriorityUserIds(Yii::$app->user->role)),
             array('worker_dflt_profile', 'in', 'range' => WorkerProfiles::getValidValues()),
             // Stuff for new/changing password
             array('newPassword, newPasswordRepeat', 'required', 'on' => 'create'),

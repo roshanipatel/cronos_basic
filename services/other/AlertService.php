@@ -130,7 +130,7 @@ class AlertService {
 
     // So it can be mocked!
     protected function getNotifierClasses(){
-        return Yii::app()->params->alert_notifiers;
+        return Yii::$app->params->alert_notifiers;
     }
 
 }
@@ -218,7 +218,7 @@ class EmailNotifier implements Notifier {
     private function getMailConfig() {
         if( empty( self::$mailConfig ) ) {
             // Default values
-            self::$mailConfig = Yii::app()->params->mail;
+            self::$mailConfig = Yii::$app->params->mail;
         }
         return self::$mailConfig;
     }

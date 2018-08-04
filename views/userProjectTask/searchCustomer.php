@@ -200,7 +200,7 @@ function refuseTask( taskId )
 
             <div class="box" style="text-align:center; margin-top: 15px">
                 Total horas: <strong> <?php echo $projectHours ?></strong>
-<?php if( Yii::app()->user->isAdmin() ) {?>
+<?php if( Yii::$app->user->isAdmin() ) {?>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 Total coste: <strong> <?php echo $projectPrice . ' €' ?></strong>
 

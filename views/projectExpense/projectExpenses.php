@@ -4,16 +4,16 @@
 assert(isset($projectsProvider));
 assert(isset($onlyManagedByUser));
 // Required fields
-$isProjectManagerRole = Yii::app()->user->hasProjectManagerPrivileges() || Yii::app()->user->hasAdministrativePrivileges();
+$isProjectManagerRole = Yii::$app->user->hasProjectManagerPrivileges() || Yii::$app->user->hasAdministrativePrivileges();
 $form = $this->beginWidget('CActiveForm', array(
     //'action' => $actionURL,
     'method' => 'get',
         ));
 
 //If project manager
-if (Yii::app()->user->isProjectManager()) {
-    $workersProvider = ServiceFactory::createUserService()->findWorkersByManager(true, Yii::app()->user->id);
-} else if (Yii::app()->user->hasAdministrativePrivileges()) {
+if (Yii::$app->user->isProjectManager()) {
+    $workersProvider = ServiceFactory::createUserService()->findWorkersByManager(true, Yii::$app->user->id);
+} else if (Yii::$app->user->hasAdministrativePrivileges()) {
     $workersProvider = ServiceFactory::createUserService()->findAllWorkers(true);
 } else if ($isProjectManagerRole) {
     $workersProvider = ServiceFactory::createUserService()->findProjectWorkers(true);
@@ -248,7 +248,7 @@ $aExpenses = array(
             'htmlOptions' => array(
                 'style' => 'width: 100px'
             ),
-            'visible' => 'Yii::app()->user->hasDirectorPrivileges()',
+            'visible' => 'Yii::$app->user->hasDirectorPrivileges()',
         ),
         array(
             'header' => 'Importe',
@@ -271,7 +271,7 @@ $aExpenses = array(
                 'pdf' => array(
                     'label'=>'Download PDF',
                     'visible' => '$data->pdffile != ""',
-                    'imageUrl'=>Yii::app()->request->baseUrl.'/images/pdf.png',
+                    'imageUrl'=>Yii::$app->request->baseUrl.'/images/pdf.png',
                     'url'=>'$this->grid->controller->createUrl("/ProjectExpense/downloadPdf/$data->id")',
                     ),
                 'print' => array(

@@ -1,6 +1,6 @@
 <?php
 // In order to use custom jquery.js file
-Yii::app()->clientScript->scriptMap = array(
+Yii::$app->clientScript->scriptMap = array(
     'jquery.js' => false,
     'jquery.min.js' => false,
     'jquery-ui.js' => false,
@@ -15,7 +15,7 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
-$baseUrl = Yii::app()->request->hostInfo . Yii::app()->request->baseUrl;
+$baseUrl = Yii::$app->request->hostInfo . Yii::$app->request->baseUrl;
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -28,7 +28,7 @@ $baseUrl = Yii::app()->request->hostInfo . Yii::app()->request->baseUrl;
         <link rel="stylesheet" type="text/css" href="css/screen.css" media="screen, projection" />
         <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
         <!--[if lt IE 8]>
-	<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/ie.css" media="screen, projection" />
+	<link rel="stylesheet" type="text/css" href="<?php echo Yii::$app->request->baseUrl; ?>/css/ie.css" media="screen, projection" />
 	<![endif]-->
 
         <link rel="stylesheet" type="text/css" href="css/main.css" />
@@ -72,7 +72,7 @@ $baseUrl = Yii::app()->request->hostInfo . Yii::app()->request->baseUrl;
 
         <div class="container" id="page">
             <div id="header">
-                <div id="logo"><?php echo CHtml::encode( Yii::app()->name ); ?></div>
+                <div id="logo"><?php echo CHtml::encode( Yii::$app->name ); ?></div>
             </div><!-- header -->
 
             <?php echo $content; ?>
@@ -80,7 +80,7 @@ $baseUrl = Yii::app()->request->hostInfo . Yii::app()->request->baseUrl;
                 <span style="float:left; position: relative; top:30px; left: 20px">
                     <!--
         <a href='<?php echo htmlspecialchars( $_SERVER['HTTP_REFERER'] ); ?>' title="Volver">
-            <img alt="Volver" src="<?php echo Yii::app()->request->baseUrl; ?>/images/back.png"/>
+            <img alt="Volver" src="<?php echo Yii::$app->request->baseUrl; ?>/images/back.png"/>
         </a>-->
                     <a href='#' onclick="history.back();return false;" title="Volver"
                        style="color: #2E6E9E; text-decoration: none; font-weight: bold; font-size: 0.8em">

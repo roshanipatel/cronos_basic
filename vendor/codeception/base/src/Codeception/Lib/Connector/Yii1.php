@@ -89,7 +89,7 @@ class Yii1 extends Client
         \Yii::setApplication(null);
         \Yii::createApplication($this->appSettings['class'], $this->appSettings['config']);
 
-        $app = \Yii::app();
+        $app = \Yii::$app;
         // disabling logging. Logs slow down test execution
         if ($app->hasComponent('log')) {
             foreach ($app->getComponent('log')->routes as $route) {
@@ -133,7 +133,7 @@ class Yii1 extends Client
      */
     public function setHeaders()
     {
-        $this->headers = \Yii::app()->request->getAllHeaders();
+        $this->headers = \Yii::$app->request->getAllHeaders();
     }
 
     /**

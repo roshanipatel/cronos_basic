@@ -78,7 +78,7 @@ $columns = array(
 		)
 	)
 );
-if(Yii::app()->user->isAdmin()){
+if(Yii::$app->user->isAdmin()){
 	$columns[] = array(
 		'header' => 'Facturable',
 		'name' => 'is_billable',
@@ -92,7 +92,7 @@ if(Yii::app()->user->isAdmin()){
 //			'class' => 'CLinkColumn',
 //			'labelExpression' => '$data->frm_date_ini',
 //            'urlExpression' =>
-//				'Yii::app()->createUrl("userProjectTask/calendar", array("timestamp" => $data->date_ini->getTimestamp(), "user" => $data->user_id))',
+//				'Yii::$app->createUrl("userProjectTask/calendar", array("timestamp" => $data->date_ini->getTimestamp(), "user" => $data->user_id))',
 //            'htmlOptions' => array(
 //                'style' => 'text-align: center',
 //            )
