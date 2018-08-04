@@ -1,6 +1,9 @@
-
+<?php
+use yii\helpers\Html;
+?>
 <h1>Tareas</h1>
-<?php echo Yii::$app->view->renderPartial('/userProjectTask/_form', [
+
+<?php echo Yii::$app->controller->renderPartial('/userProjectTask/_form', [
     'model'=>$model,
     'isWorker' => $isWorker,
     'workers' => $workers,

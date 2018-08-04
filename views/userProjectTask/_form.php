@@ -1,4 +1,5 @@
 <?php
+use yii\helpers\Html;
 use yii\widgets\ActiveForm;    
 ?>
 <div id="task-calendar"></div>
@@ -7,9 +8,12 @@ use yii\widgets\ActiveForm;
     <div class="form">
 
         <?php
-        print_r($model);die;
         $form = ActiveForm::begin([
                     'id' => 'user-project-task-form',
+                    'fieldConfig' => [
+                                        'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",
+                                       // 'labelOptions' => ['class' => 'form-control'],
+                                    ],
                    // 'focus' => array( $model, 'frm_customer_name' ),// this is redundant because it's true by default
                 ]);
        /* $form = $this->beginWidget( 'CActiveForm', array(
@@ -22,15 +26,19 @@ use yii\widgets\ActiveForm;
 
         <div id="user-task-result"></div>
 
-        <?php echo $form->field($model, 'id')->hiddenInput(['value'=>$model->id])->label(false); ?>
-        <?php echo $form->field($model, 'user_id')->hiddenInput()->label(false);  ?>
+        <?php
+            if($model->id){
+                echo $form->field($model, 'id')->hiddenInput(['value'=>$model->id])->label(false); 
+            }
+        ?>
+        <?php
+            if($model->id){
+             echo $form->field($model, 'user_id')->hiddenInput()->label(false);  
+            }
+        ?>
         <div class="row">
-            <?php echo $form->labelEx( $model, 'frm_customer_name' ); ?>
-            <?php
-            echo $form->textField( $model, 'frm_customer_name', array(
-                'id' => 'company_name'
-            ) );
-            ?>
+            <?= $form->field($model, 'frm_customer_name')->textInput(['class'=>"form-control",'id' => 'company_name','value'=>$model->frm_customer_name]) ?>
+           
 <?php
 if( !$isWorker )
 {
@@ -38,7 +46,7 @@ if( !$isWorker )
                 &nbsp;&nbsp;&nbsp;
                 <small><?php echo CHtml::link( '(Crear nueva empresa)', array( 'company/create' ) ); ?></small>
             <?php } ?>
-            <?php echo $form->error( $model, 'frm_customer_name' ); ?>
+            
         </div>
         <div class="row">
             <?php echo $form->labelEx( $model, 'project_id' ); ?>
