@@ -1,4 +1,8 @@
 <?php
+namespace app\models\db;
+
+use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "worker_profiles".
@@ -12,23 +16,14 @@
  * @property User[] $users
  * @property UserProjectTask[] $userProjectTasks
  */
-class WorkerProfile extends CActiveRecord
+class WorkerProfile extends ActiveRecord
 {
     const I18N_CATEGORY = 'models';
 
     /**
-     * Returns the static model of the specified AR class.
-     * @return WorkerProfiles the static model class
-     */
-    public static function model( $className=__CLASS__ )
-    {
-        return parent::model( $className );
-    }
-
-    /**
      * @return string the associated database table name
      */
-    public function tableName()
+    public static function tableName()
     {
         return 'worker_profiles';
     }

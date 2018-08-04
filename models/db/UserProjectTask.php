@@ -2,7 +2,8 @@
 namespace app\models\db;
 
 use yii\db\ActiveRecord;
-
+use app\models\enums\TaskStatus;
+use app\models\enums\WorkerProfiles;
 /**
  * This is the model class for table "user_project_task".
  *
@@ -74,14 +75,6 @@ class UserProjectTask extends ActiveRecord {
     public $imputetypeName;
     protected static $table;
 
-
-    /**
-     * Returns the static model of the specified AR class.
-     * @return UserProjectTask the static model class
-     */
-    public static function model($className = __CLASS__) {
-        return parent::model($className);
-    }
 
     /**
      * @return string the associated database table name

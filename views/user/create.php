@@ -1,3 +1,3 @@
 <h1>Crear Usuario</h1>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>
+<?php echo Yii::$app->controller->renderPartial('_form', ['model'=>$model]); ?>

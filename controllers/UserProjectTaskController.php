@@ -6,6 +6,7 @@ use app\components\CronosController;
 use app\models\db\UserProjectTask;
 use app\models\db\User;
 use app\models\db\Company;
+use app\services\ServiceFactory;
 
 class UserProjectTaskController extends CronosController {
    
@@ -100,7 +101,6 @@ class UserProjectTaskController extends CronosController {
     }
 
     public function actionCalendar($taskId = NULL) {
-
         if (empty($taskId)) { 
             $model = new UserProjectTask;
            // $model->unsetAttributes();
@@ -110,6 +110,7 @@ class UserProjectTaskController extends CronosController {
         } else {
             $model = $this->loadModel($taskId);
         }
+       
         // Don't convert to int: not enough with 32 bits
         $date = ( isset($_REQUEST['timestamp']) && is_numeric($_REQUEST['timestamp'])) ? $_REQUEST['timestamp'] : null;
         $userId = ( isset($_REQUEST['user']) && User::isValidID($_REQUEST['user'])) ? (int) $_REQUEST['user'] : null;
@@ -117,14 +118,14 @@ class UserProjectTaskController extends CronosController {
         if ($isWorker && $userId !== NULL && $userId != Yii::app()->user->id) {
             throw new CHttpException(403, 'No tiene acceso a esta página');
         }
-        $this->render('task_calendar', array(
+        $this->render('/UserProjectTask/task_calendar', array(
             'model' => $model,
             'isWorker' => $isWorker,
-            /*'workers' => array_merge(array_merge(ServiceFactory::createUserService()->findCommercials(true), 
+            'workers' => array_merge(array_merge(ServiceFactory::createUserService()->findCommercials(true), 
                                      ServiceFactory::createUserService()->findProjectWorkers(true)),
                                      ServiceFactory::createUserService()->findProjectManagers(true)),
-            'customers' => Company::where(['order' => 't.name asc'])->all(),
-           */ 'showDate' => $date,
+            'customers' => Company::find()->orderBy('name asc')->all(),
+            'showDate' => $date,
             'showUser' => $userId
         ));
     }

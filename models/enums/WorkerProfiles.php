@@ -1,4 +1,8 @@
 <?php
+namespace app\models\enums;
+
+use app\commands\enums\DBEnum;
+use app\models\db\WorkerProfile;
 
 /**
  * Description of WorkerProfiles
@@ -18,7 +22,7 @@ class WorkerProfiles extends DBEnum
 
     protected function  getDBTable()
     {
-        return WorkerProfile::model()->tableName();
+        return WorkerProfile::tableName();
     }
 }
 ?>

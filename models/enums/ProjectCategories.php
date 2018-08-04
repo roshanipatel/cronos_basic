@@ -1,5 +1,7 @@
 <?php
+namespace app\models\enums;
 
+use app\commands\enums\Enum;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.

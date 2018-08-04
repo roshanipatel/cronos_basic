@@ -1,11 +1,10 @@
 
 <h1>Tareas</h1>
-				
-<?php echo $this->renderPartial('_form', array(
+<?php echo Yii::$app->view->renderPartial('/userProjectTask/_form', [
     'model'=>$model,
     'isWorker' => $isWorker,
     'workers' => $workers,
     'customers' => $customers,
     'showDate' => $showDate,
     'showUser' => $showUser
-    )); ?>
+    ]); ?>

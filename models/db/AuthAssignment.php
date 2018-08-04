@@ -1,5 +1,8 @@
 <?php
+namespace app\models\db;
 
+use Yii;
+use app\components\ActiveRelationalRecord;
 /**
  * This is the model class for table "AuthAssignment".
  *
@@ -14,20 +17,13 @@
  */
 class AuthAssignment extends ActiveRelationalRecord
 {
-
-    /**
-     * Returns the static model of the specified AR class.
-     * @return AuthAssignment the static model class
-     */
-    public static function model( $className=__CLASS__ )
-    {
-        return parent::model( $className );
-    }
+    protected static $table;
+    
 
     /**
      * @return string the associated database table name
      */
-    public function tableName()
+    public static function tableName()
     {
         return 'authassignment';
     }

@@ -1,5 +1,8 @@
 <?php
+namespace app\models\db;
 
+use Yii;
+use yii\db\ActiveRecord;
 /**
  * This is the model class for table "user_project_cost".
  *
@@ -25,7 +28,7 @@
  * @property User $worker
  * @property Project $project
  */
-class ProjectExpense extends CActiveRecord {
+class ProjectExpense extends ActiveRecord {
 
     const MY_LOG_CATEGORY = 'models.ProjectExpense';
     const DATE_FORMAT_ON_CHECK = 'dd/MM/yyyy';
@@ -40,13 +43,7 @@ class ProjectExpense extends CActiveRecord {
     public $workerName;
     public $companyId;
 
-    /**
-     * Returns the static model of the specified AR class.
-     * @return UserProjectTask the static model class
-     */
-    public static function model($className = __CLASS__) {
-        return parent::model($className);
-    }
+    
 
     /**
      * @return string the associated database table name
