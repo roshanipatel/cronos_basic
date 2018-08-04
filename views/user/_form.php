@@ -80,7 +80,7 @@
         <?php echo $form->labelEx( $model, 'company_id' ); ?>
         <?php echo $form->dropDownList( $model, 'company_id', CHtml::listData( Company::model()->findAll(), 'id', 'name' ) ); ?>
         &nbsp;&nbsp;&nbsp;
-        <small><?php echo CHtml::link( '(Crear nueva empresa)', array( 'company/create' ) ); ?></small>
+        <small><?php echo Html::a( '(Crear nueva empresa)', array( 'company/create' ) ); ?></small>
         <?php echo $form->error( $model, 'company_id' ); ?>
     </div>
 

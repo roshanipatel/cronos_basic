@@ -169,11 +169,11 @@ function refuseTask( taskId )
                     /*
                     array(
                         'header' => '',
-                        'value' => 'CHtml::link( "Rechazar", "#", array(
+                        'value' => 'Html::a( "Rechazar", "#", array(
                                 "onclick" => "refuseTask($data->id);".
                                 "class" => "taskRefuseLink",
                             ) );',
-                        'value' => 'CHtml::link( "Rechazar", "#", array() )',
+                        'value' => 'Html::a( "Rechazar", "#", array() )',
                         'htmlOptions' => array(
                             'style' => 'text-align: center',
                         ),

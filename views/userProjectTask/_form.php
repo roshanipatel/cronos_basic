@@ -44,7 +44,7 @@ if( !$isWorker )
 {
     ?>
                 &nbsp;&nbsp;&nbsp;
-                <small><?php echo CHtml::link( '(Crear nueva empresa)', array( 'company/create' ) ); ?></small>
+                <small><?php echo Html::a( '(Crear nueva empresa)', array( 'company/create' ) ); ?></small>
             <?php } ?>
             
         </div>
@@ -63,7 +63,7 @@ echo $form->dropDownList( $model, 'project_id', CHtml::listData( array(), 'id', 
             {
                 ?>
                 &nbsp;&nbsp;&nbsp;
-                <small><?php echo CHtml::link( '(Crear nuevo proyecto)', array( 'project/create' ) ); ?></small>
+                <small><?php echo Html::a( '(Crear nuevo proyecto)', array( 'project/create' ) ); ?></small>
         <?php } ?>
         <?php echo $form->error( $model, 'project_id' ); ?>
         </div>
@@ -134,7 +134,7 @@ echo $form->dropDownList( $model, 'project_id', CHtml::listData( array(), 'id', 
 			<?php echo $form->labelEx( $model, 'ticket_id' ); ?>
 			<?php echo $form->textField( $model, 'ticket_id', array( 'size' => 40, 'maxlength' => 128 ) ); ?>
             &nbsp;&nbsp;&nbsp;
-            <small><?php echo CHtml::link( '(Previsualizar ticket)', 'javascript:testTicket()' ); ?></small>
+            <small><?php echo Html::a( '(Previsualizar ticket)', 'javascript:testTicket()' ); ?></small>
             <?php echo $form->error( $model, 'ticket_id' ); ?>
         </div>
         <div class="row">

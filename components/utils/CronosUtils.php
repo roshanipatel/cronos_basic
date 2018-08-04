@@ -25,7 +25,7 @@ class CronosUtils {
 			return "";
 		} else {
 			$tickedId = str_replace("{ticket_id}", $ticketId, Yii::$app->params->ticket_url);
-                        return CHTML::link("<img src='/images/gbjbifbh.png'></img>", $tickedId, array( "target" => "_blank"));
+                        return Html::a("<img src='/images/gbjbifbh.png'></img>", $tickedId, array( "target" => "_blank"));
 		}
 	}
         
