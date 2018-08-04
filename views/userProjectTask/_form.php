@@ -27,17 +27,14 @@ use yii\widgets\ActiveForm;
         <div id="user-task-result"></div>
 
         <?php
-            if($model->id){
-                echo $form->field($model, 'id')->hiddenInput(['value'=>$model->id])->label(false); 
-            }
-        ?>
+            echo $form->field($model, 'id')->hiddenInput()->label(false); 
+       ?>
         <?php
             if($model->id){
              echo $form->field($model, 'user_id')->hiddenInput()->label(false);  
             }
         ?>
         <div class="row">
-            <?= $form->field($model, 'username')->textInput(['autofocus' => true,'class'=>"form-control"]) ?>
             <?= $form->field($model, 'frm_customer_name')->textInput(['class'=>"form-control",'id' => 'company_name','value'=>$model->frm_customer_name]) ?>
            
 <?php
@@ -50,12 +47,13 @@ if( !$isWorker )
             
         </div>
         <div class="row">
-            <?php echo $form->labelEx( $model, 'project_id' ); ?>
+            <?= $form->field($model, 'project_id')->textInput(['class'=>"form-control",'id' => 'company_name','value'=>$model->frm_customer_name]) ?>
+           
 <?php
-echo $form->dropDownList( $model, 'project_id', CHtml::listData( array(), 'id', 'name' ), array(
+/*echo $form->dropDownList( $model, 'project_id', CHtml::listData( array(), 'id', 'name' ), array(
     'id' => 'customer_projects',
     'prompt' => 'Seleccione cliente',
-) );
+) );*/
 ?>
             <!-- Loading image placeholder -->
             <span id="loadingProjects"></span>
@@ -66,25 +64,28 @@ echo $form->dropDownList( $model, 'project_id', CHtml::listData( array(), 'id', 
                 &nbsp;&nbsp;&nbsp;
                 <small><?php echo CHtml::link( '(Crear nuevo proyecto)', array( 'project/create' ) ); ?></small>
         <?php } ?>
-        <?php echo $form->error( $model, 'project_id' ); ?>
+        <?php //echo $form->error( $model, 'project_id' ); ?>
         </div>
         <div class="row">
-            <?php echo $form->labelEx( $model, 'imputetype_id' ); ?>
+            <?= $form->field($model, 'imputetype_id')->textInput(['class'=>"form-control",'id' => 'company_name']) ?>
             <?php
-            echo $form->dropDownList( $model, 'imputetype_id', CHtml::listData( array(), 'id', 'name' ), array(
+           /* echo $form->dropDownList( $model, 'imputetype_id', CHtml::listData( array(), 'id', 'name' ), array(
                 'id' => 'imputetype_projects',
                 'prompt' => 'Seleccione un tipo de imputación',
-            ) );
+            ) );*/
             ?>
             <!-- Loading image placeholder -->
             <span id="loadingImputetypes"></span>
-        <?php echo $form->error( $model, 'imputetype_id' ); ?>
+        <?php //echo $form->error( $model, 'imputetype_id' ); ?>
         </div>
 
     <div class="row">
-        <?php echo $form->hiddenField($model, 'frm_date_ini' ) ?>
-        <?php echo $form->hiddenField($model, 'frm_date_end' ) ?>
+        <?php echo $form->field($model, 'frm_date_ini')->hiddenInput()->label(false); ?>
+        <?php echo $form->field($model, 'frm_date_end')->hiddenInput()->label(false); ?>
+        
         <label class="required">Horas <span class="required">*</span></label>
+    </div>
+        <?php /*
         <?php 
             $aDateProps = array(
                 'size' => 12,
@@ -159,7 +160,7 @@ echo $form->dropDownList( $model, 'project_id', CHtml::listData( array(), 'id', 
         <div class="row">
             <span id="savingTasks"></span>
         </div>
-
+        <?php */ ?>
         <br>
 <?php ActiveForm::end(); ?>
     </div>

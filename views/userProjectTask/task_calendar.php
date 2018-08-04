@@ -1,6 +1,3 @@
-<?php
-use yii\helpers\Html;
-?>
 <h1>Tareas</h1>
 
 <?php echo $this->render('/userProjectTask/_form', [

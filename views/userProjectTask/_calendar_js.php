@@ -1,4 +1,11 @@
 <?php
+use yii\helpers\Json;
+use yii\helpers\Html; 
+use yii\helpers\ArrayHelper;
+
+use app\controllers\UserProjectTaskController;
+use app\models\enums\ProjectStatus;
+
 /**
  * Parameters:
  * @param bool $showExtendedFields
@@ -8,11 +15,11 @@
  * @param array[] $workers
  */
 
-$cs = Yii::$app->clientScript;
-$cs->registerCssFile( 'css/plugins/jquery.weekcalendar.css' );
-$cs->registerCssFile( 'css/plugins/timePicker.css' );
-$cs->registerScriptFile( 'js/plugins/jquery.weekcalendar.js', CClientScript::POS_BEGIN );
-$cs->registerScriptFile( 'js/plugins/jquery.timePicker.min.js', CClientScript::POS_BEGIN );
+//$cs = Yii::$app->clientScript;
+$this->registerCssFile( 'css/plugins/jquery.weekcalendar.css' );
+$this->registerCssFile( 'css/plugins/timePicker.css' );
+$this->registerJsFile( 'js/plugins/jquery.weekcalendar.js');
+$this->registerJsFile( 'js/plugins/jquery.timePicker.min.js');
 ?>
 
 <script type="text/javascript">
@@ -107,13 +114,13 @@ $cs->registerScriptFile( 'js/plugins/jquery.timePicker.min.js', CClientScript::P
             
             jQuery('#UserProjectTask_frm_date_ini').val(jQuery('#frm_date_ini2').val());
             jQuery('#UserProjectTask_frm_date_end').val(jQuery('#UserProjectTask_frm_date_ini').val());
-            submitAJAXRequest( false, "<?php echo $this->createUrl( 'userProjectTask/saveTask' ); ?>",
+            submitAJAXRequest( false, "<?php echo Yii::$app->urlManager->createUrl( 'userProjectTask/saveTask' ); ?>",
             jQuery('#user-project-task-form').serializeArray() );
             
         } else {
             jQuery('#UserProjectTask_frm_date_ini').val(jQuery('#frm_date_ini2').val());
             jQuery('#UserProjectTask_frm_date_end').val(jQuery('#UserProjectTask_frm_date_ini').val());
-            submitAJAXRequest( false, "<?php echo $this->createUrl( 'userProjectTask/saveTask' ); ?>",
+            submitAJAXRequest( false, "<?php echo Yii::$app->urlManager->createUrl( 'userProjectTask/saveTask' ); ?>",
             jQuery('#user-project-task-form').serializeArray() );
         }
     }
@@ -129,12 +136,12 @@ $cs->registerScriptFile( 'js/plugins/jquery.timePicker.min.js', CClientScript::P
         updatedTask['UserProjectTask']['frm_hour_ini'] = calEventDateIni.toString('HH:mm');
         updatedTask['UserProjectTask']['frm_hour_end'] = calEventDateFin.toString('HH:mm');
         
-        submitAutomaticAJAXRequest( false, "<?php echo $this->createUrl( 'userProjectTask/automaticSaveTask' ); ?>",
+        submitAutomaticAJAXRequest( false, "<?php echo Yii::$app->urlManager->createUrl( 'userProjectTask/automaticSaveTask' ); ?>",
             updatedTask );
     }
 
     function deleteTask(taskId){
-        submitAJAXRequest( true, "<?php echo $this->createUrl( 'userProjectTask/delete' ); ?>", {id: taskId} );
+        submitAJAXRequest( true, "<?php echo Yii::$app->urlManager->createUrl( 'userProjectTask/delete' ); ?>", {id: taskId} );
     }
 </script>
 <script type="text/javascript">
@@ -217,7 +224,7 @@ if( $showExtendedFields ) {
                     .empty()
                     .append('<option value="">' + calEvent.project_name + '</option>');
             } else {
-                var url = '<?php echo $this->createUrl( 'AJAX/retrieveProjectsFromCustomerIdAsListOptions' ) ?>';
+                var url = '<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveProjectsFromCustomerIdAsListOptions' ) ?>';
                 var data = {
                     customerId: calEvent.customer_id,
                     startFilter: calEvent.start.toString('dd/MM/yyyy'),
@@ -227,7 +234,7 @@ if( $showExtendedFields ) {
                 };
                 populateProjectsSelect(url,data,calEvent.project_id, calEvent.project_name);
                 
-                var url = '<?php echo $this->createUrl( 'AJAX/retrieveImputetypesFromProjectAsListOptions' ) ?>';
+                var url = '<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveImputetypesFromProjectAsListOptions' ) ?>';
                 var data = {
                     projectId: calEvent.project_id,
                     //selectProjectPrompt : 'Seleccione un tipo de imputación...'
@@ -350,7 +357,7 @@ if( $showExtendedFields ) {
         calendar.weekCalendar({
             data: function(start,end,callback){
                 calendar.weekCalendar("clear");
-                jQuery.getJSON('<?php echo $this->createUrl( 'AJAX/retrieveTasksForUserAndWeek' ) ?>',
+                jQuery.getJSON('<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveTasksForUserAndWeek' ) ?>',
 					{
 						'date': start.toString('dd/MM/yyyy'),
 						'userId' : <?php echo $userIdStr ?>,
@@ -364,7 +371,7 @@ if( $showExtendedFields ) {
                         if(!$isWorker) {
                             ?>
                             var selectedUser = jQuery("#user_selector").val();
-                            $.get('<?php echo $this->createUrl( 'AJAX/retrieveWorkers' ) ?>',
+                            $.get('<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveWorkers' ) ?>',
                                         {
 						startFilter: start.toString('dd/MM/yyyy'),
                                                 endFilter: end.toString('dd/MM/yyyy'),
@@ -379,7 +386,7 @@ if( $showExtendedFields ) {
                         }
                         ?>
                         var selectedCompany = jQuery("#company_selector").val();
-                            $.get('<?php echo $this->createUrl( 'AJAX/retrieveCompanies' ) ?>',
+                            $.get('<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveCompanies' ) ?>',
                                         {
 						startFilter: start.toString('dd/MM/yyyy'),
                                                 endFilter: end.toString('dd/MM/yyyy'),
@@ -490,7 +497,7 @@ if( ! $isWorker ) {
 	} else{
 		$userIdStr = $showUser;
 	}
-	$usersSelect = CHtml::dropDownList('user_selector', $userIdStr, CHtml::listData( $workers, 'id', 'name' ), array(
+	$usersSelect = Html::dropDownList('user_selector', $userIdStr, ArrayHelper::map( $workers, 'id', 'name' ), array(
 				'onchange' => 'updateTasks()',
 				'style' => 'font-size: 1.2em',
 				'id' => 'user_selector',
@@ -507,7 +514,7 @@ if( ! $isWorker ) {
 <?php } ?>
 
 <?php
-$companySelect = CHtml::dropDownList('company_selector', "", CHtml::listData( $customers, 'id', 'name' ), array(
+$companySelect = Html::dropDownList('company_selector', "", ArrayHelper::map( $customers, 'id', 'name' ), array(
                                 'prompt' => 'Todos',
 				'onchange' => 'updateTasks()',
 				'style' => 'font-size: 1.2em',

@@ -6,6 +6,8 @@ use app\components\CronosController;
 use app\models\db\UserProjectTask;
 use app\models\db\User;
 use app\models\db\Company;
+use app\models\LoginForm;
+
 use app\services\ServiceFactory;
 
 class UserProjectTaskController extends CronosController {
@@ -110,6 +112,7 @@ class UserProjectTaskController extends CronosController {
         } else {
             $model = $this->loadModel($taskId);
         }
+        //$model = new LoginForm;
         /*echo "<pre/>";
         print_r($model);die();*/
         // Don't convert to int: not enough with 32 bits
