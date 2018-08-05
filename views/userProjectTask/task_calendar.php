@@ -1,4 +1,4 @@
-<h1>Tareas</h1>
+<h1 class="page-header">Tareas</h1>
 
 <?php echo $this->render('/userProjectTask/_form', [
     'model'=>$model,

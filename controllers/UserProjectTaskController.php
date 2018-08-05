@@ -567,7 +567,7 @@ class UserProjectTaskController extends CronosController {
     public function loadModel($id) {
         $model = UserProjectTask::model()->findByPk((int) $id);
         if ($model === null)
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
         return $model;
     }
 
@@ -577,7 +577,7 @@ class UserProjectTaskController extends CronosController {
      */
     protected function performAjaxValidation($model) {
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'user-project-task-form') {
-            echo CActiveForm::validate($model);
+            echo ActiveForm::validate($model);
             Yii::$app->end();
         }
     }

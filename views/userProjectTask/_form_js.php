@@ -1,8 +1,8 @@
 
 <?php
 use yii\helpers\Json;
-$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/date.js', ['position' => '\yii\web\View::POS_BEGIN'] );
-$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js', ['position' => '\yii\web\View::POS_HEAD']);
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/date.js' );
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js');
 ?>
 <script type="text/javascript">
     // Ticket preview
