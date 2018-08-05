@@ -21,12 +21,13 @@ use app\models\enums\WorkerProfiles;
                         'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",
                        // 'labelOptions' => ['class' => 'form-control'],
                     ],
-                ]); 
-                 $form = ActiveForm::begin([
-                    'id' => 'ride-form',
                     'enableClientValidation'=>false,
-                    'validateOnSubmit' => true, // this is redundant because it's true by default
-                ]);
+                    'validateOnSubmit' => true,
+                ]); 
+                /* $form = ActiveForm::begin([
+                    'id' => 'ride-form',
+                     // this is redundant because it's true by default
+                ]);*/
                 ?>
                 <div class="row">
                     <div class="col-lg-12">
