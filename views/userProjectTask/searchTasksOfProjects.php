@@ -62,7 +62,7 @@ $columns = array(
 	array(
 		'name' => 'ticket_id',
 		'type' => 'raw',
-		'value' => 'CHtml::link($data->ticket_id, CronosUtils::getTicketUrl($data->ticket_id), array("target"=>"_blank"))',
+		'value' => 'Html::a($data->ticket_id, CronosUtils::getTicketUrl($data->ticket_id), array("target"=>"_blank"))',
 	),
 	array(
 		'header' => 'Tarea',

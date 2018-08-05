@@ -19,7 +19,7 @@ $this->widget( 'zii.widgets.CDetailView', array(
         array(
             'label' => 'Ticket',
             'type' => 'raw',
-            'value' => CHtml::link( 'ticket url',
+            'value' => Html::a( 'ticket url',
                                     CHtml::normalizeUrl( CronosUtils::getTicketUrl( $model->ticket_id ) ),
                                     array( 'target' => '_blank' ) ),
         ),

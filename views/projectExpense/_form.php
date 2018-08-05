@@ -32,7 +32,7 @@
         echo $form->error($model, 'pdffile');
         if (isset($model->id)) {
             $imghtml = CHtml::image('images/pdf.png');
-            echo CHtml::link($imghtml, array('downloadPdf', 'id'=>$model->id));
+            echo Html::a($imghtml, array('downloadPdf', 'id'=>$model->id));
         }
         ?>
     </div>

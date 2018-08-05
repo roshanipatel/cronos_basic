@@ -47,7 +47,7 @@
         &nbsp;&nbsp;&nbsp;
         <small><?php 
             if( !Yii::$app->user->hasCommercialPrivileges() ) { 
-            echo CHtml::link( '(Crear nueva empresa)', array( 'company/create' ) ); 
+            echo Html::a( '(Crear nueva empresa)', array( 'company/create' ) ); 
             } ?></small>
         <?php echo $form->error( $model, 'company_id' ); ?>
     <?php if( !Yii::$app->user->hasCommercialPrivileges() ) {  ?>
@@ -102,7 +102,7 @@
     <div class="row">
         <label for="project_profiles_prices" style="margin-bottom: 3px">Precios por perfil
                 &nbsp;&nbsp;&nbsp;
-        <small><?php echo CHtml::link( '(Modificar precios por defecto)', array( 'workerProfiles/update' ), array('style'=>'font-weight: normal') ); ?></small>
+        <small><?php echo Html::a( '(Modificar precios por defecto)', array( 'workerProfiles/update' ), array('style'=>'font-weight: normal') ); ?></small>
         </label>
 
         <?php echo $form->error( $model, 'workerProfiles' ); ?>

@@ -20,6 +20,7 @@ use app\models\db\userProjectTask;
 //$cs = Yii::$app->clientScript;
 $this->registerCssFile(Yii::$app->request->BaseUrl . '/css/plugins/jquery.weekcalendar.css');
 $this->registerCssFile( Yii::$app->request->BaseUrl .'/css/plugins/timePicker.css');
+
 $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/plugins/jquery.weekcalendar.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
 $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/plugins/jquery.timePicker.min.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
 ?>
