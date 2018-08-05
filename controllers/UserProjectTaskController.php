@@ -122,7 +122,8 @@ class UserProjectTaskController extends CronosController {
         if ($isWorker && $userId !== NULL && $userId != Yii::$app->user->id) {
             throw new CHttpException(403, 'No tiene acceso a esta página');
         }
-        $this->render('/UserProjectTask/task_calendar',[
+
+       return $this->render('/UserProjectTask/task_calendar',[
             'model' => $model,
             'isWorker' => $isWorker,
             'workers' => array_merge(array_merge(ServiceFactory::createUserService()->findCommercials(true), 

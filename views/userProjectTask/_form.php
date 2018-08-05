@@ -3,7 +3,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;    
 ?>
 <div id="task-calendar"></div>
-
+<?php /*
 <div id="task-input-form" style="display:none">
     <div class="form">
 
@@ -16,11 +16,7 @@ use yii\widgets\ActiveForm;
                                             ],
                                         ]); 
        
-       /* $form = $this->beginWidget( 'CActiveForm', array(
-                    'id' => 'user-project-task-form',
-                    'focus' => array( $model, 'frm_customer_name' ),
-                ) );*/
-        ?>
+       ?>
 
         <p class="note">Los campos con <span class="required">*</span> son obligatorios.</p>
 
@@ -54,6 +50,7 @@ if( !$isWorker )
     'id' => 'customer_projects',
     'prompt' => 'Seleccione cliente',
 ) );*/
+/*
 ?>
             <!-- Loading image placeholder -->
             <span id="loadingProjects"></span>
@@ -68,11 +65,11 @@ if( !$isWorker )
         </div>
         <div class="row">
             <?= $form->field($model, 'imputetype_id')->textInput(['class'=>"form-control",'id' => 'company_name']) ?>
-            <?php
+            <?php */
            /* echo $form->dropDownList( $model, 'imputetype_id', CHtml::listData( array(), 'id', 'name' ), array(
                 'id' => 'imputetype_projects',
                 'prompt' => 'Seleccione un tipo de imputación',
-            ) );*/
+            ) );*//*
             ?>
             <!-- Loading image placeholder -->
             <span id="loadingImputetypes"></span>
@@ -85,7 +82,7 @@ if( !$isWorker )
         
         <label class="required">Horas <span class="required">*</span></label>
     </div>
-        <?php /*
+        
         <?php 
             $aDateProps = array(
                 'size' => 12,
@@ -160,19 +157,17 @@ if( !$isWorker )
         <div class="row">
             <span id="savingTasks"></span>
         </div>
-        <?php */ ?>
+        
         <br>
 <?php ActiveForm::end(); ?>
     </div>
 </div><!-- form -->
-
-<?php
-Yii::$app->controller->renderPartial('/userProjectTask/_form_js',[
+<?php */ ?>
+<?= $this->render('/userProjectTask/_form_js',[
     'customers' => $customers,
 ]);
 ?>
-<?php
-Yii::$app->controller->renderPartial('/userProjectTask/_calendar_js',[
+<?= $this->render('/userProjectTask/_calendar_js',[
     'model' => $model,
     'workers' => $workers,
     'customers' => $customers,

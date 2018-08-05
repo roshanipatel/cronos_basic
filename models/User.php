@@ -35,7 +35,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne($id);
+        $user = User::find()->where(['id' => $id])->one();   
+        return $user;
     }
 
     /**

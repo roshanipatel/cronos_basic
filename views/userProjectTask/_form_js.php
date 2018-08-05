@@ -1,45 +1,60 @@
 
 <?php
+
 use yii\helpers\Json;
-$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/date.js', ['position' => '\yii\web\View::POS_BEGIN'] );
-$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js', ['position' => '\yii\web\View::POS_HEAD']);
+//$this->registerJsFile( Yii::$app->request->BaseUrl ."/js/jquery-1.6.2.min.js" );
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/date.js' ,['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
+
+
+// Build an array of customer names
+$customerNames = array();
+$aColorCompanies = array();
+foreach( $customers as $customer ) {
+    $customerNames[] = $customer->name;
+    $aColorCompanies[$customer->id] = $customer->getColor();
+}
+$Jsoncolors = "'".Json::encode( $aColorCompanies )."'";
+$JsoncustomerNames = "'".Json::encode( $customerNames )."'";
+
 ?>
-<script type="text/javascript">
-    // Ticket preview
+
+<?php  $this->registerJs( '  
+
     function testTicket()
     {
-        var baseUrl = "<?php echo Yii::$app->params['ticket_url'] ?>";
-        var ticketId = jQuery('#UserProjectTask_ticket_id').val().trim();
-        if( ticketId == '' )
-            alert('Introduzca un ticket válido');
+        var baseUrl = "'. Yii::$app->params['ticket_url'] .'";
+        var ticketId = jQuery("#UserProjectTask_ticket_id").val().trim();
+        if( ticketId == "" )
+            alert("Introduzca un ticket válido");
         else
-            window.open( baseUrl.replace( '{ticket_id}', ticketId ) );
+            window.open( baseUrl.replace( "{ticket_id}", ticketId ) );
     }
     
     function checkTaskHours(){
         var resultObj = {};
-        var hourIni = Date.parseExact(jQuery('#UserProjectTask_frm_hour_ini').val(), 'HH:mm');
-        var hourEnd = Date.parseExact(jQuery('#UserProjectTask_frm_hour_end').val(), 'HH:mm');
+        var hourIni = Date.parseExact(jQuery("#UserProjectTask_frm_hour_ini").val(), "HH:mm");
+        var hourEnd = Date.parseExact(jQuery("#UserProjectTask_frm_hour_end").val(), "HH:mm");
         if( hourIni.getTime() > hourEnd.getTime() ){
-            resultObj['success'] = false;
-            resultObj['hourIni'] = hourIni;
-            resultObj['hourEnd'] = hourEnd;
+            resultObj["success"] = false;
+            resultObj["hourIni"] = hourIni;
+            resultObj["hourEnd"] = hourEnd;
         }
         else{
-            resultObj['success'] = true;
+            resultObj["success"] = true;
         }
         return resultObj;
     }
     
     function validateTaskForm(){
-        if( isNaN(parseInt(jQuery('#customer_projects').val())) ){
-            alert('Seleccione un proyecto');
+        if( isNaN(parseInt(jQuery("#customer_projects").val())) ){
+            alert("Seleccione un proyecto");
             return false;
         }
         var checkTaskHoursResult = checkTaskHours();
-        if( ! checkTaskHoursResult['success'] )
+        if( ! checkTaskHoursResult["success"] )
         {
-            alert('La hora inicial debe ser anterior a la final');
+            alert("La hora inicial debe ser anterior a la final");
             return false;
         }
         return true;
@@ -47,12 +62,12 @@ $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js',
 
     function checkHourSemantics(which){
         var checkTaskHoursResult = checkTaskHours();
-        if( ! checkTaskHoursResult['success'] ){
-            if( which == 'hour_ini' ){
-                jQuery('#UserProjectTask_frm_hour_end').val(jQuery('#UserProjectTask_frm_hour_ini').val());
+        if( ! checkTaskHoursResult["success"] ){
+            if( which == "hour_ini" ){
+                jQuery("#UserProjectTask_frm_hour_end").val(jQuery("#UserProjectTask_frm_hour_ini").val());
             }
             else{
-                jQuery('#UserProjectTask_frm_hour_ini').val(jQuery('#UserProjectTask_frm_hour_end').val());
+                jQuery("#UserProjectTask_frm_hour_ini").val(jQuery("#UserProjectTask_frm_hour_end").val());
             }
         }
     }
@@ -61,32 +76,32 @@ $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js',
     function populateProjectsSelect(url,data,projectId, projectName){
         ajaxLoadingProjects.show();
         // Clean select before update
-        jQuery("#customer_projects")
+        jQuery(\'#customer_projects\')
         .empty()
-        .append('<option value="">Actualizando proyectos...</option>');
+        .append("<option value=\'\'>Actualizando proyectos...</option>");
 
         jQuery.ajax( {
-            'url': url,
-            'data': data,
-            'dataType':'html',
-            'cache':false,
-            'success':function(html){
+            "url": url,
+            "data": data,
+            "dataType":"html",
+            "cache":false,
+            "success":function(html){
                 jQuery("#customer_projects").html(html);
                 if( projectId ){
-                    if (html.search('value="' + projectId + '"') <= 0) {
-                        jQuery("#customer_projects").append("<option value='" + projectId + "'>" + projectName + "</option>");
+                    if (html.search("value=" + projectId ) <= 0) {
+                        jQuery("#customer_projects").append("<option value= projectId >" + projectName + "</option>");
                     }
                     jQuery("#customer_projects").val(projectId);
                 }
             },
-            'error':function(){
-                alert('Respuesta inválida. Seleccione otro cliente.');
+            "error":function(){
+                alert("Respuesta inválida. Seleccione otro cliente.");
                 jQuery("#customer_projects")
                 .empty()
-                .append('<option value="">Seleccione cliente...</option>');
+                .append("<option value=\'\'>Seleccione cliente...</option>");
 
             },
-            'complete':function(){
+            "complete":function(){
                 ajaxLoadingProjects.hide();
             }
         });
@@ -97,35 +112,35 @@ $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js',
         // Clean select before update
         jQuery("#imputetype_projects")
         .empty()
-        .append('<option value="">Actualizando tipos de imputación...</option>');
+        .append("<option value=\'\'>Actualizando tipos de imputación...</option>");
 
         jQuery.ajax( {
-            'url': url,
-            'data': data,
-            'dataType':'html',
-            'cache':false,
-            'success':function(html){
+            "url": url,
+            "data": data,
+            "dataType":"html",
+            "cache":false,
+            "success":function(html){
                 jQuery("#imputetype_projects").empty().html(html);
                 if( imputetypeId ){
-                    if (html.search('value="' + imputetypeId + '"') <= 0) {
-                        jQuery("#imputetype_projects").append("<option value='" + imputetypeId + "'>" + imputetypeName + "</option>");
+                    if (html.search("value="+ imputetypeId ) <= 0) {
+                        jQuery("#imputetype_projects").append("<option value=imputetypeId>" + imputetypeName + "</option>");
                     }
                     jQuery("#imputetype_projects").val(imputetypeId);
                 }
             },
-            'error':function(){
-                alert('Respuesta inválida. Seleccione otro tipo de imputación.');
+            "error":function(){
+                alert("Respuesta inválida. Seleccione otro tipo de imputación.");
                 jQuery("#imputetype_projects")
                 .empty()
-                .append('<option value="">Seleccione tipo de imputación...</option>');
+                .append("<option value=\'\'>Seleccione tipo de imputación...</option>");
 
             },
-            'complete':function(){
+            "complete":function(){
                 ajaxLoadingImputetypes.hide();
             }
         });
     }
-    
+     
     var ajaxLoadingProjects;
     var ajaxLoadingImputetypes;
     jQuery(document).ready(function(){	
@@ -141,45 +156,33 @@ $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js',
         });
     });
 
-<?php
-// Build an array of customer names
-$customerNames = array();
-$aColorCompanies = array();
-foreach( $customers as $customer ) {
-    $customerNames[] = $customer->name;
-    $aColorCompanies[$customer->id] = $customer->getColor();
-}
-
-?>      
-        var companyColors = <?php echo Json::encode( $aColorCompanies ); ?>;
+   
+        var companyColors =  '.$Jsoncolors .';
         var customersAutocomplete = {
-            names: <?php echo Json::encode( $customerNames ); ?>
+            names:  '.$JsoncustomerNames.'
         };
         // Company autocomplete
-        jQuery('#company_name').autocomplete({
+        jQuery("#company_name").autocomplete({
             source: customersAutocomplete.names,
             select: function(event,ui)
             {
-                var url = '<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveOpenProjectsFromCustomerNameAsListOptions' ) ?>';
+                var url = "'. Yii::$app->urlManager->createUrl( 'AJAX/retrieveOpenProjectsFromCustomerNameAsListOptions' ).'";
                 var data = { customerName: ui.item.value };
                 populateProjectsSelect(url,data,false);
             }
         });
         
-        $('#customer_projects').change(function(event,ui)
+        $("#customer_projects").change(function(event,ui)
             {
-                var url = '<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveImputetypesFromProjectAsListOptions' ) ?>';
-                var data = { projectId: $('#customer_projects').val() };
+                var url = "'. Yii::$app->urlManager->createUrl( 'AJAX/retrieveImputetypesFromProjectAsListOptions' ).'";
+                var data = { projectId: $("#customer_projects").val() };
                 populateImputetypeSelect(url,data,false);
             }
         );
     
-</script>
-
-<script type="text/javascript">
     // Loading image for task insertion/update
     var ajaxSavingTask = new AjaxImageLoader({
         id: "savingTasks",
         source: "images/ajax-loader.gif"
     });
-</script>
+');
