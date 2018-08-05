@@ -148,16 +148,14 @@ use app\models\enums\WorkerProfiles;
                 </div>
                 <?php ActiveForm::end(); ?>
             </div>
-        </div><!-- form -->
+       </div><!-- form -->
     </div>
 </div>    
-<?php
-Yii::$app->controller->renderPartial('/userProjectTask/_form_js',[
+<?= $this->render('/userProjectTask/_form_js',[
     'customers' => $customers,
 ]);
 ?>
-<?php
-Yii::$app->controller->renderPartial('/userProjectTask/_calendar_js',[
+<?= $this->render('/userProjectTask/_calendar_js',[
     'model' => $model,
     'workers' => $workers,
     'customers' => $customers,

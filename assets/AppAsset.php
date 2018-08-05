@@ -30,15 +30,16 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
         'js/bootstrap.min.js',
-        'js/sb-admin-2.js',
+        //'js/sb-admin-2.js',
         //'js/morris.min.js',
-        'js/metisMenu.min.js',
+       // 'js/metisMenu.min.js',
         //'js/morris-data.js',
-        'js/raphael.min.js',
-        'js/jquery-ui.min.js'
+        //'js/raphael.min.js',
+       
+       
     ];
     public $depends = [
-        'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
+        'yii\web\YiiAsset',
     ];
 }

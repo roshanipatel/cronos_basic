@@ -22,7 +22,17 @@ AppAsset::register($this);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
-    <?php $this->head() ?>
+     <?php $this->head() ?>
+    
+    <?php
+    $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jquery-1.6.2.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
+    $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jquery-ui-1.8.8.custom.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
+    $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jqueryslidemenu.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
+    ?>
+    <!-- <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jquery-1.6.2.js' ?>></script>
+    <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jquery-ui-1.8.8.custom.js' ?>></script>
+    <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jqueryslidemenu.js' ?>></script> -->
+    
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -84,4 +94,4 @@ AppAsset::register($this);
 <?php $this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage(); die; ?>
+<?php $this->endPage();  ?>
