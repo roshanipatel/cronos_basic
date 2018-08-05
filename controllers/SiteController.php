@@ -24,8 +24,7 @@ class SiteController extends CronosController {
 
 	public function allowedActions() {
         return '*';
-	}
-
+    }
 	/**
 	 * This is the default 'index' action that is invoked
 	 * when an action is not explicitly requested by users.
@@ -42,7 +41,9 @@ class SiteController extends CronosController {
         ]);
         }*/ 
 
-
+        if (\Yii::$app->user->isGuest) {
+            return $this->redirect(Yii::$app->urlManager->createUrl(['site/login']));;
+        }
         return $this->render('index');
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'

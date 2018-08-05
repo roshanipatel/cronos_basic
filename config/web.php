@@ -15,7 +15,11 @@ $config = [
         'assetManager'=>[
             'bundles' => [
                 //'yii\bootstrap\BootstrapPluginAsset'=>false,
-               'yii\web\JqueryAsset\jquery.js'=> false,
+               'yii\web\JqueryAsset'=> false,
+               'jquery.js' => false,
+                'jquery.min.js' => false,
+                'jquery-ui.js' => false,
+                'jquery-ui.min.js' => false,
                // 'yii\web\YiiAsset'=>false
             ],
         ],

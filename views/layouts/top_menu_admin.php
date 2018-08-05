@@ -6,7 +6,7 @@ $topMenus = array( "user" => "Usuarios",
         );
 ?>
 <?php foreach ( $topMenus as $controller => $desc ) { ?>
-    <li><?php echo Html::a( $desc'<span class="fa arrow"></span>', array( $controller.'/admin' ) ) ?>
+    <li><?php echo $desc.'<span class="fa arrow"></span>' //Html::a( $desc.'<span class="fa arrow"></span>', array( $controller.'/admin' ) ) ?>
         <ul class="nav nav-second-level">
             <li><?php echo Html::a( 'Crear', array( $controller.'/create' ) ) ?></li>
             <li><?php echo Html::a( 'Gestionar', array( $controller.'/admin' ) ) ?></li>
