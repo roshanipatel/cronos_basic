@@ -184,7 +184,7 @@ if (Yii::$app->user->isProjectManager()) {
     }));
 </script>
 <?php
-Yii::$app->controller->renderPartial('../userProjectTask/_projectsFromCustomerAutocomplete', [
+$this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
     'onlyManagedByUser' => $onlyManagedByUser,
     'onlyUserEnvolved' => true
 ]);

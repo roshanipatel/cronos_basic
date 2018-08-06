@@ -5,20 +5,20 @@ $topMenus = array( "user" => "Usuarios",
                    "company"=>"Empresas",
         );
 ?>
-    <li><?php echo Html::a( 'Tareas<span class="fa arrow"></span>', array( 'userProjectTask/calendar' ) ) ?>
+    <li><?php echo Html::a( 'Tareas<span class="fa arrow"></span>', array( 'user-project-task/calendar' ) ) ?>
             <ul class="nav nav-second-level">
-                    <li><?php echo Html::a( 'Calendario', array( 'userProjectTask/calendar' ) ) ?></li>
+                    <li><?php echo Html::a( 'Calendario', array( 'user-project-task/calendar' ) ) ?></li>
             </ul>
     </li>
     <li><?php echo Html::a( 'Proyectos<span class="fa arrow"></span>', array( 'project/admin' ) ) ?>
         <ul class="nav nav-second-level">
-            <li><?php echo Html::a( 'Gestionar', array( 'project/projectOverview' ) ) ?></li>
+            <li><?php echo Html::a( 'Gestionar', array( 'project/project-overview' ) ) ?></li>
         </ul>
     </li>
-    <li><?php echo Html::a( 'Operaciones portal<span class="fa arrow"></span>', array( 'userProjectTask/searchTasksCommercial' ) ) ?>
+    <li><?php echo Html::a( 'Operaciones portal<span class="fa arrow"></span>', array( 'user-project-task/search-tasks-commercial' ) ) ?>
         <ul class="nav nav-second-level">
-            <li><?php echo Html::a( 'Consultar Horas', array( 'userProjectTask/searchTasksCommercial' ) ) ?></li>
-            <li><?php echo Html::a( 'Modificación Horas', array( 'userProjectTask/updateTasks' ) ) ?></li>
+            <li><?php echo Html::a( 'Consultar Horas', array( 'user-project-task/search-tasks-commercial' ) ) ?></li>
+            <li><?php echo Html::a( 'Modificación Horas', array( 'user-project-task/update-tasks' ) ) ?></li>
         </ul>
     </li>
     <li><?php echo Html::a( 'Gastos<span class="fa arrow"></span>', array( 'projectExpense/expenses' ) ) ?>

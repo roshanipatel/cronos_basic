@@ -13,11 +13,11 @@ use app\models\enums\Roles;
 class SiteController extends CronosController {
 
 	static private $indexByRole = array(
-		Roles::UT_ADMIN => 'userProjectTask/calendar',
-                Roles::UT_DIRECTOR_OP => 'userProjectTask/calendar',
-		Roles::UT_CUSTOMER => 'userProjectTask/searchTasksCustomer',
-		Roles::UT_PROJECT_MANAGER => 'userProjectTask/approveTasks',
-		Roles::UT_WORKER => 'userProjectTask/calendar',
+		Roles::UT_ADMIN => 'user-project-task/calendar',
+                Roles::UT_DIRECTOR_OP => 'user-project-task/calendar',
+		Roles::UT_CUSTOMER => 'user-project-task/searchTasksCustomer',
+		Roles::UT_PROJECT_MANAGER => 'user-project-task/approveTasks',
+		Roles::UT_WORKER => 'user-project-task/calendar',
                 Roles::UT_ADMINISTRATIVE => 'project/projectOverview',
                 Roles::UT_COMERCIAL => 'project/projectOverview'
 	);

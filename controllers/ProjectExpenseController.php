@@ -1,5 +1,8 @@
 <?php
+namespace app\controllers;
 
+use Yii;
+use app\components\CronosController;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.

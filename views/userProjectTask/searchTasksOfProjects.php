@@ -3,7 +3,7 @@
 <?php
 /* SEARCH FORM */
 
-Yii::$app->controller->renderPartial('/userProjectTask/_searchForm',
+$this->render('/userProjectTask/_searchForm',
 	[
 	'taskSearch' => $taskSearch,
 	'projectsProvider' => $projectsProvider,

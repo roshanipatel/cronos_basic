@@ -169,7 +169,7 @@ echo CHtml::submitButton('Buscar', array(
     }));
 </script>
 <?php
-Yii::$app->controller->renderPartial('../userProjectTask/_projectsFromCustomerAutocomplete', [
+$this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
     'projectStatus' => (!isset($projectStatus)) ? NULL : $projectStatus,
     'onlyManagedByUser' => false,
     'onlyUserEnvolved' => true

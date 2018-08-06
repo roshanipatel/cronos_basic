@@ -290,7 +290,7 @@ if($hasToDefineForm) {
 				<script type="text/javascript">
 					function exportToCSV( frm )
 					{
-						frm.action = '<?php echo $this->createUrl('userProjectTask/exportToCSV'); ?>';
+						frm.action = '<?php echo $this->createUrl('user-project-task/export-toCSV'); ?>';
 						frm.target = '_blank';
 						return true;
 					}
@@ -335,7 +335,7 @@ if($hasToDefineForm) {
 	}));
 </script>
 <?php
-Yii::$app->controller->renderPartial('/userProjectTask/_projectsFromCustomerAutocomplete', [
+$this->render('/userProjectTask/_projectsFromCustomerAutocomplete', [
 	'projectStatus' => (!isset($projectStatus))?NULL : $projectStatus,
         'projectStatusCom' => (!isset($projectStatusCom))?NULL : $projectStatusCom,
 	'onlyManagedByUser' => false, //$onlyManagedByUser,

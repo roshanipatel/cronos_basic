@@ -1,5 +1,8 @@
 <?php
+namespace app\controllers;
 
+use Yii;
+use app\components\CronosController;
 class CompanyController extends CronosController
 {
 
