@@ -29,7 +29,7 @@ class WorkerProfilesController extends CronosController
                 $model->dflt_price = (float)$profilePrice;
                 $model->save();
             }
-            Yii::app()->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Valores guardados con éxito' );
+            Yii::$app->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Valores guardados con éxito' );
             $this->refresh();
         }
 

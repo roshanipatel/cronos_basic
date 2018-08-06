@@ -3,8 +3,8 @@
 <?php
 /* SEARCH FORM */
 
-$this->renderPartial('_searchForm',
-		array(
+Yii::$app->controller->renderPartial('/userProjectTask/_searchForm',
+	[
 	'taskSearch' => $taskSearch,
 	'projectsProvider' => $projectsProvider,
 	'usersProvider' => $usersProvider,
@@ -16,7 +16,7 @@ $this->renderPartial('_searchForm',
 	'projectStatus' => NULL,
 	'onlyManagedByUser' => $onlyManagedByUser,
         'projectImputetypes' => $projectImputetypes
-));
+]);
 
 /* END SEARCH FORM */
 
@@ -62,7 +62,7 @@ $columns = array(
 	array(
 		'name' => 'ticket_id',
 		'type' => 'raw',
-		'value' => 'CHtml::link($data->ticket_id, CronosUtils::getTicketUrl($data->ticket_id), array("target"=>"_blank"))',
+		'value' => 'Html::a($data->ticket_id, CronosUtils::getTicketUrl($data->ticket_id), array("target"=>"_blank"))',
 	),
 	array(
 		'header' => 'Tarea',
@@ -78,7 +78,7 @@ $columns = array(
 		)
 	)
 );
-if(Yii::app()->user->isAdmin()){
+if(Yii::$app->user->isAdmin()){
 	$columns[] = array(
 		'header' => 'Facturable',
 		'name' => 'is_billable',
@@ -92,7 +92,7 @@ if(Yii::app()->user->isAdmin()){
 //			'class' => 'CLinkColumn',
 //			'labelExpression' => '$data->frm_date_ini',
 //            'urlExpression' =>
-//				'Yii::app()->createUrl("userProjectTask/calendar", array("timestamp" => $data->date_ini->getTimestamp(), "user" => $data->user_id))',
+//				'Yii::$app->createUrl("userProjectTask/calendar", array("timestamp" => $data->date_ini->getTimestamp(), "user" => $data->user_id))',
 //            'htmlOptions' => array(
 //                'style' => 'text-align: center',
 //            )

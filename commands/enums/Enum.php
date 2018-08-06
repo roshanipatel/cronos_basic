@@ -1,6 +1,7 @@
 <?php
 namespace app\commands\enums;
 
+use Yii;
 /**
  * Superclass for any Enum. It provides methods for checking an enum value,
  * get a string representation, get data for dropdowns or selects...

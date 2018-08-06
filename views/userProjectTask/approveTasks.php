@@ -4,14 +4,14 @@
 // Required elements
 assert( isset( $tasksProvider ) );
 
-$form = $this->beginWidget( 'CActiveForm', array(
+$form = $this->beginWidget( 'CActiveForm', [
             'action' => '',
             'method' => 'post'
-                ) );
+                ] );
 
 /* SEARCH FORM */
-$this->renderPartial( '_searchForm',
-        array(
+Yii::$app->controller->renderPartial( '/userProjectTask/_searchForm',
+        [
             'taskSearch' => $taskSearch,
             'projectsProvider' => $projectsProvider,
             'searchFieldsToHide' => $searchFieldsToHide,
@@ -22,7 +22,7 @@ $this->renderPartial( '_searchForm',
             'onlyManagedByUser' => $onlyManagedByUser,
             'projectImputetypes' => $projectImputetypes,
             'form' => $form,
-        ) );
+        ] );
 
 /* END SEARCH FORM */
 
@@ -217,7 +217,7 @@ $columns = array(
 		'header' => 'Cliente',
                 'name' =>  '"pc[".$data->id."]"',
                 'selected' => '$data->project->company->id',
-		'selectData' => 'ServiceFactory::createCompanyService()->findCustomerForDropdown($data->project->company->id,Yii::app()->user)',
+		'selectData' => 'ServiceFactory::createCompanyService()->findCustomerForDropdown($data->project->company->id,Yii::$app->user)',
 		'selectClass' => 'company'
 	),
 	array(
@@ -225,7 +225,7 @@ $columns = array(
 		'header' => 'Proyecto',
 		'name' =>  '"pj[".$data->id."]"',
 		'selected' => '$data->project_id',
-		'selectData' => 'ServiceFactory::createProjectService()->findProjectsForCustomerAndManagerForDropdown($data->project_id,Yii::app()->user, false)',
+		'selectData' => 'ServiceFactory::createProjectService()->findProjectsForCustomerAndManagerForDropdown($data->project_id,Yii::$app->user, false)',
 		'selectClass' => 'project'
 	),
         array(
@@ -300,13 +300,13 @@ echo "&nbsp;";
 /**
  * Add hours column with desired format
  */
-if(Yii::app()->user->hasDirectorPrivileges()) {
+if(Yii::$app->user->hasDirectorPrivileges()) {
 	$day = array(
             'header' => 'Día',
 			'class' => 'CLinkColumn',
 			'labelExpression' => '$data->frm_date_ini',
             'urlExpression' =>
-				'Yii::app()->createUrl("userProjectTask/calendar", array("timestamp" => $data->date_ini->getTimestamp(), "user" => $data->user_id))',
+				'Yii::$app->createUrl("userProjectTask/calendar", array("timestamp" => $data->date_ini->getTimestamp(), "user" => $data->user_id))',
             'htmlOptions' => array(
                 'style' => 'text-align: center',
             )

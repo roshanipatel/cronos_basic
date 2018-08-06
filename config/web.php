@@ -12,6 +12,13 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'assetManager'=>[
+            'bundles' => [
+                //'yii\bootstrap\BootstrapPluginAsset'=>false,
+               'yii\web\JqueryAsset\jquery.js'=> false,
+               // 'yii\web\YiiAsset'=>false
+            ],
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'zVogRSDJE8nSHsI16jRQBcN550mpB7Ll',
@@ -51,6 +58,18 @@ $config = [
                 ],
             ],
         ],
+        'i18n' => [
+        'translations' => [
+            '*' => [
+                'class' => 'yii\i18n\PhpMessageSource',
+                'basePath' => '@app/messages', // if advanced application, set @frontend/messages
+                'sourceLanguage' => 'en',
+                'fileMap' => [
+                    //'main' => 'main.php',
+                ],
+            ],
+        ],
+    ],
         'db' => $db,
         
         'urlManager' => [

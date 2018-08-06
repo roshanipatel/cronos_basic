@@ -1,5 +1,8 @@
 <?php
+namespace app\models\db;
 
+use Yii;
+use app\components\ActiveRelationalRecord;
 /**
  * This is the model class for table "project_manager".
  *
@@ -10,14 +13,7 @@
  */
 class ProjectManager extends ActiveRelationalRecord {
 
-    /**
-     * Returns the static model of the specified AR class.
-     * @return ProjectManager the static model class
-     */
-    public static function model($className = __CLASS__) {
-        return parent::model($className);
-    }
-
+    
     /**
      * @return string the associated database table name
      */

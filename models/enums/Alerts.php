@@ -1,5 +1,7 @@
 <?php
+namespace app\models\enums;
 
+use app\commands\enums\Enum;
 /**
  * Description of Alerts
  *

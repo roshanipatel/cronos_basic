@@ -1,5 +1,8 @@
 <?php
+namespace app\models\db;
 
+use Yii;
+use yii\db\ActiveRecord;
 /**
  * This is the model class for table "project".
  *
@@ -30,7 +33,7 @@
  * @property UserProjectTask[] $userProjectTasks
  * @property Role[] $reportingtarget
  */
-class Project extends CActiveRecord {
+class Project extends ActiveRecord {
 
     const MY_LOG_CATEGORY = 'models.Project';
     const INVALID_ID = -1;
@@ -52,13 +55,7 @@ class Project extends CActiveRecord {
     public $imputetypeName;
     public $imputetype;
 
-    /**
-     * Returns the static model of the specified AR class.
-     * @return Project the static model class
-     */
-    public static function model($className = __CLASS__) {
-        return parent::model($className);
-    }
+    
 
     /**
      * @return string the associated database table name
@@ -252,7 +249,7 @@ class Project extends CActiveRecord {
         return new CActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                     'pagination' => array(
-                        'pageSize' => Yii::app()->params->default_page_size,
+                        'pageSize' => Yii::$app->params->default_page_size,
                     ),
                     'sort' => $this->getSort(),
                 ));

@@ -5,7 +5,7 @@ assert(isset($projectsProvider));
 // Required fields
 $showExportButton = TRUE;
 $searchFieldsToHide = array();
-$showManager = Yii::app()->user->hasDirectorPrivileges();
+$showManager = Yii::$app->user->hasDirectorPrivileges();
 $form = $this->beginWidget('CActiveForm', array(
     'method' => 'get',
     'action' => $this->createUrl('projectOveriew'),
@@ -169,11 +169,11 @@ echo CHtml::submitButton('Buscar', array(
     }));
 </script>
 <?php
-$this->renderPartial('../userProjectTask/_projectsFromCustomerAutocomplete', array(
+Yii::$app->controller->renderPartial('../userProjectTask/_projectsFromCustomerAutocomplete', [
     'projectStatus' => (!isset($projectStatus)) ? NULL : $projectStatus,
     'onlyManagedByUser' => false,
     'onlyUserEnvolved' => true
-));
+]);
 ?>
 <script type="text/javascript">
     jQuery(document).ready(function(){
@@ -191,7 +191,7 @@ $this->endWidget();
 <?php /* * ********** END SEARCH FORM  ****************** */ ?>
 
 <?php
-$cs = Yii::app()->clientScript;
+$cs = Yii::$app->clientScript;
 $cs->registerScriptFile('js/plugins/jquery.progressbar.min.js', CClientScript::POS_BEGIN);
 
 $this->widget('zii.widgets.grid.CGridView', array(
@@ -283,7 +283,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
         ),
         array(
             'class' => 'CButtonColumn',
-            'visible' => 'Yii::app()->user->hasDirectorPrivileges()',
+            'visible' => 'Yii::$app->user->hasDirectorPrivileges()',
             'buttons' => array(
                 'delete' => array(
                     'visible' => '!$data->hasTasks()',

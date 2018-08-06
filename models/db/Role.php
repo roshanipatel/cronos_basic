@@ -1,8 +1,9 @@
 <?php
-namespace app\models;
+namespace app\models\db;
 
 use Yii;
-use yii\base\Model;
+use yii\db\ActiveRecord;
+
 /**
  * This is the model class for table "role".
  *
@@ -10,20 +11,12 @@ use yii\base\Model;
  * @property integer $id
  * @property string $name
  */
-class Role extends Model
+class Role extends ActiveRecord
 {
     const MY_LOG_CATEGORY = 'models.Role';
     const TABLE_IMPUTETYPE = "role";
     
-    /**
-     * Returns the static model of the specified AR class.
-     * @return Company the static model class
-     */
-    public static function model( $className=__CLASS__ )
-    {
-        return parent::model( $className );
-    }
-
+    
     /**
      * @return string the associated database table name
      */

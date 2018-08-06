@@ -23,7 +23,7 @@ class ProjectExpenseController extends CronosController {
                 && is_array($_POST['toApprove'])) {
             $upts = ServiceFactory::createProjectExpenseService();
             foreach ($_POST['toApprove'] as $expenseId) {
-                $upts->approveCost($expenseId, Yii::app()->user);
+                $upts->approveCost($expenseId, Yii::$app->user);
             }
             // Reload w/o post data
             // NO!!! now search is included and must be kept
@@ -34,14 +34,14 @@ class ProjectExpenseController extends CronosController {
         $expenseSearch = $this->getProjectExpensesModelForSearchFromRequest();
         $expenseSearchService = ServiceFactory::createExpenseSearchService();
         $expenseSearch->status = TaskStatus::TS_NEW;
-        $expenseSearch->owner = Yii::app()->user->id;
+        $expenseSearch->owner = Yii::$app->user->id;
         $providers = $expenseSearchService->getExpenseSearchFormProviders($expenseSearch);
         $projectsCriteria = new CDbCriteria();
         $projectsCriteria->select = 't.id, t.name';
         $projectsCriteria->order = 't.id desc';
         if (!empty($expenseSearch->companyId)) {
             $projectsProvider = ServiceFactory::createProjectService()
-                    ->findProjectsFromCustomerByCustomerId($expenseSearch->companyId, Yii::app()->user, $projectsCriteria, true, $expenseSearch->dateIni, $expenseSearch->dateEnd);
+                    ->findProjectsFromCustomerByCustomerId($expenseSearch->companyId, Yii::$app->user, $projectsCriteria, true, $expenseSearch->dateIni, $expenseSearch->dateEnd);
         } else {
             $projectsProvider = array();
         }
@@ -61,12 +61,12 @@ class ProjectExpenseController extends CronosController {
             $expenseSearch->attributes = $_GET['ExpenseSearch'];
         }
         //If it not a project manager or administrative
-        if (!Yii::app()->user->hasProjectManagerPrivileges() && !Yii::app()->user->hasAdministrativePrivileges()) {
-            $expenseSearch->worker = Yii::app()->user->id;
+        if (!Yii::$app->user->hasProjectManagerPrivileges() && !Yii::$app->user->hasAdministrativePrivileges()) {
+            $expenseSearch->worker = Yii::$app->user->id;
         }
         
-        if (Yii::app()->user->isProjectManager()) {
-            $expenseSearch->owner = Yii::app()->user->id;
+        if (Yii::$app->user->isProjectManager()) {
+            $expenseSearch->owner = Yii::$app->user->id;
         }
         
         // Add sort if it's in the request
@@ -91,7 +91,7 @@ class ProjectExpenseController extends CronosController {
      */
     public function actionCreate() {
         $model = new ProjectExpense();
-        $model->user_id = Yii::app()->user->id;
+        $model->user_id = Yii::$app->user->id;
         $this->createUpdateRefactor($model, 'create');
     }
 
@@ -125,12 +125,12 @@ class ProjectExpenseController extends CronosController {
             if ($model->isNewRecord) {
                 if ($ps->createProjectExpense($model, $_POST['ProjectExpense'])) {
                     // Set flash if operation was successfull
-                    Yii::app()->user->setFlash(Constants::FLASH_OK_MESSAGE, "Gasto del proyecto ".$model->project->name ." guardado con éxito");
+                    Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, "Gasto del proyecto ".$model->project->name ." guardado con éxito");
                     $this->redirect(array('update', 'id' => $model->id));
                 }
             } else {
                 if ($ps->updateProjectExpense($model, $_POST['ProjectExpense'])) {
-                    Yii::app()->user->setFlash(Constants::FLASH_OK_MESSAGE, "Gasto del proyecto ".$model->project->name ." guardado con éxito");
+                    Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, "Gasto del proyecto ".$model->project->name ." guardado con éxito");
                     $this->refresh();
                 }
             }
@@ -168,7 +168,7 @@ class ProjectExpenseController extends CronosController {
     }
     
     public function actionDelete($id) {
-        if (Yii::app()->request->isPostRequest) {
+        if (Yii::$app->request->isPostRequest) {
             // we only allow deletion via POST request
             $this->loadModel($id)->delete();
 
@@ -185,13 +185,13 @@ class ProjectExpenseController extends CronosController {
 
         $expenseSearch = $this->getProjectExpensesModelForSearchFromRequest();
         $expenseSearchService = ServiceFactory::createExpenseSearchService();
-        $providers = $expenseSearchService->getExpenseSearchFormProviders($expenseSearch, Yii::app()->user);
+        $providers = $expenseSearchService->getExpenseSearchFormProviders($expenseSearch, Yii::$app->user);
         $projectsCriteria = new CDbCriteria();
         $projectsCriteria->select = 't.id, t.name';
         $projectsCriteria->order = 't.id desc';
         if (!empty($expenseSearch->companyId)) {
             $projectsProvider = ServiceFactory::createProjectService()
-                    ->findProjectsFromCustomerByCustomerId($expenseSearch->companyId, Yii::app()->user, $projectsCriteria, false, $expenseSearch->dateIni, $expenseSearch->dateEnd);
+                    ->findProjectsFromCustomerByCustomerId($expenseSearch->companyId, Yii::$app->user, $projectsCriteria, false, $expenseSearch->dateIni, $expenseSearch->dateEnd);
         } else {
             $projectsProvider = array();
         }
@@ -218,7 +218,7 @@ class ProjectExpenseController extends CronosController {
             $content = utf8_decode($content);
         }
         $filename = 'expenses_' . date('Ymd') . '.csv';
-        Yii::app()->getRequest()->sendFile($filename, $content, "text/csv", true);
+        Yii::$app->getRequest()->sendFile($filename, $content, "text/csv", true);
     }
 }
 

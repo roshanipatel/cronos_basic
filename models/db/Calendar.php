@@ -1,5 +1,8 @@
 <?php
+namespace app\models\db;
 
+use Yii;
+use yii\db\ActiveRecord;
 /**
  * This is the model class for table "calendar".
  *
@@ -10,7 +13,7 @@
  *
  * The followings are the available model relations:
  */
-class Calendar extends CActiveRecord
+class Calendar extends ActiveRecord
 {
     
     const FESTIVO_NACIONAL = "-1";
@@ -34,14 +37,7 @@ class Calendar extends CActiveRecord
     const MY_LOG_CATEGORY = 'models.Calendar';
     const TABLE_NAME = "calendar";
 
-    /**
-     * Returns the static model of the specified AR class.
-     * @return Company the static model class
-     */
-    public static function model( $className=__CLASS__ )
-    {
-        return parent::model( $className );
-    }
+    
 
     /**
      * @return string the associated database table name

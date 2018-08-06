@@ -109,7 +109,7 @@ class TaskHistoryController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-		if(Yii::app()->request->isPostRequest)
+		if(Yii::$app->request->isPostRequest)
 		{
 			// we only allow deletion via POST request
 			$this->loadModel($id)->delete();
@@ -170,7 +170,7 @@ class TaskHistoryController extends Controller
 		if(isset($_POST['ajax']) && $_POST['ajax']==='task-history-form')
 		{
 			echo CActiveForm::validate($model);
-			Yii::app()->end();
+			Yii::$app->end();
 		}
 	}
 }

@@ -2,7 +2,7 @@
 <?php /* * ********** SEARCH FORM  ****************** */ ?>
 <?php
 // Required fields
-$showManager = Yii::app()->user->hasDirectorPrivileges();
+$showManager = Yii::$app->user->hasDirectorPrivileges();
 $onlyManagedByUser = !$showManager;
 
 $managersProvider = ServiceFactory::createUserService()->findProjectWorkers(true);
@@ -113,10 +113,10 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
     }));
 </script>
 <?php
-$this->renderPartial('../userProjectTask/_projectsFromCustomerAutocomplete', array(
+Yii::$app->controller->renderPartial('../userProjectTask/_projectsFromCustomerAutocomplete', [
     'onlyManagedByUser' => $onlyManagedByUser,
     'onlyUserEnvolved' => true
-));
+]);
 ?>
 <script type="text/javascript">
     jQuery(document).ready(function(){

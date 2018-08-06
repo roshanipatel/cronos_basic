@@ -6,6 +6,9 @@ use app\components\CronosController;
 use app\models\db\UserProjectTask;
 use app\models\db\User;
 use app\models\db\Company;
+use app\models\LoginForm;
+
+use app\services\ServiceFactory;
 
 class UserProjectTaskController extends CronosController {
    
@@ -100,7 +103,6 @@ class UserProjectTaskController extends CronosController {
     }
 
     public function actionCalendar($taskId = NULL) {
-
         if (empty($taskId)) { 
             $model = new UserProjectTask;
            // $model->unsetAttributes();
@@ -110,23 +112,27 @@ class UserProjectTaskController extends CronosController {
         } else {
             $model = $this->loadModel($taskId);
         }
+        //$model = new LoginForm;
+        /*echo "<pre/>";
+        print_r($model);die();*/
         // Don't convert to int: not enough with 32 bits
         $date = ( isset($_REQUEST['timestamp']) && is_numeric($_REQUEST['timestamp'])) ? $_REQUEST['timestamp'] : null;
         $userId = ( isset($_REQUEST['user']) && User::isValidID($_REQUEST['user'])) ? (int) $_REQUEST['user'] : null;
         $isWorker = !Yii::$app->user->hasDirectorPrivileges();
-        if ($isWorker && $userId !== NULL && $userId != Yii::app()->user->id) {
+        if ($isWorker && $userId !== NULL && $userId != Yii::$app->user->id) {
             throw new CHttpException(403, 'No tiene acceso a esta página');
         }
-        $this->render('task_calendar', array(
+
+       return $this->render('/UserProjectTask/task_calendar',[
             'model' => $model,
             'isWorker' => $isWorker,
-            /*'workers' => array_merge(array_merge(ServiceFactory::createUserService()->findCommercials(true), 
+            'workers' => array_merge(array_merge(ServiceFactory::createUserService()->findCommercials(true), 
                                      ServiceFactory::createUserService()->findProjectWorkers(true)),
                                      ServiceFactory::createUserService()->findProjectManagers(true)),
-            'customers' => Company::where(['order' => 't.name asc'])->all(),
-           */ 'showDate' => $date,
+            'customers' => Company::find()->orderBy('name asc')->all(),
+            'showDate' => $date,
             'showUser' => $userId
-        ));
+        ]);
     }
 
     /**
@@ -135,13 +141,13 @@ class UserProjectTaskController extends CronosController {
      * @param integer $id the ID of the model to be deleted
      */
     public function actionDelete() {
-        if (Yii::app()->request->isPostRequest) {
+        if (Yii::$app->request->isPostRequest) {
             $id = (int) $_REQUEST['id'];
             // we only allow deletion via POST request
             $this->loadModel($id)->delete();
 
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-            if (!isset($_GET['ajax']) && !Yii::app()->request->isAjaxRequest) {
+            if (!isset($_GET['ajax']) && !Yii::$app->request->isAjaxRequest) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin') );
             } else {
                 $result['code'] = self::OP_RESULT_OK;
@@ -149,7 +155,7 @@ class UserProjectTaskController extends CronosController {
                         . 'Tarea borrada con éxito'
                         . CHtml::closeTag('div');
                 echo json_encode($result);
-                Yii::app()->end();
+                Yii::$app->end();
             }
         }
         else
@@ -198,7 +204,7 @@ class UserProjectTaskController extends CronosController {
                     $ticketId = $_POST['ticket'][$taskId];
                 }
                 
-                $upts->approveTask($taskId, $profile, Yii::app()->user, $project, $comment, $ticketId, $imputetype);
+                $upts->approveTask($taskId, $profile, Yii::$app->user, $project, $comment, $ticketId, $imputetype);
             }
             // Reload w/o post data
             // NO!!! now search is included and must be kept
@@ -228,26 +234,26 @@ class UserProjectTaskController extends CronosController {
         $taskSearch->projectStatusCom = ProjectStatus::PS_OPEN;
         // Get providers. Pass in a projects criteria with open projects
         $searchFlags = TaskSearchService::OP_APPROVE_TASKS;
-        $searchFlags |= (Yii::app()->user->hasDirectorPrivileges()) ? TaskSearchService::SEARCH_AS_ADMIN : TaskSearchService::SEARCH_AS_MANAGER;
+        $searchFlags |= (Yii::$app->user->hasDirectorPrivileges()) ? TaskSearchService::SEARCH_AS_ADMIN : TaskSearchService::SEARCH_AS_MANAGER;
         
-        $taskSearch->roleSearch = Yii::app()->user->role;
-        if (Yii::app()->user->isProjectManager() && $bFilterBlank) {
-            $taskSearch->owner = Yii::app()->user->id;
-        } else if ($taskSearch->owner == "" && Yii::app()->user->isProjectManager()) {
-            $taskSearch->creator = Yii::app()->user->id;
-        } else if (Yii::app()->user->hasDirectorPrivileges() && $bFilterBlank) { 
-            $taskSearch->owner = Yii::app()->user->id;
+        $taskSearch->roleSearch = Yii::$app->user->role;
+        if (Yii::$app->user->isProjectManager() && $bFilterBlank) {
+            $taskSearch->owner = Yii::$app->user->id;
+        } else if ($taskSearch->owner == "" && Yii::$app->user->isProjectManager()) {
+            $taskSearch->creator = Yii::$app->user->id;
+        } else if (Yii::$app->user->hasDirectorPrivileges() && $bFilterBlank) { 
+            $taskSearch->owner = Yii::$app->user->id;
         }
         
         $providers = ServiceFactory::createTaskSearchService()
-                ->getTaskSearchFormProvidersForProfile($taskSearch, Yii::app()->user, $searchFlags, true);
+                ->getTaskSearchFormProvidersForProfile($taskSearch, Yii::$app->user, $searchFlags, true);
         $oImputetypeService = ServiceFactory::createImputetypeService();
         
         $this->render('approveTasks', CMap::mergeArray($providers, array(
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
                     'actionURL' => $this->createUrl($this->route),
-                    'onlyManagedByUser' => !Yii::app()->user->hasDirectorPrivileges(),
+                    'onlyManagedByUser' => !Yii::$app->user->hasDirectorPrivileges(),
                     'projectImputetypes' => $oImputetypeService->findImputetypes(),
                     //'projectStatus' => ProjectStatus::PS_OPEN,
                     'projectStatusCom' => ProjectStatus::PS_OPEN                    
@@ -282,7 +288,7 @@ class UserProjectTaskController extends CronosController {
                     $ticketId = $_POST['ticket'][$taskId];
                 }
                 
-                $upts->updateTask($taskId, $profile, Yii::app()->user, $project, $comment, $ticketId, $imputetype);
+                $upts->updateTask($taskId, $profile, Yii::$app->user, $project, $comment, $ticketId, $imputetype);
             }
             // Reload w/o post data
             // NO!!! now search is included and must be kept
@@ -307,27 +313,27 @@ class UserProjectTaskController extends CronosController {
             $bFilterBlank = true;
         }
         
-        if (Yii::app()->user->hasDirectorPrivileges()) {
+        if (Yii::$app->user->hasDirectorPrivileges()) {
             $searchFlags = TaskSearchService::SEARCH_AS_ADMIN;
-        } else if (Yii::app()->user->hasProjectManagerPrivileges()) {
+        } else if (Yii::$app->user->hasProjectManagerPrivileges()) {
             $searchFlags = TaskSearchService::SEARCH_AS_MANAGER;
-        } else if (Yii::app()->user->hasCommercialPrivileges()) {
+        } else if (Yii::$app->user->hasCommercialPrivileges()) {
             $searchFlags = TaskSearchService::SEARCH_AS_COMMERCIAL;
         } else {
             $searchFlags = TaskSearchService::SEARCH_AS_WORKER;
         }
         
-        $taskSearch->roleSearch = Yii::app()->user->role;
-        if (Yii::app()->user->isProjectManager() && $bFilterBlank) {
-            $taskSearch->owner = Yii::app()->user->id;
-        } else if ($taskSearch->owner == "" && Yii::app()->user->isProjectManager()) {
-            $taskSearch->creator = Yii::app()->user->id;
-        } else if (Yii::app()->user->hasDirectorPrivileges() && $bFilterBlank) { 
-            $taskSearch->owner = Yii::app()->user->id;
+        $taskSearch->roleSearch = Yii::$app->user->role;
+        if (Yii::$app->user->isProjectManager() && $bFilterBlank) {
+            $taskSearch->owner = Yii::$app->user->id;
+        } else if ($taskSearch->owner == "" && Yii::$app->user->isProjectManager()) {
+            $taskSearch->creator = Yii::$app->user->id;
+        } else if (Yii::$app->user->hasDirectorPrivileges() && $bFilterBlank) { 
+            $taskSearch->owner = Yii::$app->user->id;
         }
         
         $providers = ServiceFactory::createTaskSearchService()
-                ->getTaskSearchFormProvidersForProfile($taskSearch, Yii::app()->user, $searchFlags);
+                ->getTaskSearchFormProvidersForProfile($taskSearch, Yii::$app->user, $searchFlags);
         
         $oImputetypeService = ServiceFactory::createImputetypeService();
         
@@ -335,7 +341,7 @@ class UserProjectTaskController extends CronosController {
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
                     'actionURL' => $this->createUrl($this->route),
-                    'onlyManagedByUser' => !Yii::app()->user->hasDirectorPrivileges(),
+                    'onlyManagedByUser' => !Yii::$app->user->hasDirectorPrivileges(),
                     'projectImputetypes' => $oImputetypeService->findImputetypes()
                 )));
     }
@@ -393,17 +399,17 @@ class UserProjectTaskController extends CronosController {
             $bFilterBlank = true;
         }
         
-        $taskSearch->roleSearch = Yii::app()->user->role;
-        if (Yii::app()->user->isProjectManager() && $bFilterBlank) {
-            $taskSearch->owner = Yii::app()->user->id;
-        } else if ($taskSearch->owner == "" && Yii::app()->user->isProjectManager()) {
-            $taskSearch->creator = Yii::app()->user->id;
-        } else if (Yii::app()->user->hasDirectorPrivileges() && $bFilterBlank) { 
-            $taskSearch->owner = Yii::app()->user->id;
+        $taskSearch->roleSearch = Yii::$app->user->role;
+        if (Yii::$app->user->isProjectManager() && $bFilterBlank) {
+            $taskSearch->owner = Yii::$app->user->id;
+        } else if ($taskSearch->owner == "" && Yii::$app->user->isProjectManager()) {
+            $taskSearch->creator = Yii::$app->user->id;
+        } else if (Yii::$app->user->hasDirectorPrivileges() && $bFilterBlank) { 
+            $taskSearch->owner = Yii::$app->user->id;
         }
         
         // Get providers
-        $providers = ServiceFactory::createTaskSearchService()->getTaskSearchFormProvidersForProfile($taskSearch, Yii::app()->user, $searchAs);
+        $providers = ServiceFactory::createTaskSearchService()->getTaskSearchFormProvidersForProfile($taskSearch, Yii::$app->user, $searchAs);
         // Return project total hours and cost
         $projectCost = ServiceFactory::createUserProjectTaskService()->getTasksCost($taskSearch);
         $oImputetypeService = ServiceFactory::createImputetypeService();
@@ -431,7 +437,7 @@ class UserProjectTaskController extends CronosController {
     }
 
     public function actionSearchTasksAdmin() {
-        assert(Yii::app()->user->hasDirectorPrivileges());
+        assert(Yii::$app->user->hasDirectorPrivileges());
         $this->searchTasksOfProject(TaskSearchService::SEARCH_AS_ADMIN, TRUE, FALSE, TRUE, array(), false);
     }
 
@@ -469,7 +475,7 @@ class UserProjectTaskController extends CronosController {
         $taskSearch = $this->getTaskSearchFromRequest();
         // Get providers
         $providers = ServiceFactory::createTaskSearchService()
-                ->getTaskSearchFormProvidersForProfile($taskSearch, Yii::app()->user, TaskSearchService::SEARCH_AS_CUSTOMER, false);
+                ->getTaskSearchFormProvidersForProfile($taskSearch, Yii::$app->user, TaskSearchService::SEARCH_AS_CUSTOMER, false);
         $searchFieldsToHide = array(
             TaskSearch::FLD_STATUS,
             TaskSearch::FLD_CREATOR,
@@ -485,7 +491,7 @@ class UserProjectTaskController extends CronosController {
                     'searchFieldsToHide' => $searchFieldsToHide,
                     'projectHours' => $projectCost['hours'],
                     'projectPrice' => $projectCost['price'],
-                    'showExportButton' => Yii::app()->user->hasDirectorPrivileges(),
+                    'showExportButton' => Yii::$app->user->hasDirectorPrivileges(),
                     'actionURL' => $this->createUrl($this->route)
                 )));
     }
@@ -507,7 +513,7 @@ class UserProjectTaskController extends CronosController {
         
         //Array ( [ExpenseSearch] => Array ( [dateIni] => [dateEnd] => [companyId] => 4 [companyName] => abertis airports [projectId] => 2 [worker] => [costtype] => [paymentMethod] => ) [yt0] => Buscar [yt2] => Exportar a CSV ) 
         $taskSarch->attributes = $aParam;
-        $content = ServiceFactory::createUserProjectTaskService()->getCSVContentFromTaskSearch($taskSarch, Yii::app()->user);
+        $content = ServiceFactory::createUserProjectTaskService()->getCSVContentFromTaskSearch($taskSarch, Yii::$app->user);
         if (!$content) {
             $content = "No results";
         } else {
@@ -517,7 +523,7 @@ class UserProjectTaskController extends CronosController {
             $content = utf8_decode($content);
         }
         $filename = 'tasks_' . date('Ymd') . '.csv';
-        Yii::app()->getRequest()->sendFile($filename, $content, "text/csv", true);
+        Yii::$app->getRequest()->sendFile($filename, $content, "text/csv", true);
     }
 
     /**
@@ -526,7 +532,7 @@ class UserProjectTaskController extends CronosController {
     public function actionExportToCSV() {
         
         $taskSearch = $this->getTaskSearchFromRequest();
-        $content = ServiceFactory::createUserProjectTaskService()->getCSVContentFromTaskSearch($taskSearch, Yii::app()->user);
+        $content = ServiceFactory::createUserProjectTaskService()->getCSVContentFromTaskSearch($taskSearch, Yii::$app->user);
         if (!$content) {
             $content = "No results";
         } else {
@@ -536,7 +542,7 @@ class UserProjectTaskController extends CronosController {
             $content = utf8_decode($content);
         }
         $filename = 'tasks_' . date('Ymd') . '.csv';
-        Yii::app()->getRequest()->sendFile($filename, $content, "text/csv", true);
+        Yii::$app->getRequest()->sendFile($filename, $content, "text/csv", true);
     }
 
     /**
@@ -562,7 +568,7 @@ class UserProjectTaskController extends CronosController {
     public function loadModel($id) {
         $model = UserProjectTask::model()->findByPk((int) $id);
         if ($model === null)
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
         return $model;
     }
 
@@ -572,8 +578,8 @@ class UserProjectTaskController extends CronosController {
      */
     protected function performAjaxValidation($model) {
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'user-project-task-form') {
-            echo CActiveForm::validate($model);
-            Yii::app()->end();
+            echo ActiveForm::validate($model);
+            Yii::$app->end();
         }
     }
 
@@ -587,14 +593,14 @@ class UserProjectTaskController extends CronosController {
      * @param string $motive
      */
     public function actionRefuseTask() {
-        if (!Yii::app()->request->isPostRequest)
+        if (!Yii::$app->request->isPostRequest)
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
         // Call func
         $taskId = (int) $_POST['taskId'];
         $motive = (string) $_POST['motive'];
         $upts = ServiceFactory::createUserProjectTaskService();
-        if ($upts->refuseTask(Yii::app()->user, $taskId, $motive) === false)
-            Yii::app()->end();
+        if ($upts->refuseTask(Yii::$app->user, $taskId, $motive) === false)
+            Yii::$app->end();
         echo "refused";
     }
 
@@ -606,7 +612,7 @@ class UserProjectTaskController extends CronosController {
     
     public function actionAutomaticSaveTask() {
 
-        if (!Yii::app()->request->isPostRequest) {
+        if (!Yii::$app->request->isPostRequest) {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
         }
         
@@ -617,7 +623,7 @@ class UserProjectTaskController extends CronosController {
         $result['code'] = self::OP_RESULT_NOTHING;
         try {        
             
-            $userInfo = Yii::app()->user;
+            $userInfo = Yii::$app->user;
             $oCurrentUser = User::model()->findByAttributes( array( "id" => $userInfo->id ) );                
             $aCurrentDay = mb_split("/", date("d/m/Y"));
             $nexttime = mktime(0,0,0,$aCurrentDay[1],$aCurrentDay[0] - $oCurrentUser->imputacionanterior, $aCurrentDay[2]);
@@ -647,7 +653,7 @@ class UserProjectTaskController extends CronosController {
                       
             if ($result['code'] == self::OP_RESULT_NOTHING) {
                 $model->attributes = $_POST['UserProjectTask'];
-                if (ServiceFactory::createUserProjectTaskService()->saveNewTask($model, Yii::app()->user)) {
+                if (ServiceFactory::createUserProjectTaskService()->saveNewTask($model, Yii::$app->user)) {
                     // Return
                     $result['code'] = self::OP_RESULT_OK;
                     $result['msg'] = CHtml::openTag('div', array('class' => 'resultOk-short'))
@@ -671,12 +677,12 @@ class UserProjectTaskController extends CronosController {
                     . CHtml::closeTag('div');
         }
         echo json_encode($result);
-        Yii::app()->end();
+        Yii::$app->end();
     }
     
     public function actionSaveTask() {       
         
-        if (!Yii::app()->request->isPostRequest) {
+        if (!Yii::$app->request->isPostRequest) {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
         }
         
@@ -686,7 +692,7 @@ class UserProjectTaskController extends CronosController {
         $result['code'] = self::OP_RESULT_NOTHING;
         try {
             
-            $userInfo = Yii::app()->user;
+            $userInfo = Yii::$app->user;
             $oCurrentUser = User::model()->findByAttributes( array( "id" => $userInfo->id ) );                
             $aCurrentDay = mb_split("/", date("d/m/Y"));
             $nexttime = mktime(0,0,0,$aCurrentDay[1],$aCurrentDay[0] - $oCurrentUser->imputacionanterior, $aCurrentDay[2]);
@@ -744,7 +750,7 @@ class UserProjectTaskController extends CronosController {
             if ($result['code'] == self::OP_RESULT_NOTHING) {
                 $model->attributes = $_POST['UserProjectTask'];
                 
-                if (ServiceFactory::createUserProjectTaskService()->saveNewTask($model, Yii::app()->user)) {
+                if (ServiceFactory::createUserProjectTaskService()->saveNewTask($model, Yii::$app->user)) {
                     // Return
                     $result['code'] = self::OP_RESULT_OK;
                     $result['msg'] = CHtml::openTag('div', array('class' => 'resultOk-short'))
@@ -769,11 +775,11 @@ class UserProjectTaskController extends CronosController {
                     . CHtml::closeTag('div');
         }
         echo json_encode($result);
-        Yii::app()->end();
+        Yii::$app->end();
     }
 
     private function ensureUserCanUpdateTask(UserProjectTask $model) {
-        $user = Yii::app()->user;
+        $user = Yii::$app->user;
         $isWorker = !$user->hasDirectorPrivileges();
         // Check task access & task status for user
         if ($isWorker) {

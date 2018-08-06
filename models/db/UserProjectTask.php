@@ -1,8 +1,12 @@
 <?php
 namespace app\models\db;
 
-use yii\db\ActiveRecord;
+use Yii;
+use yii\base\Model;
 
+//use yii\db\ActiveRecord;
+use app\models\enums\TaskStatus;
+use app\models\enums\WorkerProfiles;
 /**
  * This is the model class for table "user_project_task".
  *
@@ -37,7 +41,30 @@ use yii\db\ActiveRecord;
  * @property Project $project
  * @property Imputetype $imputetype
  */
-class UserProjectTask extends ActiveRecord {
+class UserProjectTask extends Model {
+    
+     public $id;
+     public $user_id;
+     public $project_id;
+     public $imputetype_id;
+     public $status;
+     public $date_ini;
+     public $date_end;
+     public $hour_ini;
+     public $hour_end;
+     public $frm_customer_name;
+     public $task_description;
+     public $ticket_id;
+     public $price_per_hour;
+     public $profile_id;
+     public $is_extra;
+     public $is_billable;
+     public $companyName;
+     public $projectName;
+     public $workerName;
+     public $managerName;
+     public $workerCost;
+     public $imputetypeName;
 
     public $totalhours;
     public $projectManager;
@@ -58,7 +85,7 @@ class UserProjectTask extends ActiveRecord {
     public $frm_date_end;
     public $frm_hour_ini;
     public $frm_hour_end;
-    public $frm_customer_name;
+    //public $frm_customer_name;
     // Internal for detecting profile change
     private $oldTaskProfile;
     // For custom searchs
@@ -66,22 +93,13 @@ class UserProjectTask extends ActiveRecord {
     public $custom2;
     
     // For searching
-    public $companyName;
+    /*public $companyName;
     public $projectName;
     public $workerName;
     public $managerName;
     public $workerCost;
     public $imputetypeName;
-    protected static $table;
-
-
-    /**
-     * Returns the static model of the specified AR class.
-     * @return UserProjectTask the static model class
-     */
-    public static function model($className = __CLASS__) {
-        return parent::model($className);
-    }
+    */
 
     /**
      * @return string the associated database table name
@@ -106,7 +124,7 @@ class UserProjectTask extends ActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('user_id, project_id, imputetype_id, status, profile_id, frm_date_ini, frm_hour_ini, frm_date_end, frm_hour_end', 'required'),
+           /* array('user_id, project_id, imputetype_id, status, profile_id, frm_date_ini, frm_hour_ini, frm_date_end, frm_hour_end', 'required'),
             array('user_id, project_id, imputetype_id, ticket_id', 'numerical', 'integerOnly' => true),
             array('user_id', 'exist', 'className' => 'User', 'attributeName' => 'id'),
             array('project_id', 'exist', 'className' => 'Project', 'attributeName' => 'id'),
@@ -123,7 +141,7 @@ class UserProjectTask extends ActiveRecord {
             array('is_extra, is_billable', 'boolean'),
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.
-                //array( 'status, frm_date_ini, task_description, ticket_id', 'safe', 'on' => 'search' ),
+                array( 'status, frm_date_ini, task_description, ticket_id', 'safe', 'on' => 'search' ),*/
         );
     }
 

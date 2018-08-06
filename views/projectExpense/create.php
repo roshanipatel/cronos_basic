@@ -1,8 +1,8 @@
 <h1>Imputar Gasto Proyecto</h1>
 
 <?php
-echo $this->renderPartial( '_form', array(
+echo Yii::$app->controller->renderPartial( '/projectExpense/_form', [
     'model' => $model,
-    'projects' => array()
-) );
+    'projects' => []
+] );
 ?>

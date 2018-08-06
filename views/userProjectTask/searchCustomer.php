@@ -14,8 +14,8 @@
 <?php
 /* SEARCH FORM */
 
-$this->renderPartial( '_searchForm',
-        array(
+Yii::$app->controller->renderPartial( '/userProjectTask/_searchForm',
+        [
             'taskSearch' => $taskSearch,
             'projectsProvider' => $projectsProvider,
             'usersProvider' => $usersProvider,
@@ -25,7 +25,7 @@ $this->renderPartial( '_searchForm',
             'actionURL' => $actionURL,
  			'projectStatus' => NULL,
 			'onlyManagedByUser' => FALSE,
-       ) );
+       ] );
 
 /* END SEARCH FORM */
 
@@ -169,11 +169,11 @@ function refuseTask( taskId )
                     /*
                     array(
                         'header' => '',
-                        'value' => 'CHtml::link( "Rechazar", "#", array(
+                        'value' => 'Html::a( "Rechazar", "#", array(
                                 "onclick" => "refuseTask($data->id);".
                                 "class" => "taskRefuseLink",
                             ) );',
-                        'value' => 'CHtml::link( "Rechazar", "#", array() )',
+                        'value' => 'Html::a( "Rechazar", "#", array() )',
                         'htmlOptions' => array(
                             'style' => 'text-align: center',
                         ),
@@ -200,7 +200,7 @@ function refuseTask( taskId )
 
             <div class="box" style="text-align:center; margin-top: 15px">
                 Total horas: <strong> <?php echo $projectHours ?></strong>
-<?php if( Yii::app()->user->isAdmin() ) {?>
+<?php if( Yii::$app->user->isAdmin() ) {?>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 Total coste: <strong> <?php echo $projectPrice . ' €' ?></strong>
 

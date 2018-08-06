@@ -14,8 +14,8 @@
 
     <?php echo $form->errorSummary( $model ); ?>
 
-    <?php if( Yii::app()->user->hasFlash(Constants::FLASH_OK_MESSAGE) ) { ?>
-        <div class="resultOk"><p><?php echo Yii::app()->user->getFlash(Constants::FLASH_OK_MESSAGE)?></p></div>
+    <?php if( Yii::$app->user->hasFlash(Constants::FLASH_OK_MESSAGE) ) { ?>
+        <div class="resultOk"><p><?php echo Yii::$app->user->getFlash(Constants::FLASH_OK_MESSAGE)?></p></div>
     <?php } ?>
 
     <div class="row">
@@ -80,7 +80,7 @@
         <?php echo $form->labelEx( $model, 'company_id' ); ?>
         <?php echo $form->dropDownList( $model, 'company_id', CHtml::listData( Company::model()->findAll(), 'id', 'name' ) ); ?>
         &nbsp;&nbsp;&nbsp;
-        <small><?php echo CHtml::link( '(Crear nueva empresa)', array( 'company/create' ) ); ?></small>
+        <small><?php echo Html::a( '(Crear nueva empresa)', array( 'company/create' ) ); ?></small>
         <?php echo $form->error( $model, 'company_id' ); ?>
     </div>
 
@@ -94,7 +94,7 @@
         <?php echo $form->labelEx( $model, 'role' ); ?>
         <!--<div id="radioRole" style="padding: 3px;">-->
         <?php
-         echo $form->dropDownList( $model, 'role', User::getPriorityUser(Yii::app()->user->role, $model->role), array(
+         echo $form->dropDownList( $model, 'role', User::getPriorityUser(Yii::$app->user->role, $model->role), array(
             //'labelOptions' => array(
             //    'style' => 'display: inline; width: 100px',
             //    )
@@ -150,8 +150,8 @@
     </script>
     <br>
 
-    <?php if( Yii::app()->user->role == Roles::UT_ADMIN ||
-              (Yii::app()->user->role != Roles::UT_ADMIN && $model->role != Roles::UT_ADMIN)) { ?>
+    <?php if( Yii::$app->user->role == Roles::UT_ADMIN ||
+              (Yii::$app->user->role != Roles::UT_ADMIN && $model->role != Roles::UT_ADMIN)) { ?>
     <div class="row buttons">
         <?php echo CHtml::submitButton( $model->isNewRecord ? 'Crear' : 'Guardar' ); ?>
     </div>
