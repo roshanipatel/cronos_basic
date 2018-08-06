@@ -45,9 +45,8 @@ $baseUrl = Yii::$app->request->hostInfo . Yii::$app->request->baseUrl;
      <?php $this->head() ?>
     
     <?php
-    $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jquery-1.6.2.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
-    $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jquery-ui-1.8.8.custom.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
-    $this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jqueryslidemenu.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
+    
+    //$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jquery-ui.min.js',['position' => \yii\web\View::POS_HEAD]);
     ?>
     <!-- <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jquery-1.6.2.js' ?>></script>
     <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jquery-ui-1.8.8.custom.js' ?>></script>

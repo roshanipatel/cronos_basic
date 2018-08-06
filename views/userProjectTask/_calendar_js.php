@@ -18,11 +18,11 @@ use app\models\db\userProjectTask;
  */
 
 //$cs = Yii::$app->clientScript;
-$this->registerCssFile(Yii::$app->request->BaseUrl . '/css/plugins/jquery.weekcalendar.css');
-$this->registerCssFile( Yii::$app->request->BaseUrl .'/css/plugins/timePicker.css');
+$this->registerCssFile(Yii::$app->request->BaseUrl . '/css/plugins/jquery.weekcalendar.css',['position' => \yii\web\View::POS_HEAD]);
+$this->registerCssFile( Yii::$app->request->BaseUrl .'/css/plugins/timePicker.css',['position' => \yii\web\View::POS_HEAD]);
 
-$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/plugins/jquery.weekcalendar.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
-$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/plugins/jquery.timePicker.min.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/plugins/jquery.weekcalendar.js',['position' => \yii\web\View::POS_BEGIN]);
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/plugins/jquery.timePicker.min.js',['position' => \yii\web\View::POS_BEGIN]);
 ?>
 <?php
 if($isWorker) {

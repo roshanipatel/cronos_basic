@@ -2,10 +2,11 @@
 <?php
 
 use yii\helpers\Json;
-
+$this->registerJsFile(Yii::$app->request->BaseUrl .'/js/jquery.min.js',['position' => \yii\web\View::POS_BEGIN]);
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jquery-ui-1.8.8.custom.js',['position' => \yii\web\View::POS_BEGIN]);
 //$this->registerJsFile( Yii::$app->request->BaseUrl ."/js/jquery-1.6.2.min.js" );
-$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/date.js' ,['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
-$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js',['depends' => [\yii\web\JqueryAsset::className(),yii\bootstrap\BootstrapPluginAsset::className()],'position' => \yii\web\View::POS_END]);
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/date.js' ,['position' => \yii\web\View::POS_BEGIN]);
+$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js',['position' => \yii\web\View::POS_BEGIN]);
 
 
 // Build an array of customer names
