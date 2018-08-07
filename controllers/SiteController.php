@@ -14,12 +14,12 @@ class SiteController extends CronosController {
 
 	static private $indexByRole = array(
 		Roles::UT_ADMIN => 'user-project-task/calendar',
-                Roles::UT_DIRECTOR_OP => 'user-project-task/calendar',
+        Roles::UT_DIRECTOR_OP => 'user-project-task/calendar',
 		Roles::UT_CUSTOMER => 'user-project-task/searchTasksCustomer',
 		Roles::UT_PROJECT_MANAGER => 'user-project-task/approveTasks',
 		Roles::UT_WORKER => 'user-project-task/calendar',
-                Roles::UT_ADMINISTRATIVE => 'project/projectOverview',
-                Roles::UT_COMERCIAL => 'project/projectOverview'
+        Roles::UT_ADMINISTRATIVE => 'project/projectOverview',
+        Roles::UT_COMERCIAL => 'project/projectOverview'
 	);
 
 	public function allowedActions() {
@@ -64,14 +64,15 @@ class SiteController extends CronosController {
 	 * Displays the login page
 	 */
 	public function actionLogin() {
-		
-		$this->layout = "login_main";
+        $this->layout = "login_main";
         if (!\Yii::$app->user->isGuest) {
             return $this->goHome();
         }
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        $model->load(Yii::$app->request->post());
+        
+        if ($model->login()) {
             
             return $this->redirect(Yii::$app->urlManager->createUrl([self::$indexByRole[Yii::$app->user->identity->role]]));
         }

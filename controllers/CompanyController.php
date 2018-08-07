@@ -3,6 +3,9 @@ namespace app\controllers;
 
 use Yii;
 use app\components\CronosController;
+use yii\data\Sort;
+use yii\data\ActiveDataProvider;
+
 class CompanyController extends CronosController
 {
 
@@ -41,7 +44,7 @@ class CompanyController extends CronosController
     {
         $model = new Company;
         // Clean
-        $model->unsetAttributes();
+//        $model->unsetAttributes();
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
@@ -112,7 +115,7 @@ class CompanyController extends CronosController
      */
     public function actionIndex()
     {
-        $dataProvider = new CActiveDataProvider( 'Company' );
+        $dataProvider = new ActiveDataProvider( 'Company' );
         $this->render( 'index', array(
             'dataProvider' => $dataProvider,
                 ) );
@@ -126,11 +129,11 @@ class CompanyController extends CronosController
         $filter = new Company( 'search' );
         $filter->unsetAttributes();  // clear any default values
         
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         if( isset( $_GET['Company']['name'] ) )
             $criteria->compare('t.name', $_GET['Company']['name']);
         
-        $sort = new CSort();
+        $sort = new Sort();
 		$sort->attributes = array(
 			'name' => array(
 				'asc' => 't.name ASC',
@@ -138,10 +141,9 @@ class CompanyController extends CronosController
 			)
 		);
 
-        $oModel = new CActiveDataProvider(
-						'Company',
+        $oModel = new ActiveDataProvider(
 						array(
-							'criteria' => $criteria,
+							'query' => $criteria->from('User'),
 							'pagination' => array(
 								'pageSize' => Yii::$app->params->default_page_size,
 							),

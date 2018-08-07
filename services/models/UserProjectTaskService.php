@@ -37,7 +37,7 @@ class UserProjectTaskService implements CronosService {
      * @return CDbCriteria the data provider that can return the models based on the search/filter conditions.
      */
     public function findNewByManager($mngr_id = null) {
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria->with = array('worker', 'project');
         $criteria->addColumnCondition(array('t.status' => TaskStatus::TS_NEW));
         if (isset($mngr_id)) {
@@ -663,7 +663,7 @@ class UserProjectTaskService implements CronosService {
     private function checkIfTaskExceedsLimitsOfProject(UserProjectTask $task) {
         $result = array();
         //$project = Project::model()->findByPk($task->project_id);
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria->select = "*, 
                     ( select user.name from " . Project::TABLE_PROJECT_MANAGER . " inner join " . User::TABLE_USER . " on user.id = user_id where project_id = t.id order by user.name limit 1 ) as manager_custom,
                     ( select user.name from " . Project::TABLE_PROJECT_COMMERCIAL . " inner join " . User::TABLE_USER . " on user.id = user_id where project_id = t.id order by user.name limit 1 ) as commercial_custom,

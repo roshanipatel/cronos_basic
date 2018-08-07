@@ -3,6 +3,8 @@ namespace app\models\db;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\data\ActiveDataProvider;
+
 /**
  * This is the model class for table "calendar".
  *
@@ -92,7 +94,7 @@ class Calendar extends ActiveRecord
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search()
     {
@@ -106,7 +108,7 @@ class Calendar extends ActiveRecord
         $criteria->compare( 'day', $this->day, true );
         $criteria->compare( 'city', $this->city, true );
 
-        return new CActiveDataProvider( get_class( $this ), array(
+        return new ActiveDataProvider( get_class( $this ), array(
             'criteria' => $criteria,
                 ) );
     }

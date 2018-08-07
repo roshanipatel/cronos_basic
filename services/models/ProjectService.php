@@ -142,7 +142,7 @@ class ProjectService implements CronosService {
      * @return boolean
      */
     public function createProject(Project $model, array $newData) {
-        $model->unsetAttributes();
+        //$model->unsetAttributes();
         // Default attributes
         // TODO : implement variable time behaviour
         $model->fixed_time = 0;
@@ -288,7 +288,7 @@ class ProjectService implements CronosService {
             return array();
         }
         if ($projectCriteria === null) {
-            $criteria = new CDbCriteria();
+            $criteria = new yii\db\Query();
         } else {
             $criteria = $projectCriteria;
         }
@@ -362,7 +362,7 @@ class ProjectService implements CronosService {
      * @return array List of Projects (models) which manager has access to AND ARE OPEN
      */
     public function findProjectsByProjectManager($userId, $onlyOpen = TRUE) {
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria->order = 't.name asc';
         $this->addCriteriaForProjectManagers($criteria, $userId);
         if ($onlyOpen) {
@@ -377,7 +377,7 @@ class ProjectService implements CronosService {
     }
     
     public function findProjectsByWorker($userId, $onlyOpen = TRUE) {
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria->order = 't.name asc';
         $this->addCriteriaForWorker($criteria, $userId);
         if ($onlyOpen) {
@@ -397,7 +397,7 @@ class ProjectService implements CronosService {
      * @return array List of Projects (models) which manager has access to AND ARE OPEN
      */
     public function findProjectsByCommercial($userId, $onlyOpen = TRUE) {
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria->order = 't.name asc';
         $this->addCriteriaForCommercial($criteria, $userId);
         if ($onlyOpen) {
@@ -671,7 +671,7 @@ class ProjectService implements CronosService {
      */
     public function getCriteriaFromModel(Project $model) {
 
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
 //        $isManager = (!Yii::$app->user->hasDirectorPrivileges()) && (!Yii::$app->user->hasCommercialPrivileges());
 //
 //        if (!$isManager) {

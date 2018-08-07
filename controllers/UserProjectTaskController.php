@@ -9,6 +9,7 @@ use app\models\db\Company;
 use app\models\LoginForm;
 
 use app\services\ServiceFactory;
+use yii\data\ActiveDataProvider;
 
 class UserProjectTaskController extends CronosController {
    
@@ -96,8 +97,9 @@ class UserProjectTaskController extends CronosController {
         }
         
         
-        $model = new Calendar( 'search' );
-        $model->unsetAttributes();  // clear any default values
+        $model = new Calendar( );
+        $model->scenario = 'search';
+        //$model->unsetAttributes();  // clear any default values
         
         $this->render('_calendarUpload', array('model' => $model, 'errorMessage' => $sErrorMessage));
     }
@@ -166,7 +168,7 @@ class UserProjectTaskController extends CronosController {
      * Lists all models.
      */
     public function actionIndex() {
-        $dataProvider = new CActiveDataProvider('UserProjectTask', array(
+        $dataProvider = new ActiveDataProvider('UserProjectTask', array(
                     'criteria' => array(
                         'with' => array('worker', 'project'),
                     ),
@@ -549,7 +551,9 @@ class UserProjectTaskController extends CronosController {
      * Manages all models.
      */
     public function actionAdmin() {
-        $model = new UserProjectTask('search');
+        $model = new UserProjectTask();
+        $model->scenario = 'search';
+
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['UserProjectTask']))
             $model->attributes = $_GET['UserProjectTask'];
@@ -702,7 +706,7 @@ class UserProjectTaskController extends CronosController {
             if (!is_numeric($_POST['UserProjectTask']['id'])) {
                 // New task
                 $model = new UserProjectTask;
-                $model->unsetAttributes();
+               // $model->unsetAttributes();
                 
                 $oProject = Project::model()->findByPk($_POST['UserProjectTask']['project_id']);
                 

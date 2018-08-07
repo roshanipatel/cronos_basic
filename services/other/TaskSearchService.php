@@ -1,4 +1,9 @@
 <?php
+use app\services\other;
+
+use yii;
+use yii\data\Sort;
+use yii\data\ActiveDataProvider;
 
 /**
  * Some help functions for task serach duties
@@ -35,7 +40,7 @@ class TaskSearchService {
 		$providers = $builder->getProvidersForSearch($taskSearch[TaskSearch::FLD_NAME_DATE_INI], $taskSearch[TaskSearch::FLD_NAME_DATE_END]);
 
 		$tasksCriteria = ServiceFactory::createUserProjectTaskService()->getCriteriaFromTaskSearch($taskSearch);
-		$providers["tasksProvider"] = new CActiveDataProvider(
+		$providers["tasksProvider"] = new ActiveDataProvider(
 						'UserProjectTask',
 						array(
 							'criteria' => $tasksCriteria,
@@ -53,7 +58,7 @@ class TaskSearchService {
 	 * @return CSort
 	 */
 	private function getSort() {
-		$sort = new CSort();
+		$sort = new Sort();
 		$sort->attributes = array(
 			'companyName' => array(
 				'asc' => 'company.name ASC',
@@ -150,7 +155,7 @@ abstract class TaskSearchProviderBuilder implements ITaskSearchProvidersBuilder 
 		  $this->projectsCriteria->addCondition( 't.company_id=:companyId' );
 		  $this->projectsCriteria->params['companyId'] = $this->taskSearch->companyId;
 		  } */
-		$this->projectsCriteria = new CDbCriteria();
+		$this->projectsCriteria = new yii\db\Query();
 		$this->projectsCriteria->select = 't.id, t.name';
 		$this->projectsCriteria->order = 't.id desc';
 	}

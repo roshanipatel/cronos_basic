@@ -57,8 +57,8 @@ class ExpenseSearch extends CFormModel {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array(ExpenseSearch::FLD_NAME_DATE_INI, 'type', 'type' => 'datetime', 'datetimeFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
-            array(ExpenseSearch::FLD_NAME_DATE_END, 'type', 'type' => 'datetime', 'datetimeFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
+            array(ExpenseSearch::FLD_NAME_DATE_INI, 'datetime', 'format' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
+            array(ExpenseSearch::FLD_NAME_DATE_END, 'datetime', 'format' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
             array(ExpenseSearch::FLD_NAME_DATE_INI . "," .
                 ExpenseSearch::FLD_NAME_DATE_END . "," .
                 ExpenseSearch::FLD_NAME_PROJECT_ID . "," .

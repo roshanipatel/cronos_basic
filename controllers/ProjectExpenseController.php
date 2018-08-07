@@ -39,7 +39,7 @@ class ProjectExpenseController extends CronosController {
         $expenseSearch->status = TaskStatus::TS_NEW;
         $expenseSearch->owner = Yii::$app->user->id;
         $providers = $expenseSearchService->getExpenseSearchFormProviders($expenseSearch);
-        $projectsCriteria = new CDbCriteria();
+        $projectsCriteria = new yii\db\Query();
         $projectsCriteria->select = 't.id, t.name';
         $projectsCriteria->order = 't.id desc';
         if (!empty($expenseSearch->companyId)) {
@@ -189,7 +189,7 @@ class ProjectExpenseController extends CronosController {
         $expenseSearch = $this->getProjectExpensesModelForSearchFromRequest();
         $expenseSearchService = ServiceFactory::createExpenseSearchService();
         $providers = $expenseSearchService->getExpenseSearchFormProviders($expenseSearch, Yii::$app->user);
-        $projectsCriteria = new CDbCriteria();
+        $projectsCriteria = new yii\db\Query();
         $projectsCriteria->select = 't.id, t.name';
         $projectsCriteria->order = 't.id desc';
         if (!empty($expenseSearch->companyId)) {

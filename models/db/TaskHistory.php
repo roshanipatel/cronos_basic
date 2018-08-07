@@ -3,6 +3,8 @@ namespace app\models;
 
 use Yii;
 use yii\base\Model;
+use yii\data\ActiveDataProvider;
+
 /**
  * This is the model class for table "task_history".
  *
@@ -39,11 +41,11 @@ class TaskHistory extends Model
         // will receive user inputs.
         return array(
             array( 'user_id, user_project_task_id, timestamp, status, comment', 'required' ),
-            array( 'user_id, user_project_task_id', 'numerical', 'integerOnly' => true ),
+            array( 'user_id, user_project_task_id', 'integer' ),
             array( 'user_id', 'exist', 'className' => 'User', 'attributeName' => 'id' ),
             array( 'user_project_task_id', 'exist', 'className' => 'UserProjectTask', 'attributeName' => 'id' ),
             array( 'status', 'in', 'range' => TaskStatus::getValidValues() ),
-            array( 'comment', 'length', 'max' => 1024 ),
+            array( 'comment', 'string', 'max' => 1024 ),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array( 'id, user_id, user_project_task_id, timestamp, status, comment', 'safe', 'on' => 'search' ),
@@ -80,7 +82,7 @@ class TaskHistory extends Model
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search()
     {
@@ -88,7 +90,7 @@ class TaskHistory extends Model
         // should not be searched.
         $criteria = new CDbCriteria;
 
-        return new CActiveDataProvider( get_class( $this ), array(
+        return new ActiveDataProvider( get_class( $this ), array(
             'criteria' => $criteria,
                 ) );
     }

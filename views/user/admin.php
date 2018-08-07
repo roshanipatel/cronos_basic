@@ -1,32 +1,41 @@
 <h1>Gestionar Usuarios</h1>
 
 <?php
-$this->widget( 'zii.widgets.grid.CGridView', array(
+yii\grid\GridView::widget(array(
     'id' => 'user-grid',
     'dataProvider' => $model,
-    'filter' => $filter,
-    'selectableRows' => 0,
-    'summaryText' => 'Mostrando {end} de {count} resultado(s)',
+    'filterModel' => $filter,
+    //'selectableRows' => 0,
+    'summary' => 'Mostrando {end} de {count} resultado(s)',
     'columns' => array(
         'username',
         'name',
         array(
-            'name' => 'email',
+            'class' => 'yii\grid\DataColumn', 
+            'label' => 'email',
+            'value' => function ($data) {
+               return $data->email;
+            },
             'filter' => false,
         ),
         array(
-            'header' => 'Empresa',
-            'name' => 'company_name',
-            'value' => '$data->company->name',
+            'class' => 'yii\grid\DataColumn', 
+            'label' => 'Empresa',
+            'value' => function ($data) {
+               return $data->company->name;
+            },
             //'filter' => "CHtml::listData(Company::model()->findAll(), 'id', 'name')",
         ),
         array(
-            'name' => 'role',
-            'value' => 'Roles::toString( $data->role )',
+            'class' => 'yii\grid\DataColumn', 
+            'label' => 'role',
+            'value' => function ($data) {
+               return Roles::toString( $data->role );
+            },
             'filter' => false,
         ),
         array(
-            'class' => 'CButtonColumn',
+            'class' => 'yii\grid\ActionColumn',
             'buttons' => array(
                 'delete' => array(
                     'visible' => '$data->canDelete()',
@@ -35,7 +44,7 @@ $this->widget( 'zii.widgets.grid.CGridView', array(
                     'visible' => 'false',
                 ),
             ),
-            'htmlOptions' => array( 'style' => 'text-align: left' ),
+            'buttonOptions' => array( 'style' => 'text-align: left' ),
         ),
     ),
         ) ); ?>

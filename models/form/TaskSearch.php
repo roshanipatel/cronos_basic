@@ -72,8 +72,8 @@ class TaskSearch extends CFormModel {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('dateIni', 'type', 'type' => 'datetime', 'datetimeFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
-			array('dateEnd', 'type', 'type' => 'datetime', 'datetimeFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
+			array('dateIni', 'datetime', 'format' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
+			array('dateEnd', 'datetime', 'format' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
 			array(TaskSearch::FLD_NAME_DATE_INI.', '.TaskSearch::FLD_NAME_DATE_END.', projectId, '.TaskSearch::FLD_NAME_PROJECT_STATUS.',
                             '.TaskSearch::FLD_NAME_PROJECT_STATUS_COM.',
                             projectCategoryType, 
@@ -122,7 +122,7 @@ class TaskSearch extends CFormModel {
 	public function buildCriteria($criteria = null) {
                 
                 if ($criteria == null) {
-                    $criteria = new CDbCriteria();
+                    $criteria = new yii\db\Query();
                 }
 		
 		$addJoinProject = false;

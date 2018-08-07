@@ -3,6 +3,10 @@ namespace app\controllers;
 
 use Yii;
 use app\components\CronosController;
+use app\models\db\Project;
+use yii\data\ActiveDataProvider;
+use app\services\ServiceFactory'
+
 class ProjectController extends CronosController {
 
     const MY_LOG_CATEGORY = 'controllers.ProjectController';
@@ -11,7 +15,7 @@ class ProjectController extends CronosController {
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
-    public $layout = '//layouts/top_menu';
+    //public $layout = '//layouts/top_menu';
 
     /**
      * Displays a particular model.
@@ -255,10 +259,8 @@ class ProjectController extends CronosController {
      */
     public function actionIndex() {
 
-        $dataProvider = new CActiveDataProvider('Project', array(
-                    'criteria' => array(
-                        'with' => array('company'),
-                    ),
+        $dataProvider = new ActiveDataProvider(array(
+                    'criteria' => Project::find()->leftJoin(['company']),
                 ));
         $this->render('index', array(
             'dataProvider' => $dataProvider,
@@ -269,8 +271,9 @@ class ProjectController extends CronosController {
      * Manages all models.
      */
     public function actionAdmin() {
-        $model = new Project('search');
-        $model->unsetAttributes();  // clear any default values
+        $model = new Project();
+        $model->scenario = 'search';
+        //$model->unsetAttributes();  // clear any default values
         if (isset($_GET['Project'])) {
             $model->attributes = $_GET['Project'];
         }
@@ -309,8 +312,8 @@ class ProjectController extends CronosController {
     }
 
     private function getProjectModelForSearchFromRequest() {
-        $model = new Project('search');
-        $model->unsetAttributes();  // clear any default values
+        $model = new Project();
+        $model->scenario = 'search';
         if (isset($_GET['Project'])) {
             $model->attributes = $_GET['Project'];
         }
@@ -324,7 +327,7 @@ class ProjectController extends CronosController {
             $model->imputetype = Imputetype::getDefaultImputetypesFilter();
         }
         
-        $projectsCriteria = new CDbCriteria();
+        $projectsCriteria = new yii\db\Query();
         $projectsCriteria->select = 't.id, t.name';
         $projectsCriteria->order = 't.id desc';
         if (!empty($model->company_id)) {

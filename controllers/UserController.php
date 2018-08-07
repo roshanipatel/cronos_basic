@@ -4,7 +4,8 @@ namespace app\controllers;
 use Yii;
 use app\components\CronosController;
 use app\models\User;
-
+use yii\data\Sort;
+use yii\data\ActiveDataProvider;
 class UserController extends CronosController {
 
     const MY_LOG_CATEGORY = 'controllers.UserController';
@@ -13,7 +14,7 @@ class UserController extends CronosController {
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
-    public $layout = '//layouts/top_menu';
+    //public $layout = '/top_menu';
 
     /**
      * @return array action filters
@@ -41,17 +42,22 @@ class UserController extends CronosController {
 
         if (isset($_POST['User'])) {
             $model->attributes = $_POST['User'];
-            $transaction = $model->dbConnection->beginTransaction();
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                if ($model->save()) {
-                    // We have the userid. Let's save the role
-                    if (AuthAssignment::saveRoles($model->id, $model->role)) {
-                        $transaction->commit();
-                        Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, 'Usuario ' . $model->username . ' guardado con éxito');
-                        Yii::$app->user->setFlash('oldUser', $model);
-                        $this->refresh();
-                    }
-                }
+              
+              if($model->validate()){
+
+                  if ($model->save()) {
+                      // We have the userid. Let's save the role
+                      if (AuthAssignment::saveRoles($model->id, $model->role)) {
+                          $transaction->commit();
+                          Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, 'Usuario ' . $model->username . ' guardado con éxito');
+                          Yii::$app->user->setFlash('oldUser', $model);
+                          $this->refresh();
+                      }
+                  }
+              }
+                
             } catch (Exception $e) {
                 Yii::log('Error saving User ' . $e, CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
                 $transaction->rollback();
@@ -68,9 +74,10 @@ class UserController extends CronosController {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
-        $model = new User('create');
+        $model = new User();
+        $model->scenario = 'create';
         // Clean default values
-        $model->unsetAttributes();
+       // $model->unsetAttributes();
         $this->createUpdateRefactor($model, 'create');
     }
 
@@ -117,7 +124,7 @@ class UserController extends CronosController {
      * Lists all models.
      */
     public function actionIndex() {
-        $dataProvider = new CActiveDataProvider('User', array(
+        $dataProvider = new ActiveDataProvider('User', array(
                     'criteria' => array(
                         'with' => array('company'),
                     ),
@@ -132,10 +139,11 @@ class UserController extends CronosController {
      */
     public function actionAdmin() {
         
-        $filter = new User( 'search' );
-        $filter->unsetAttributes();  // clear any default values
+        $filter = new User();
+        $filter->scenario =  'search' ;
+        //$filter->unsetAttributes();  // clear any default values
         
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         if( isset( $_GET['User']['name'] ) )
             $criteria->compare('t.name', $_GET['User']['name'], true);
         if( isset( $_GET['User']['username'] ) )
@@ -143,23 +151,20 @@ class UserController extends CronosController {
         if( isset( $_GET['User']['company_name'] ) )
             $criteria->compare('t.company_name', $_GET['User']['company_name'], true);
         
-        $sort = new CSort();
+        $sort = new Sort();
 		$sort->attributes = array(
 			'name' => array(
 				'asc' => 't.name ASC',
 				'desc' => 't.name DESC',
 			)
 		);
-
-        $oModel = new CActiveDataProvider(
-						'User',
-						array(
-							'criteria' => $criteria,
-							'pagination' => array(
-								'pageSize' => Yii::$app->params->default_page_size,
-							),
-							'sort' => $sort,
-				));
+        $oModel = new ActiveDataProvider([
+                                'query' => $criteria->from('User'),
+                                'pagination' => array(
+                                    'pageSize' => Yii::$app->params['default_page_size'],
+                                ),
+                                'sort' => $sort,
+                                ]);
         $this->render( 'admin', array(
             'model' => $oModel,
             'filter' => $filter,

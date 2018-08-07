@@ -13,25 +13,7 @@ use app\assets\AppAsset;
 AppAsset::register($this);
 
 ?>
-<?php
-// In order to use custom jquery.js file
-/*Yii::$app->clientScript->scriptMap = array(
-    'jquery.js' => false,
-    'jquery.min.js' => false,
-    'jquery-ui.js' => false,
-    'jquery-ui.min.js' => false,
-);*/
-?>
-<?php
-// Prevent browser caching
-header("Expires: Tue, 03 Jul 2001 06:00:00 GMT");
-header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
 
-$baseUrl = Yii::$app->request->hostInfo . Yii::$app->request->baseUrl;
-?>
 
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -42,16 +24,7 @@ $baseUrl = Yii::$app->request->hostInfo . Yii::$app->request->baseUrl;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
-     <?php $this->head() ?>
-    
-    <?php
-    
-    //$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jquery-ui.min.js',['position' => \yii\web\View::POS_HEAD]);
-    ?>
-    <!-- <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jquery-1.6.2.js' ?>></script>
-    <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jquery-ui-1.8.8.custom.js' ?>></script>
-    <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jqueryslidemenu.js' ?>></script> -->
-    
+     <?php $this->head() ?>    
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -113,4 +86,4 @@ $baseUrl = Yii::$app->request->hostInfo . Yii::$app->request->baseUrl;
 <?php $this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage();  ?>
+<?php  $this->endPage();die; ?>
