@@ -24,7 +24,10 @@ AppAsset::register($this);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
-     <?php $this->head() ?>    
+     <?php $this->head() ?>
+     <?php
+        $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/bootstrap.min.js',['position' => \yii\web\View::POS_END]);
+     ?>    
 </head>
 <body>
 <?php $this->beginBody() ?>

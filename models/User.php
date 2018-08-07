@@ -27,7 +27,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     // User role
     public $role = Roles::UT_WORKER;
     public $id;
-     public $username;
+    /* public $username;
      public $password;
      public $name;
      public $email;
@@ -39,7 +39,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      public $worker_dflt_profile;
      public $totalhours;
      public $hourcost;
-     public $weeklyhours;
+     public $weeklyhours;*/
 
     /*private static $users = [
         '100' => [

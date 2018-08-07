@@ -14,12 +14,13 @@ $config = [
     'components' => [
         'assetManager'=>[
             'bundles' => [
+                 'yii\web\JqueryAsset' => [
+                    'sourcePath' => null,
+                    'js' => [] 
+                ],  
                 //'yii\bootstrap\BootstrapPluginAsset'=>false,
-               'yii\web\JqueryAsset'=> false,
-               'jquery.js' => false,
-                'jquery.min.js' => false,
-                'jquery-ui.js' => false,
-                'jquery-ui.min.js' => false,
+               //'yii\web\JqueryAsset'=> false,
+               
                // 'yii\web\YiiAsset'=>false
             ],
         ],
