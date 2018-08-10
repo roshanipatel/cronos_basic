@@ -25,6 +25,12 @@
                 Usuarios
             </div>
             <div class="panel-body">
+                <div class="alert alert-success">
+                    <?php echo $form->errorSummary( $model ); ?>
+                        <?php if( Yii::$app->session->getFlash('success')) { ?>
+                            <div class="resultOk"><p><?= Yii::$app->session->getFlash('success') ?></p></div>
+                        <?php } ?>
+                </div>
                 <?php
                     $form = ActiveForm::begin([
                         'id' => 'user-form',
@@ -45,12 +51,6 @@
                             <div class="form-group">
                                 <p class="note">Los campos con <span class="required">*</span> son obligatorios.</p>
                             </div>
-                        </div>
-                        <div class="col-lg-12">
-                        <?php echo $form->errorSummary( $model ); ?>
-                        <?php if( Yii::$app->session->getFlash('success')) { ?>
-                            <div class="resultOk"><p><?= Yii::$app->session->getFlash('success') ?></p></div>
-                        <?php } ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
@@ -191,7 +191,7 @@
 
                         <?php if( Yii::$app->user->role == Roles::UT_ADMIN ||
                                   (Yii::$app->user->role != Roles::UT_ADMIN && $model->role != Roles::UT_ADMIN)) { ?>
-                        <div class="row buttons">
+                        <div class="col-lg-12">
                             <?php echo Html::submitButton( $model->isNewRecord ? 'Crear' : 'Guardar' , ['class'=>'btn btn-success']); ?>
                         </div>
                         <?php } ?>
