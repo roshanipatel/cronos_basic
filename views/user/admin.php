@@ -4,6 +4,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use common\components\Common;
+use app\models\enums\Roles;
 ?>
 <?= GridView::widget([
         'id' => 'user-grid',
@@ -13,8 +14,8 @@ use common\components\Common;
         'columns' => 
                   [
                     ['class' => 'yii\grid\SerialColumn'],
-  //                  'username',
-    //                'name',
+                   'username',
+                    'name',
                     [
                         'class' => 'yii\grid\DataColumn', 
                         'label' => 'email',
@@ -41,14 +42,15 @@ use common\components\Common;
                   ],
                   [
                     'class' => 'yii\grid\ActionColumn',
-                    'buttons'=> [
+                   // 'template'=>'{delete}{print}',
+                   /* 'buttons'=> [
                             'delete' =>[
                                 'visible' => '$data->canDelete()',
                             ],
                             'print' =>[
                                 'visible' => 'false',
                             ],
-                        ],
+                        ],*/
                   ],
               ]
     ]);

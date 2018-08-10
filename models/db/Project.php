@@ -67,7 +67,7 @@ class Project extends ActiveRecord {
     /**
      * @return string the associated database table name
      */
-    public function tableName() {
+    public static function tableName() {
         return Project::TABLE_PROJECT;
     }
 
@@ -331,7 +331,7 @@ class Project extends ActiveRecord {
         return is_numeric($id) && ( ((int) $id) > 0 );
     }
 
-    protected function beforeSave() {
+    public function beforeSave() {
 
         if (!empty($this->open_time)) {
             $this->open_time = PHPUtils::convertStringToDBDateTime($this->open_time);
@@ -348,7 +348,7 @@ class Project extends ActiveRecord {
         return parent::beforeSave();
     }
 
-    protected function afterFind() {
+    public function afterFind() {
         if ($this->open_time != null) {
             $this->open_time = PHPUtils::convertDBDateTimeToString($this->open_time);
         }

@@ -8,6 +8,7 @@ use app\models\enums\WorkerProfiles;
 use app\models\db\Company;
 use yii\data\ActiveDataProvider;
 use app\components\utils\PHPUtils;
+
 class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
     //public $id;
@@ -59,7 +60,9 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'accessToken' => '101-token',
         ],
     ];*/
-
+    public function getCompany(){
+        return $this->hasOne(Company::className(), ['id' => 'company_id']);
+    }
 
     /**
      * {@inheritdoc}

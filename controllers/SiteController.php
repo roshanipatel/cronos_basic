@@ -15,11 +15,11 @@ class SiteController extends CronosController {
 	static private $indexByRole = array(
 		Roles::UT_ADMIN => 'user-project-task/calendar',
         Roles::UT_DIRECTOR_OP => 'user-project-task/calendar',
-		Roles::UT_CUSTOMER => 'user-project-task/searchTasksCustomer',
-		Roles::UT_PROJECT_MANAGER => 'user-project-task/approveTasks',
+		Roles::UT_CUSTOMER => 'user-project-task/search-tasks-customer',
+		Roles::UT_PROJECT_MANAGER => 'user-project-task/approve-tasks',
 		Roles::UT_WORKER => 'user-project-task/calendar',
-        Roles::UT_ADMINISTRATIVE => 'project/projectOverview',
-        Roles::UT_COMERCIAL => 'project/projectOverview'
+        Roles::UT_ADMINISTRATIVE => 'project/project-overview',
+        Roles::UT_COMERCIAL => 'project/project-overview'
 	);
 
 	public function allowedActions() {
