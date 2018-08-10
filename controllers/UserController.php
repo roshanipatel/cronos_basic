@@ -130,11 +130,10 @@ class UserController extends CronosController {
      * Lists all models.
      */
     public function actionIndex() {
-        $dataProvider = new ActiveDataProvider('User', array(
-                    'criteria' => array(
-                        'with' => array('company'),
-                    ),
-                        ));
+        $query = User::find()->joinWith(['company']);
+        $dataProvider = new ActiveDataProvider(
+                    'query' =>$query);
+        
         $this->render('index', array(
             'dataProvider' => $dataProvider,
         ));
@@ -149,14 +148,15 @@ class UserController extends CronosController {
         $filter->scenario =  'search' ;
         //$filter->unsetAttributes();  // clear any default values
         
-        $criteria = new yii\db\Query();
+        /*$criteria = new yii\db\Query();
         if( isset( $_GET['User']['name'] ) )
             $criteria->compare('t.name', $_GET['User']['name'], true);
         if( isset( $_GET['User']['username'] ) )
             $criteria->compare('t.username', $_GET['User']['username'], true);
         if( isset( $_GET['User']['company_name'] ) )
             $criteria->compare('t.company_name', $_GET['User']['company_name'], true);
-        
+        */
+
         $sort = new Sort();
 		$sort->attributes = array(
 			'name' => array(
@@ -164,8 +164,17 @@ class UserController extends CronosController {
 				'desc' => 't.name DESC',
 			)
 		);
+
+        $query = User::find()->joinWith(['company']);
+        if( isset( $_GET['User']['name'] ) )
+            $query->compare('t.name', $_GET['User']['name'], true);
+        if( isset( $_GET['User']['username'] ) )
+            $query->compare('t.username', $_GET['User']['username'], true);
+        if( isset( $_GET['User']['company_name'] ) )
+            $query->compare('t.company_name', $_GET['User']['company_name'], true);
+        
         $oModel = new ActiveDataProvider([
-                                'query' => $criteria->from('User'),
+                                'query' =>$query,
                                 'pagination' => array(
                                     'pageSize' => Yii::$app->params['default_page_size'],
                                 ),

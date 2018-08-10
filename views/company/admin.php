@@ -7,23 +7,27 @@ You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&g
 or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.
 </p>
 -->
-
 <?php
-$this->widget( 'zii.widgets.grid.CGridView', array(
+use yii\helpers\Html;
+use yii\grid\GridView;
+use common\components\Common;
+?>
+<?= GridView::widget([
     'id' => 'company-grid',
     'dataProvider' => $model,
-    'filter' => $filter,
-    'selectableRows' => 0,
-    'summaryText' => 'Mostrando {end} de {count} resultado(s)',
+    'filterModel' => $filter,
+    //'selectableRows' => 0,
+    'summary' => 'Mostrando {end} de {count} resultado(s)',
     'columns' => array(
         'name',
-        array(
+        'email',
+        /*array(
             'name' => 'email',
             'filter' => false,
-        ),
+        ),*/
         array(
-            'class' => 'CButtonColumn',
-            'buttons' => array(
+            'class' => 'yii\grid\ActionColumn',
+            /*'buttons' => array(
                 'delete' => array(
                     'visible' => '$data->canDelete()',
                 ),
@@ -31,8 +35,8 @@ $this->widget( 'zii.widgets.grid.CGridView', array(
                     'visible' => 'false',
                 ),
             ),
-            'htmlOptions' => array( 'style' => 'text-align: left' ),
+            'htmlOptions' => array( 'style' => 'text-align: left' ),*/
         ),
     ),
-) );
+]);
 ?>

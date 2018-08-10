@@ -14,8 +14,6 @@ class CompanyController extends CronosController
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
-    public $layout = '/main';
-
     /**
      * @return array action filters
       public function filters()
@@ -116,7 +114,8 @@ class CompanyController extends CronosController
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider( 'Company' );
+        $query = Company::find();
+        $dataProvider = new ActiveDataProvider(['query' =>$query]);
         $this->render( 'index', array(
             'dataProvider' => $dataProvider,
                 ) );
@@ -127,30 +126,30 @@ class CompanyController extends CronosController
      */
     public function actionAdmin()
     {
-        $filter = new Company( 'search' );
-        $filter->unsetAttributes();  // clear any default values
+        $filter = new Company();
+        $filter->scenario =  'search' ;
+       // $filter->unsetAttributes();  // clear any default values
         
-        $criteria = new yii\db\Query();
+
+        $query = Company::find();
         if( isset( $_GET['Company']['name'] ) )
-            $criteria->compare('t.name', $_GET['Company']['name']);
+            $query->compare('t.name', $_GET['Company']['name']);
+        
         
         $sort = new Sort();
-		$sort->attributes = array(
-			'name' => array(
-				'asc' => 't.name ASC',
-				'desc' => 't.name DESC',
-			)
-		);
-
-        $oModel = new ActiveDataProvider(
-						array(
-							'query' => $criteria->from('User'),
-							'pagination' => array(
-								'pageSize' => Yii::$app->params->default_page_size,
-							),
-							'sort' => $sort,
-				));
-
+        $sort->attributes = array(
+            'name' => array(
+                'asc' => 't.name ASC',
+                'desc' => 't.name DESC',
+            )
+        );
+        $oModel = new ActiveDataProvider([
+                                'query' =>$query,
+                                'pagination' => array(
+                                    'pageSize' => Yii::$app->params['default_page_size'],
+                                ),
+                                'sort' => $sort,
+                                ]);
         $this->render( 'admin', array(
             'model' => $oModel,
             'filter' => $filter,

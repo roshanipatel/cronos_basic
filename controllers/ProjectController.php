@@ -4,8 +4,9 @@ namespace app\controllers;
 use Yii;
 use app\components\CronosController;
 use app\models\db\Project;
+use app\models\db\Imputetype;
 use yii\data\ActiveDataProvider;
-use app\services\ServiceFactory'
+use app\services\ServiceFactory;
 
 class ProjectController extends CronosController {
 

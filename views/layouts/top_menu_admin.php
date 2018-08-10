@@ -16,7 +16,7 @@ $topMenus = array( "user" => "Usuarios",
     <li><a href="javascript:void(0);">Proyectos <span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
             <li><?php echo Html::a( 'Crear', array( 'project/create' ) ) ?></li>
-            <li><?php echo Html::a( 'Gestionar', array( 'project/projectOverview' ) ) ?></li>
+            <li><?php echo Html::a( 'Gestionar', array( 'project/project-overview' ) ) ?></li>
         </ul>
     </li>
     <li><a href="javascript:void(0);">Calendario<span class="fa arrow"></span></a>
