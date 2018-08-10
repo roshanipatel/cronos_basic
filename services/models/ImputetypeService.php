@@ -1,6 +1,6 @@
 <?php
 namespace app\services\models;
-
+use app\models\db\Imputetype;
 /**
  * Description of AlertService
  *
@@ -18,7 +18,7 @@ class ImputetypeService {
      * @return type
      */
     private function findImputetypesFilter($iProject = "") {
-        $criteria = new yii\db\Query();
+        $criteria = new \yii\db\Query();
         if ($iProject != "") {
             $criteria->addCondition(" exists (select * from " . Project::model()->tableName() . " proj,"
                     . " " . ProjectImputetype::model()->tableName() . " projimpute "
@@ -26,7 +26,7 @@ class ImputetypeService {
             
             $criteria->params['projectId'] = $iProject;
         }
-        return Imputetype::model()->findAll($criteria);
+        return Imputetype::find($criteria)->all();
     }
     
     public function findImputetypes($iProject = "") {
