@@ -5,8 +5,9 @@ namespace app\models;
 use Yii;
 use app\models\enums\Roles;
 use app\models\enums\WorkerProfiles;
+use app\models\db\Company;
 use yii\data\ActiveDataProvider;
-
+use app\components\utils\PHPUtils;
 class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
     //public $id;
@@ -25,7 +26,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public $newPassword;
     public $newPasswordRepeat;
     // User role
-    public $role = Roles::UT_WORKER;
+    //public $role = Roles::UT_WORKER;
+    public $role = Roles::UT_ADMIN;
     public $id;
     /* public $username;
      public $password;
@@ -64,7 +66,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      */
     public static function findIdentity($id)
     {
-        $user = User::find()->where(['id' => $id])->one();   
+        $user = User::find()->where(['id' => $id])->one(); 
         return $user;
     }
 
@@ -109,7 +111,6 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      * @return type 
      */
     public static function getPriorityUser($sTargetRole, $sCurrentRole = "") {
-
         $aResult = array();
         if ($sTargetRole == Roles::UT_ADMIN) {
             $aResult = array(Roles::UT_ADMIN => Roles::DESC_UT_ADMIN(),
@@ -130,6 +131,9 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
                 Roles::UT_WORKER => Roles::DESC_UT_WORKER());
         }
 
+       // print_r($aResult[$sCurrentRole]);
+        /*print_r(Roles::UT_DIRECTOR_OP);
+        die;*/
         //En caso de director operaciones y modificando el mismo.
         if (!isset($aResult[$sCurrentRole]) && $sCurrentRole == Roles::UT_DIRECTOR_OP) {
             $aResult[Roles::UT_DIRECTOR_OP] = Roles::DESC_UT_DIRECTOR_OP();
@@ -171,11 +175,11 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            [['username','hourcost','email','name','company_id','role','worker_dflt_profile','startcontract','weeklyhours'], 'required'],
+            [['username','hourcost','email','name','company_id','worker_dflt_profile','role','startcontract','weeklyhours'], 'required'],
             ['username', 'unique'],
             ['email', 'email'],
             [['company_id'], 'integer'],
-            ['company_id', 'exist', 'targetClass' => 'Company', 'targetAttribute' => 'id'],
+            ['company_id', 'exist', 'targetClass' => '\app\models\db\Company', 'targetAttribute' => 'id'],
             ['imputacionanterior', 'integer', 'max' => 90, 'min' => 1],
             ['weeklyhours', 'integer', 'max' => 40, 'min' => 0],
             [['username','password','email'], 'string', 'max' => 128],
@@ -191,7 +195,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             ['newPassword', 'compare', 'compareAttribute' => 'newPasswordRepeat',],
             // Make it safe (since it doesn't appear in any other rule and Yii bases
             // its "safeness" in that
-            [['newPasswordRepeat','role','password'], 'safe'],
+            [['newPasswordRepeat','role','password','worker_dflt_profile'], 'safe'],
             // Never massive-assign a password (it shouldn't be in any view)
             
             // The following rule is used by search().
@@ -308,27 +312,31 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     /**
      * Before saving, if new record generate a random salt
      */
-    public function beforeSave() {
-        // Let's do some aggressive optimizing:
-        // If new password is empty, it means it's an update with blank password,
-        // so we leave it untouched
-        // If it contains some value, then let's update password and salt
+
+    public function beforeSave($insert)
+    {
         if (!empty($this->newPassword)) {
             $this->salt = $this->generateSalt();
             $this->password = $this->hashPassword($this->newPassword, $this->salt);
         }
-
         if (!empty($this->startcontract)) {
-            $this->startcontract = PHPUtils::convertStringToDBDateTime($this->startcontract);
+            $this->startcontract = $this->startcontract;
         }
         if (!empty($this->endcontract)) {
-            $this->endcontract = PHPUtils::convertStringToDBDateTime($this->endcontract);
+
+            $this->endcontract = $this->endcontract;
         } else {
             $this->endcontract = null;
         }
+        if (parent::beforeSave($insert)) {
+            // Place your custom code here
 
-        return parent::beforeSave();
+            return true;
+        } else {
+            return false;
+        }
     }
+    
 
     public  function afterFind() {
         if(isset($this->roles)){
@@ -339,15 +347,18 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         }else if(Yii::$app->user->identity){
             assert(Roles::isValidValue(Yii::$app->user->identity->role));
             $this->role = Yii::$app->user->identity->role;
+         //   $this->role = 'Admin';
             
         }
        
-
+       // echo $this->role;die;
         if (isset($this->startcontract) && $this->startcontract != null && $this->startcontract != "" ) {
-            $this->startcontract = \app\components\utils\PHPUtils::convertDBDateTimeToString($this->startcontract);
+            //$this->startcontract = \app\components\utils\PHPUtils::convertDBDateTimeToString($this->startcontract);
+            $this->startcontract = date('d/m/Y',strtotime($this->startcontract));
         }
         if (isset($this->endcontract) && $this->endcontract != null && $this->endcontract != "") {
-            $this->endcontract = \app\components\utils\PHPUtils::convertDBDateTimeToString($this->endcontract);
+           // $this->endcontract = \app\components\utils\PHPUtils::convertDBDateTimeToString($this->endcontract);
+            $this->endcontract = date('d/m/Y',strtotime($this->endcontract));
         }
 
         return parent::afterFind();
@@ -388,7 +399,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
        // return static::findOne(['username' => $username]);
 
          $user = User::find()->where(['username' => $username])->one();//I don't know if this is correct i am   //checing value 'becky' in username column of my user table.
-
+//print_r($user );die;
          return $user;
     }
 

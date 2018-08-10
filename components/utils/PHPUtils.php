@@ -1,6 +1,7 @@
 <?php
 namespace app\components\utils;
 
+use Yii;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -81,9 +82,9 @@ class PHPUtils {
         else if( substr_count( $dt, ":" ) == 1 ){
             $dt .= ':00';
         }
-        $tempDateTime = DateTime::createFromFormat( $format, $dt );
+        $tempDateTime = \DateTime::createFromFormat( $format, $dt );
         if( ($tempDateTime === FALSE ) ) {
-            Yii::log( 'Error convirtiendo fechas ' . $dt, CLogger::LEVEL_ERROR, 'utils.PHPUtils' );
+            Yii::error( 'Error convirtiendo fechas ' . $dt, 'utils.PHPUtils' );
         }
         else{
 
@@ -96,7 +97,9 @@ class PHPUtils {
      * @return string
      */
     public static function convertStringToDBDateTime( $dt ) {
+        
         assert( ( is_string( $dt ) ) && (!empty( $dt ) ) );
+        //echo self::convertStringToPHPDateTime( $dt );die;
         return self::convertPHPDateTimeToDBDateTime( self::convertStringToPHPDateTime( $dt ) );
     }
 

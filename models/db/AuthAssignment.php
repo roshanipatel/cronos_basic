@@ -102,7 +102,6 @@ class AuthAssignment extends ActiveRelationalRecord
             $newRoles = $roles;
         else
             assert( false );
-
         $model = new AuthAssignment;
         return $model->saveRelation( 'userid', $userid, 'itemname', $newRoles, $hasToDeleteBefore );
     }

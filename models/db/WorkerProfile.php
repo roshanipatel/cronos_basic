@@ -97,6 +97,7 @@ class WorkerProfile extends ActiveRecord
     {
         $values = self::model()->findAll();
         $result = array( );
+        
         foreach( $values as $value )
         {
             $result[$value['id']] = Yii::t( self::I18N_CATEGORY, $value['id'] );

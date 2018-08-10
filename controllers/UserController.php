@@ -6,6 +6,9 @@ use app\components\CronosController;
 use app\models\User;
 use yii\data\Sort;
 use yii\data\ActiveDataProvider;
+use app\models\db\AuthAssignment;
+use app\models\Constants;
+
 class UserController extends CronosController {
 
     const MY_LOG_CATEGORY = 'controllers.UserController';
@@ -44,15 +47,18 @@ class UserController extends CronosController {
             $model->attributes = $_POST['User'];
             $transaction = Yii::$app->db->beginTransaction();
             try {
+             if($model->validate()){
+                // print_r($model->attributes);die;
               
-              if($model->validate()){
-
                   if ($model->save()) {
                       // We have the userid. Let's save the role
-                      if (AuthAssignment::saveRoles($model->id, $model->role)) {
+                   // if (AuthAssignment::saveRoles($model->id, $model->role)) {
+                      if (1) {
                           $transaction->commit();
-                          Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, 'Usuario ' . $model->username . ' guardado con éxito');
-                          Yii::$app->user->setFlash('oldUser', $model);
+                          Yii::$app->session->setFlash('success', 'Usuario ' . $model->username . ' guardado con éxito');
+
+                         // Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, 'Usuario ' . $model->username . ' guardado con éxito');
+                          //Yii::$app->user->setFlash('oldUser', $model);
                           $this->refresh();
                       }
                   }

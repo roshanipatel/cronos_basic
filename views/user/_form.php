@@ -3,22 +3,26 @@
     use yii\widgets\ActiveForm;
     use yii\helpers\ArrayHelper;
     use yii\helpers\Session;
-    use app\models\Constants;
+    //use app\models\Constants;
     use app\components\utils\PHPUtils;
     use app\models\db\Company;
     use app\models\User;
     use app\models\enums\WorkerProfiles;
     use app\models\enums\Roles;
+    use app\components\utils\DateTime;
+
+    $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/jquery-1.6.2.js',['position' => \yii\web\View::POS_HEAD]);
+    $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/jquery-ui-1.8.8.custom.js',['position' => \yii\web\View::POS_HEAD]);
 ?>
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">Tareas</h1>
+        <h1 class="page-header">Usuarios</h1>
     </div>
     <div class="row" >
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                Tareas
+                Usuarios
             </div>
             <div class="panel-body">
                 <?php
@@ -44,43 +48,43 @@
                         </div>
                         <div class="col-lg-12">
                         <?php echo $form->errorSummary( $model ); ?>
-                        <?php if( Yii::$app->session->getFlash('success', "resultOkMsg")) { ?>
-                            <div class="resultOk"><p><?php echo Yii::$app->session->setFlash('success', "resultOkMsg")?></p></div>
+                        <?php if( Yii::$app->session->getFlash('success')) { ?>
+                            <div class="resultOk"><p><?= Yii::$app->session->getFlash('success') ?></p></div>
                         <?php } ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <?= $form->field($model, 'username')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 60, 'maxlength' => 128 )])->label('User Name') ?>
+                                <?= $form->field($model, 'username')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 60, 'maxlength' => 128 )])->label('User Name *') ?>
                             </div>
                                 <?php //Html::error($model,'username', ['class' => 'help-block']); ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <?= $form->field($model, 'newPassword')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 60, 'maxlength' => 128 )])->label('New Password') ?>
+                                <?= $form->field($model, 'newPassword')->textInput(['class'=>"form-control col-lg-6",'type'=>'password', array( 'size' => 60, 'maxlength' => 128 )])->label('Password *') ?>
                             </div>
                                 <?php //Html::error($model,'newPassword', ['class' => 'help-block']); ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <?= $form->field($model, 'newPasswordRepeat')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 60, 'maxlength' => 128 )])->label('New Password Repeat') ?>
+                                <?= $form->field($model, 'newPasswordRepeat')->textInput(['class'=>"form-control col-lg-6",'type'=>'password', array( 'size' => 60, 'maxlength' => 128 )])->label('Password Repita *') ?>
                             </div>
                                 <?php //Html::error($model,'newPasswordRepeat', ['class' => 'help-block']); ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <?= $form->field($model, 'name')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 60, 'maxlength' => 256 )])->label('Name') ?>
+                                <?= $form->field($model, 'name')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 60, 'maxlength' => 256 )])->label('Nombre *') ?>
                             </div>
                                 <?php //Html::error($model,'name', ['class' => 'help-block']); ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <?= $form->field($model, 'email')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 60, 'maxlength' => 128 )])->label('Email') ?>
+                                <?= $form->field($model, 'email')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 60, 'maxlength' => 128 )])->label('Email *') ?>
                             </div>
                                 <?php //Html::error($model,'email', ['class' => 'help-block']); ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <?= $form->field($model, 'imputacionanterior')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 5, 'maxlength' => 5 )])->label('Imputacionanterior') ?>
+                                <?= $form->field($model, 'imputacionanterior')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 5, 'maxlength' => 5 )])->label('Imputación anterior permitida') ?>
                             </div>
                                 <?php //Html::error($model,'imputacionanterior', ['class' => 'help-block']); ?>
                         </div>
@@ -88,35 +92,35 @@
                             <div class="form-group">
                                 
                              <?php  $model->startcontract = PHPUtils::removeHourPartFromDate($model->startcontract); ?>
-                                <?= $form->field($model, 'startcontract')->textInput(['class'=>"form-control col-lg-6", array(  'maxlength' => 16 )])->label('Start Contract') ?>
+                                <?= $form->field($model, 'startcontract')->textInput(['class'=>" form-control col-lg-6",'id'=>'User_startcontract', array(  'maxlength' => 16 )])->label('Inicio contrato') ?>
                             </div>
                                 <?php //Html::error($model,'startcontract', ['class' => 'help-block']); ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
                              <?php  $model->endcontract = PHPUtils::removeHourPartFromDate($model->endcontract); ?>
-                                <?= $form->field($model, 'endcontract')->textInput(['class'=>"form-control col-lg-6", array(  'maxlength' => 16 )])->label('End Contract') ?>
+                                <?= $form->field($model, 'endcontract')->textInput(['class'=>" form-control col-lg-6",'id'=>'User_endcontract', array(  'maxlength' => 16 )])->label('Final contrato *') ?>
                             </div>
                                 <?php //Html::error($model,'endcontract', ['class' => 'help-block']); ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <?= $form->field($model, 'company_id')->dropDownList( \yii\helpers\ArrayHelper::map(Company::find()->all(), 'id', 'name') , ['prompt'=>'Choose...'])->label('Company');?>
+                                <?= $form->field($model, 'company_id')->dropDownList( \yii\helpers\ArrayHelper::map(Company::find()->all(), 'id', 'name') , ['prompt'=>'Choose...'])->label('Empresa *');?>
                             </div>
                             <small><?php echo Html::a( '(Crear nueva empresa)', array( 'company/create' ) ); ?></small>
                             <?php //echo Html::error( $model, 'company_id', ['class' => 'help-block'] ); ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
+                                <?php //print_r(WorkerProfiles::getDataForDropDown());die; ?>
                                 <?php // $form->field($model, 'worker_dflt_profile'); ?>
-                                 <?= $form->field($model, 'worker_dflt_profile')->dropDownList(WorkerProfiles::getDataForDropDown(), ['prompt'=>'Choose...'])->label('Worker Dflt Profile');?>
+                                 <?= $form->field($model, 'worker_dflt_profile')->dropDownList(WorkerProfiles::getDataForDropDown(), ['prompt'=>'Choose...'])->label('Perfil por defecto *');?>
                             </div>
                         <?php //echo Html::error( $model, 'worker_dflt_profile', ['class' => 'help-block'] ); ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <?php // $form->field($model, 'worker_dflt_profile'); ?>
-                                 <?= $form->field($model, 'role')->dropDownList( User::getPriorityUser(Yii::$app->user->role, $model->role), ['prompt'=>'Choose...'])->label('Worker Dflt Profile');?>
+                                 <?= $form->field($model, 'role')->dropDownList(User::getPriorityUser(Yii::$app->user->identity->role, $model->role), ['prompt'=>'Choose...'])->label('Permisos *');?>
                             </div>
                         <?php //echo Html::error( $model, 'role', ['class' => 'help-block'] ); ?>
                         </div>
@@ -152,9 +156,9 @@
                         </div>
             
                         <script type="text/javascript">
-                    	jQuery(document).ready((function() {
-                    		jQuery( 'input[id^="User_startcontract"],input[id^="User_endcontract"]' )
-                    		.datepicker(
+                            var $j = jQuery.noConflict();
+                    	$j(document).ready((function() {
+                    		$j( 'input[id^="User_startcontract"],input[id^="User_endcontract"]' ).datepicker(
                     		{
                     			'dateFormat': 'dd/mm/yy',
                     			'timeFormat': 'hh:mm',
@@ -170,16 +174,16 @@
                     			'showButtonPanel' : true
                     		});
                                     
-                                    jQuery( 'input[id^="User_startcontract"]' )
+                                    $j( 'input[id^="User_startcontract"]' )
                     		.attr('readonly', 'readonly');
                     		
-                    		jQuery( "div.ui-datepicker" ).css("font-size", "80%");
+                    		$j( "div.ui-datepicker" ).css("font-size", "80%");
                     	}));
                         </script>
                         <script type="text/javascript">
-                            jQuery(document).ready(function()
+                            $j(document).ready(function()
                             {
-                                jQuery("#radioRole label").css( "display", "inline" );
+                                $j("#radioRole label").css( "display", "inline" );
                                 //jQuery( "#radioRole" ).buttonset();
                             });
                         </script>
@@ -188,7 +192,7 @@
                         <?php if( Yii::$app->user->role == Roles::UT_ADMIN ||
                                   (Yii::$app->user->role != Roles::UT_ADMIN && $model->role != Roles::UT_ADMIN)) { ?>
                         <div class="row buttons">
-                            <?php echo Html::submitButton( $model->isNewRecord ? 'Crear' : 'Guardar' ); ?>
+                            <?php echo Html::submitButton( $model->isNewRecord ? 'Crear' : 'Guardar' , ['class'=>'btn btn-success']); ?>
                         </div>
                         <?php } ?>
                     </div>
