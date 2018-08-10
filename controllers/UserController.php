@@ -132,7 +132,7 @@ class UserController extends CronosController {
     public function actionIndex() {
         $query = User::find()->joinWith(['company']);
         $dataProvider = new ActiveDataProvider(
-                    'query' =>$query);
+                    ['query' =>$query]);
         
         $this->render('index', array(
             'dataProvider' => $dataProvider,

@@ -330,7 +330,7 @@ class ProjectController extends CronosController {
         
         $projectsCriteria = new yii\db\Query();
         $projectsCriteria->select = 't.id, t.name';
-        $projectsCriteria->order = 't.id desc';
+        $projectsCriteria->orderBy = 't.id desc';
         if (!empty($model->company_id)) {
             $projectsProvider = ServiceFactory::createProjectService()
                     ->findProjectsFromCustomerByCustomerId($model->company_id, Yii::$app->user, $projectsCriteria, !Yii::$app->user->hasDirectorPrivileges(), $model->open_time, $model->close_time);
