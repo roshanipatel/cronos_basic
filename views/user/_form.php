@@ -25,12 +25,6 @@
                 Usuarios
             </div>
             <div class="panel-body">
-                <div class="alert alert-success">
-                    <?php echo $form->errorSummary( $model ); ?>
-                        <?php if( Yii::$app->session->getFlash('success')) { ?>
-                            <div class="resultOk"><p><?= Yii::$app->session->getFlash('success') ?></p></div>
-                        <?php } ?>
-                </div>
                 <?php
                     $form = ActiveForm::begin([
                         'id' => 'user-form',
@@ -51,6 +45,12 @@
                             <div class="form-group">
                                 <p class="note">Los campos con <span class="required">*</span> son obligatorios.</p>
                             </div>
+                        </div>
+                        <div class="alert alert-success">
+                            <?php echo $form->errorSummary( $model ); ?>
+                            <?php if( Yii::$app->session->getFlash('success')) { ?>
+                                <?= Yii::$app->session->getFlash('success') ?>
+                            <?php } ?>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
