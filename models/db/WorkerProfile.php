@@ -3,6 +3,8 @@ namespace app\models\db;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\data\ActiveDataProvider;
+
 
 /**
  * This is the model class for table "worker_profiles".
@@ -37,10 +39,10 @@ class WorkerProfile extends ActiveRecord
         // will receive user inputs.
         return array(
             array( 'id, dflt_price', 'required' ),
-            //array( 'id', 'length', 'max' => 45 ),
+            //array( 'id', 'string', 'max' => 45 ),
             array( 'id', 'in', 'range' => WorkerProfiles::getValidValues(), 'strict' => true ),
-            array( 'dflt_price', 'length', 'max' => 11 ),
-            array( 'dflt_price', 'numerical', 'min' => 0 ),
+            array( 'dflt_price', 'string', 'max' => 11 ),
+            array( 'dflt_price', 'integer', 'min' => 0 ),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array( 'id, dflt_price', 'safe', 'on' => 'search' ),
@@ -74,7 +76,7 @@ class WorkerProfile extends ActiveRecord
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search()
     {
@@ -86,7 +88,7 @@ class WorkerProfile extends ActiveRecord
         $criteria->compare( 'id', $this->id, true );
         $criteria->compare( 'dflt_price', $this->dflt_price, true );
 
-        return new CActiveDataProvider( get_class( $this ), array(
+        return new ActiveDataProvider( get_class( $this ), array(
             'criteria' => $criteria,
         ) );
     }
@@ -95,6 +97,7 @@ class WorkerProfile extends ActiveRecord
     {
         $values = self::model()->findAll();
         $result = array( );
+        
         foreach( $values as $value )
         {
             $result[$value['id']] = Yii::t( self::I18N_CATEGORY, $value['id'] );

@@ -10,7 +10,7 @@ $form = $this->beginWidget( 'CActiveForm', [
                 ] );
 
 /* SEARCH FORM */
-Yii::$app->controller->renderPartial( '/userProjectTask/_searchForm',
+$this->render( '/userProjectTask/_searchForm',
         [
             'taskSearch' => $taskSearch,
             'projectsProvider' => $projectsProvider,
@@ -306,7 +306,7 @@ if(Yii::$app->user->hasDirectorPrivileges()) {
 			'class' => 'CLinkColumn',
 			'labelExpression' => '$data->frm_date_ini',
             'urlExpression' =>
-				'Yii::$app->createUrl("userProjectTask/calendar", array("timestamp" => $data->date_ini->getTimestamp(), "user" => $data->user_id))',
+				'Yii::$app->createUrl("user-project-task/calendar", array("timestamp" => $data->date_ini->getTimestamp(), "user" => $data->user_id))',
             'htmlOptions' => array(
                 'style' => 'text-align: center',
             )

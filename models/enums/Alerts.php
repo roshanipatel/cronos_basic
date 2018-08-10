@@ -95,7 +95,7 @@ Esto es un AVISO de CRONOS:
 
 Se le adjunta el informe {periodo_informe} del proyecto {project.name}.
                 
-                <a target="_blank" href="https://{server}/index.php/userProjectTask/report?h={secure}&project={project}&open_time={range_ini}&close_time={range_fi}">Abrir informe</a>
+                <a target="_blank" href="https://{server}/index.php/user-project-task/report?h={secure}&project={project}&open_time={range_ini}&close_time={range_fi}">Abrir informe</a>
 MSG
         );
     }

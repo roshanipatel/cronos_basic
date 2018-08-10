@@ -76,7 +76,7 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
                 <script type="text/javascript">
                     function makeReport( frm )
                     {
-                        frm.action = '<?php echo $this->createUrl('reportTask/exportCosts'); ?>';
+                        frm.action = '<?php echo $this->createUrl('report-task/export-costs'); ?>';
                         frm.target = '_blank';
                         return true;
                     }
@@ -113,7 +113,7 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
     }));
 </script>
 <?php
-Yii::$app->controller->renderPartial('../userProjectTask/_projectsFromCustomerAutocomplete', [
+$this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
     'onlyManagedByUser' => $onlyManagedByUser,
     'onlyUserEnvolved' => true
 ]);

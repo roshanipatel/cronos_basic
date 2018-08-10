@@ -1,13 +1,13 @@
 <?php use yii\helpers\Html; ?>
-<li><?php echo Html::a('Introducir horas', array('userProjectTask/calendar')) ?></li>
-<li><?php echo Html::a('Consultar horas<span class="fa arrow"></span>', array('userProjectTask/searchTasksWorker')) ?>
+<li><?php echo Html::a('Introducir horas', array('user-project-task/calendar')) ?></li>
+<li><a href="javascript:void(0);">Consultar horas<span class="fa arrow"></span></a>
 	<ul class="nav nav-second-level">
-                <li><?php echo Html::a( 'Modificación Horas', array( 'userProjectTask/updateTasks' ) ) ?></li>
+                <li><?php echo Html::a( 'Modificación Horas', array( 'user-project-task/update-tasks' ) ) ?></li>
 	</ul>
 </li>
-<li><?php echo Html::a( 'Gastos<span class="fa arrow"></span>', array( 'projectExpense/expenses' ) ) ?>
+<li><a href="javascript:void(0);"> 'Gastos<span class="fa arrow"></span></a>
 	<ul class="nav nav-second-level">
-		<li><?php echo Html::a( 'Imputar', array( 'projectExpense/create' ) ) ?></li>
-                <li><?php echo Html::a( 'Consultar', array( 'projectExpense/expenses' ) ) ?></li>
+		<li><?php echo Html::a( 'Imputar', array( 'project-expense/create' ) ) ?></li>
+                <li><?php echo Html::a( 'Consultar', array( 'project-expense/expenses' ) ) ?></li>
 	</ul>
 </li>

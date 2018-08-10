@@ -3,6 +3,13 @@ namespace app\models\db;
 
 use Yii;
 use yii\db\ActiveRecord;
+use app\models\enums\ProjectStatus;
+use app\models\enums\ProjectCategories;
+use app\models\enums\ReportingFreq;
+use yii\data\Sort;
+use yii\data\ActiveDataProvider;
+
+
 /**
  * This is the model class for table "project".
  *
@@ -89,37 +96,37 @@ class Project extends ActiveRecord {
     public function rules() {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('name, company_id', 'required'),
-            array('company_id, fixed_time, fix_time_hour_ini', 'numerical', 'integerOnly' => true),
-            array('max_hours, hours_warn_threshold', 'numerical'),
-            array('company_id', 'exist', 'className' => 'Company', 'attributeName' => 'id'),
-            array('manager_id', 'exist', 'className' => 'User', 'attributeName' => 'id'),
-            array('commercial', 'exist', 'className' => 'User', 'attributeName' => 'id'),
-            array('id', 'exist', 'className' => 'Project', 'attributeName' => 'id'),
-            array('status', 'in', 'range' => ProjectStatus::getValidValues()),
-            array('statuscommercial', 'in', 'range' => ProjectStatus::getValidValues()),
-            array('cat_type', 'in', 'range' => ProjectCategories::getValidValues()),
-            array('reporting', 'in', 'range' => ReportingFreq::getValidValues()),
-            array('code, name, status', 'length', 'max' => 45),
-            array('fix_time_hour_end', 'safe'),
-            array('open_time, close_time', 'safe'),
-            array('reportingtarget, managers, customers, workers, commercials, imputetypes, reportingtargetcustom', 'safe'),
+        return [
+            [['name', 'company_id'], 'required'],
+            [['company_id', 'fixed_time', 'fix_time_hour_ini'],'integer'],
+            [['max_hours','hours_warn_threshold'], 'integer'],
+            ['company_id', 'exist', 'targetClass' => 'Company', 'targetAttribute' => 'id'],
+            ['manager_id', 'exist', 'targetClass' => 'User', 'targetAttribute' => 'id'],
+            ['commercial', 'exist', 'targetClass' => 'User', 'targetAttribute' => 'id'],
+            ['id', 'exist', 'targetClass' => 'Project', 'targetAttribute' => 'id'],
+            ['status', 'in', 'range' => ProjectStatus::getValidValues()],
+            ['statuscommercial', 'in', 'range' => ProjectStatus::getValidValues()],
+            ['cat_type', 'in', 'range' => ProjectCategories::getValidValues()],
+            ['reporting', 'in', 'range' => ReportingFreq::getValidValues()],
+            [['code', 'name', 'status'], 'string', 'max' => 45],
+            ['fix_time_hour_end', 'safe'],
+            [['open_time', 'close_time'], 'safe'],
+            [['reportingtarget', 'managers', 'customers', 'workers', 'commercials', 'imputetypes, reportingtargetcustom'], 'safe'],
             // Check project name unique for customer
-            array('name', 'checkProjectNameUniqueForCustomer'),
+            ['name', 'checkProjectNameUniqueForCustomer'],
             // Check status if hours pending
-            array('status', 'checkHoursPendingToApprove', 'message' => 'No se puede cerrar el proyecto operativo. Todavía quedan horas pendientes de aprobar.'),
-            array('statuscommercial', 'checkProjectIsOperationalClosed', 'message' => 'No se puede cerrar el proyecto comercial. Todavía quedan horas pendientes de aprobar.'),
+            ['status', 'checkHoursPendingToApprove', 'message' => 'No se puede cerrar el proyecto operativo. Todavía quedan horas pendientes de aprobar.'],
+            ['statuscommercial', 'checkProjectIsOperationalClosed', 'message' => 'No se puede cerrar el proyecto comercial. Todavía quedan horas pendientes de aprobar.'],
             // Check max_hours, hours_warn_threshold to check semantics
-            array('max_hours', 'checkMaxHours', 'message' => 'Número de horas inválido'),
-            array('hours_warn_threshold', 'checkHourWarnThreshold', 'message' => 'Número de horas inválido (debe ser menor que el máximo de horas)'),
-            array('cat_type', 'safe'),
+            ['max_hours', 'checkMaxHours', 'message' => 'Número de horas inválido'],
+            ['hours_warn_threshold', 'checkHourWarnThreshold', 'message' => 'Número de horas inválido (debe ser menor que el máximo de horas)'],
+            ['cat_type', 'safe'],
             // Declare it unsafe to not massively assign it!!
-            array('workerProfiles', 'unsafe'),
+            ['workerProfiles', 'unsafe'],
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, code, name, status, manager_custom, commercial_custom, company_custom, totalSeconds, company_name, open_time, close_time, manager_id, imputetype', 'safe', 'on' => 'search'),
-        );
+            [['id', 'code', 'name', 'status', 'manager_custom', 'commercial_custom', 'company_custom', 'totalSeconds', 'company_name', 'open_time', 'close_time', 'manager_id', 'imputetype'],'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -222,7 +229,7 @@ class Project extends ActiveRecord {
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search() {
 
@@ -234,7 +241,7 @@ class Project extends ActiveRecord {
             }
             $sWhere .= " ) ";
         }
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria = ServiceFactory::createProjectService()->getCriteriaFromModel($this);
         $criteria->order = "";
         $criteria->select = "*, 
@@ -246,7 +253,7 @@ class Project extends ActiveRecord {
                     ( select roundResult( ( roundResult(sum( unix_timestamp(date_end) - unix_timestamp(date_ini) ) / 3600) / resultExist(max_hours) ) * 100) from user_project_task where t.id = user_project_task.project_id ".$sWhere.") as executed,
                     ( select description from project_category where name = t.cat_type ) as category_name ";
         
-        return new CActiveDataProvider(get_class($this), array(
+        return new ActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                     'pagination' => array(
                         'pageSize' => Yii::$app->params->default_page_size,
@@ -259,7 +266,7 @@ class Project extends ActiveRecord {
      * @return CSort
      */
     private function getSort() {
-        $sort = new CSort();
+        $sort = new Sort();
         $sort->attributes = array(
             'company_custom' => array(
                 'asc' => 'company_custom ASC',

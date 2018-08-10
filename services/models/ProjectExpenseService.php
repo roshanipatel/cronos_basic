@@ -230,7 +230,7 @@ class ProjectExpenseService implements CronosService {
      * @return type
      */
     public function createProjectExpense(ProjectExpense $model, array $newData) {
-        $model->unsetAttributes();
+//        $model->unsetAttributes();
         $model->status = TaskStatus::TS_NEW;
         return $this->saveProjectExpense($model, $newData);
     }

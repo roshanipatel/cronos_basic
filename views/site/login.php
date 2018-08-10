@@ -19,6 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="panel-body">
                         <?php $form = ActiveForm::begin([
                                             'id' => 'login-form',
+                                            'enableClientScript' => true,
                                             //'layout' => 'horizontal',
                                             'fieldConfig' => [
                                                 'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",

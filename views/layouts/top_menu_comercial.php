@@ -5,23 +5,28 @@ $topMenus = array( "user" => "Usuarios",
                    "company"=>"Empresas",
         );
 ?>
-    <li><?php echo Html::a( 'Tareas<span class="fa arrow"></span>', array( 'userProjectTask/calendar' ) ) ?>
+    <li>
+        <a href="javascript:void(0);">Tareas<span class="fa arrow"></span></a>
             <ul class="nav nav-second-level">
-                    <li><?php echo Html::a( 'Calendario', array( 'userProjectTask/calendar' ) ) ?></li>
+                    <li><?php echo Html::a( 'Calendario', array( 'user-project-task/calendar' ) ) ?></li>
             </ul>
     </li>
-    <li><?php echo Html::a( 'Proyectos<span class="fa arrow"></span>', array( 'project/admin' ) ) ?>
+    <li>
+        <a href="javascript:void(0);">Proyectos<span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
-            <li><?php echo Html::a( 'Gestionar', array( 'project/projectOverview' ) ) ?></li>
+            <li><?php echo Html::a( 'Gestionar', array( 'project/project-overview' ) ) ?></li>
         </ul>
     </li>
-    <li><?php echo Html::a( 'Operaciones portal<span class="fa arrow"></span>', array( 'userProjectTask/searchTasksCommercial' ) ) ?>
+    <li>
+        <a href="javascript:void(0);">Operaciones portal<span class="fa arrow"></span></a>
+
         <ul class="nav nav-second-level">
-            <li><?php echo Html::a( 'Consultar Horas', array( 'userProjectTask/searchTasksCommercial' ) ) ?></li>
-            <li><?php echo Html::a( 'Modificación Horas', array( 'userProjectTask/updateTasks' ) ) ?></li>
+            <li><?php echo Html::a( 'Consultar Horas', array( 'user-project-task/search-tasks-commercial' ) ) ?></li>
+            <li><?php echo Html::a( 'Modificación Horas', array( 'user-project-task/update-tasks' ) ) ?></li>
         </ul>
     </li>
-    <li><?php echo Html::a( 'Gastos<span class="fa arrow"></span>', array( 'projectExpense/expenses' ) ) ?>
+    <li>
+        <a href="javascript:void(0);">Gastos<span class="fa arrow"></span></a>
 	<ul class="nav nav-second-level">
 		<li><?php echo Html::a( 'Imputar', array( 'projectExpense/create' ) ) ?></li>
                 <li><?php echo Html::a( 'Consultar', array( 'projectExpense/expenses' ) ) ?></li>

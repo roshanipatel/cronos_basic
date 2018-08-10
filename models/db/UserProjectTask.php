@@ -3,6 +3,8 @@ namespace app\models\db;
 
 use Yii;
 use yii\base\Model;
+use yii\data\ActiveDataProvider;
+
 
 //use yii\db\ActiveRecord;
 use app\models\enums\TaskStatus;
@@ -124,24 +126,24 @@ class UserProjectTask extends Model {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-           /* array('user_id, project_id, imputetype_id, status, profile_id, frm_date_ini, frm_hour_ini, frm_date_end, frm_hour_end', 'required'),
-            array('user_id, project_id, imputetype_id, ticket_id', 'numerical', 'integerOnly' => true),
-            array('user_id', 'exist', 'className' => 'User', 'attributeName' => 'id'),
-            array('project_id', 'exist', 'className' => 'Project', 'attributeName' => 'id'),
-            array('imputetype_id', 'exist', 'className' => 'Imputetype', 'attributeName' => 'id'),
-            array('frm_customer_name', 'exist', 'className' => 'Company', 'attributeName' => 'name'),
+            array(['user_id', 'project_id', 'imputetype_id', 'status', 'profile_id', 'frm_date_ini', 'frm_hour_ini', 'frm_date_end', 'frm_hour_end'], 'required'),
+            array(['user_id', 'project_id', 'imputetype_id', 'ticket_id'], 'integer'),
+            array('user_id', 'exist', 'targetClass' => 'User', 'targetAttribute' => 'id'),
+            array('project_id', 'exist', 'targetClass' => 'Project', 'targetAttribute' => 'id'),
+            array('imputetype_id', 'exist', 'targetClass' => 'Imputetype', 'targetAttribute' => 'id'),
+            array('frm_customer_name', 'exist', 'targetClass' => 'Company', 'targetAttribute' => 'name'),
             array('status', 'in', 'range' => TaskStatus::getValidValues()),
             array('profile_id', 'in', 'range' => WorkerProfiles::getValidValues()),
-            array('frm_date_ini, frm_date_end', 'type', 'type' => 'datetime', 'datetimeFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválida'),
-            array('frm_hour_ini, frm_hour_end', 'type', 'type' => 'datetime', 'datetimeFormat' => self::TIME_FORMAT_ON_CHECK, 'message' => 'Formato de hora inválida'),
+            array(['frm_date_ini', 'frm_date_end'], 'datetime', 'format' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválida'),
+            array(['frm_hour_ini', 'frm_hour_end'], 'datetime', 'format' => self::TIME_FORMAT_ON_CHECK, 'message' => 'Formato de hora inválida'),
             array('frm_date_ini', 'checkHourSemantics', 'message' => 'La hora final no puede ser anterior a la inicial'),
             array('frm_date_ini', 'checkHourIsNotLateFromNow', 'message' => 'Las horas que está imputando son demasiado antiguas.'),
-            array('task_description', 'length', 'max' => 1024),
-            array('ticket_id', 'length', 'max' => 128),
-            array('is_extra, is_billable', 'boolean'),
+            array('task_description', 'string', 'max' => 1024),
+            array('ticket_id', 'string', 'max' => 128),
+            array(['is_extra', 'is_billable'], 'boolean'),
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.
-                array( 'status, frm_date_ini, task_description, ticket_id', 'safe', 'on' => 'search' ),*/
+            array( ['status', 'frm_date_ini', 'task_description', 'ticket_id'], 'safe', 'on' => 'search' ),
         );
     }
 
@@ -255,7 +257,7 @@ class UserProjectTask extends Model {
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search() {
         $criteria = new CDbCriteria(array(
@@ -265,7 +267,7 @@ class UserProjectTask extends Model {
                     ( select user.name from " . Project::TABLE_PROJECT_MANAGER . " inner join " . User::TABLE_USER . " on "
                  . "" . User::TABLE_USER . ".id = " . Project::TABLE_PROJECT_MANAGER . ".user_id "
                  . "where " . Project::TABLE_PROJECT_MANAGER . ".project_id = t.project_id order by user.name limit 1 ) as managerName";
-        return new CActiveDataProvider(get_class($this), array(
+        return new ActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                 ));
     }

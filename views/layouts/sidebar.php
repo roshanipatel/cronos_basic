@@ -6,7 +6,8 @@
 use app\models\enums\Roles;
 use yii\helpers\Html;    
 
-$userRole = Yii::$app->user->role;
+$userRole = Yii::$app->user->identity->role;
+$userRole =Roles::UT_DIRECTOR_OP; 
 switch( $userRole )
 {
     case Roles::UT_ADMIN:

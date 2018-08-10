@@ -1,7 +1,7 @@
 <h1>Actualizar Proyecto <?php echo $model->name; ?></h1>
 
 <?php
-echo Yii::$app->controller->renderPartial( '_form', [
+echo $this->render( '_form', [
     'model' => $model,
     'companies' => $companies,
     'projectManagers' => $projectManagers,

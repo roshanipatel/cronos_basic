@@ -3,6 +3,8 @@ namespace app\models\db;
 
 use Yii;
 use app\components\ActiveRelationalRecord;
+use yii\data\ActiveDataProvider;
+
 /**
  * This is the model class for table "project_reporting".
  *
@@ -31,7 +33,7 @@ class ProjectReporting extends ActiveRelationalRecord
 		// will receive user inputs.
 		return array(
 			array('role_id, project_id', 'required'),
-			array('project_id', 'numerical', 'integerOnly'=>true),
+			array('project_id', 'integer'),
                         array( 'project_id', 'exist', 'className' => 'Project', 'attributeName' => 'id' ),
                         array( 'role_id', 'exist', 'className' => 'Role', 'attributeName' => 'id' ),
 			// The following rule is used by search().
@@ -64,7 +66,7 @@ class ProjectReporting extends ActiveRelationalRecord
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
 	public function search()
 	{
@@ -74,7 +76,7 @@ class ProjectReporting extends ActiveRelationalRecord
                 
 		$criteria->compare('project_id',$this->project_id);
 
-		return new CActiveDataProvider(get_class($this), array(
+		return new ActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
 	}

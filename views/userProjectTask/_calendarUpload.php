@@ -3,7 +3,7 @@
 <div id="task-calendar"></div>
 <label style="color: red"><?php echo $errorMessage ?></label>
 
-<form action="index.php/userProjectTask/calendarUpload" method="post" enctype="multipart/form-data">
+<form action=<?= Yii::$app->urlManager->createUrl(['user-project-task/calendar-upload'])?> method="post" enctype="multipart/form-data">
     <input type="file" name="calendarUploadFile"/>
     <input type="submit" value="Cargar calendario"/>
 </form>

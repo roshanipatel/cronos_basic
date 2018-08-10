@@ -32,7 +32,7 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 
 <?php echo Html::a('Advanced Search','#',array('class'=>'search-button')); ?>
 <div class="search-form" style="display:none">
-<?php Yii::$app->controller->renderPartial('/workerProfiles/_search',[
+<?= $this->render('/workerProfiles/_search',[
 	'model'=>$model,
 ]); ?>
 </div><!-- search-form -->

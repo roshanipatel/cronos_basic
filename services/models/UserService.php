@@ -38,7 +38,7 @@ class UserService {
      */
     public function getWorkers($orderBy = 'name', $sStartFilter = "", $sEndFilter = "", $bOnlyManagers = false) {
         
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria->addCondition('t.company_id=:companyId');
         $criteria->params['companyId'] = Company::OPEN3S_ID;
         $criteria->order = "username asc";

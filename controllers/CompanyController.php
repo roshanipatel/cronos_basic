@@ -1,4 +1,11 @@
 <?php
+namespace app\controllers;
+
+use Yii;
+use app\components\CronosController;
+use app\models\db\Company;
+use yii\data\Sort;
+use yii\data\ActiveDataProvider;
 
 class CompanyController extends CronosController
 {
@@ -7,7 +14,7 @@ class CompanyController extends CronosController
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
-    public $layout = '//layouts/top_menu';
+    public $layout = '//layouts/menu';
 
     /**
      * @return array action filters
@@ -38,7 +45,7 @@ class CompanyController extends CronosController
     {
         $model = new Company;
         // Clean
-        $model->unsetAttributes();
+//        $model->unsetAttributes();
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
@@ -47,7 +54,7 @@ class CompanyController extends CronosController
             $model->attributes = $_POST['Company'];
             if( $model->save() )
             {
-                Yii::$app->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Empresa ' . $model->name . ' guardada con éxito' );
+                Yii::$app->session->setFlash('success', 'Empresa ' . $model->name . ' guardado con éxito');
                 $this->redirect( array( 'update', 'id' => $model->id ) );
             }
         }
@@ -109,7 +116,7 @@ class CompanyController extends CronosController
      */
     public function actionIndex()
     {
-        $dataProvider = new CActiveDataProvider( 'Company' );
+        $dataProvider = new ActiveDataProvider( 'Company' );
         $this->render( 'index', array(
             'dataProvider' => $dataProvider,
                 ) );
@@ -123,11 +130,11 @@ class CompanyController extends CronosController
         $filter = new Company( 'search' );
         $filter->unsetAttributes();  // clear any default values
         
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         if( isset( $_GET['Company']['name'] ) )
             $criteria->compare('t.name', $_GET['Company']['name']);
         
-        $sort = new CSort();
+        $sort = new Sort();
 		$sort->attributes = array(
 			'name' => array(
 				'asc' => 't.name ASC',
@@ -135,10 +142,9 @@ class CompanyController extends CronosController
 			)
 		);
 
-        $oModel = new CActiveDataProvider(
-						'Company',
+        $oModel = new ActiveDataProvider(
 						array(
-							'criteria' => $criteria,
+							'query' => $criteria->from('User'),
 							'pagination' => array(
 								'pageSize' => Yii::$app->params->default_page_size,
 							),

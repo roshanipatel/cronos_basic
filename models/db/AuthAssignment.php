@@ -3,6 +3,8 @@ namespace app\models\db;
 
 use Yii;
 use app\components\ActiveRelationalRecord;
+use yii\data\ActiveDataProvider;
+
 /**
  * This is the model class for table "AuthAssignment".
  *
@@ -37,7 +39,7 @@ class AuthAssignment extends ActiveRelationalRecord
         // will receive user inputs.
         return array(
             array( 'itemname, userid', 'required' ),
-            array( 'itemname, userid', 'length', 'max' => 64 ),
+            array( 'itemname, userid', 'string', 'max' => 64 ),
             array( 'bizrule, data', 'safe' ),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
@@ -72,7 +74,7 @@ class AuthAssignment extends ActiveRelationalRecord
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search()
     {
@@ -86,7 +88,7 @@ class AuthAssignment extends ActiveRelationalRecord
           $criteria->compare('bizrule',$this->bizrule,true);
           $criteria->compare('data',$this->data,true);
          */
-        return new CActiveDataProvider( get_class( $this ), array(
+        return new ActiveDataProvider( get_class( $this ), array(
             'criteria' => $criteria,
         ) );
     }
@@ -100,7 +102,6 @@ class AuthAssignment extends ActiveRelationalRecord
             $newRoles = $roles;
         else
             assert( false );
-
         $model = new AuthAssignment;
         return $model->saveRelation( 'userid', $userid, 'itemname', $newRoles, $hasToDeleteBefore );
     }

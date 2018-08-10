@@ -1,4 +1,9 @@
 <?php
+namespace app\controllers;
+
+use Yii;
+use app\components\CronosController;
+use app\components\utils\PHPUtils;
 
 class AdminController extends CronosController
 {

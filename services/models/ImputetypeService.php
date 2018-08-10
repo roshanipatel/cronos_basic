@@ -18,7 +18,7 @@ class ImputetypeService {
      * @return type
      */
     private function findImputetypesFilter($iProject = "") {
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         if ($iProject != "") {
             $criteria->addCondition(" exists (select * from " . Project::model()->tableName() . " proj,"
                     . " " . ProjectImputetype::model()->tableName() . " projimpute "
