@@ -15,16 +15,13 @@ use yii\helpers\ArrayHelper;
                                 'id' => 'company-form',
                                 'fieldConfig' => [
                                     'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",
+                                        //'error' => 'alert alert-danger',
                                    // 'labelOptions' => ['class' => 'form-control'],
                                 ],
                                 'enableClientValidation'=>false,
                                 'validateOnSubmit' => true,
                             ]); ?>
-                        <?php if($form->errorSummary( $model )) {?>
-                            <div class="alert alert-danger">
-                                <?php echo $form->errorSummary( $model );?>
-                            </div>
-                                <?php }?>
+                        <?php echo $form->errorSummary( $model  , array('class' => 'alert alert-danger'));?>
                         <?php if( Yii::$app->session->getFlash('success')) { ?>
                             <div class="alert alert-success">
                                 <?= Yii::$app->session->getFlash('success') ?>

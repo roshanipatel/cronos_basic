@@ -162,7 +162,7 @@ class TaskHistoryController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=TaskHistory::model()->findByPk((int)$id);
+		$model=TaskHistory::findOne((int)$id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;

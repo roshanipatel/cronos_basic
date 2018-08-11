@@ -28,8 +28,8 @@ $topMenus = array( "user" => "Usuarios",
     <li>
         <a href="javascript:void(0);">Gastos<span class="fa arrow"></span></a>
 	<ul class="nav nav-second-level">
-		<li><?php echo Html::a( 'Imputar', array( 'projectExpense/create' ) ) ?></li>
-                <li><?php echo Html::a( 'Consultar', array( 'projectExpense/expenses' ) ) ?></li>
+		<li><?php echo Html::a( 'Imputar', array( 'project-expense/create' ) ) ?></li>
+                <li><?php echo Html::a( 'Consultar', array( 'project-expense/expenses' ) ) ?></li>
 	</ul>
     </li>
     

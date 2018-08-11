@@ -3,6 +3,7 @@ namespace app\controllers;
 
 use Yii;
 use app\components\CronosController;
+use app\models\db\ProjectExpense;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -17,7 +18,7 @@ class ProjectExpenseController extends CronosController {
 
     const MY_LOG_CATEGORY = 'controllers.ProjectExpensesController';
 
-    public $layout = '//layouts/top_menu';
+    //public $layout = '//layouts/top_menu';
 
     public function actionApproveExpenses() {
         
@@ -81,7 +82,7 @@ class ProjectExpenseController extends CronosController {
     }
 
     public function loadModel($id) {
-        $model = ProjectExpense::model()->findByPk((int) $id);
+        $model = ProjectExpense::FindOne((int) $id);
         if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
         }
@@ -141,10 +142,10 @@ class ProjectExpenseController extends CronosController {
         
         $projects = array();
         if (isset($model->project_id)) {
-            $projects = Project::model()->findAllByPk($model->project_id);
+            $projects = Project::find()->where(['id'=>$model->project_id])->all();
         }
         
-        $this->render($renderView, array(
+        $this->render('/projectExpense/'.$renderView, array(
             'model' => $model,
             'projects' => $projects,
         ));

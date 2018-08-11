@@ -163,7 +163,7 @@ class CompanyController extends CronosController
      */
     public function loadModel( $id )
     {
-        $model = Company::model()->findByPk( (int)$id );
+        $model = Company::findOne((int)$id);
         if( $model === null )
             throw new CHttpException( 404, 'The requested page does not exist.' );
         return $model;

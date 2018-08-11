@@ -25,7 +25,7 @@
                 Usuarios
             </div>
             <div class="panel-body">
-                 <?php
+                        <?php
                             $form = ActiveForm::begin([
                                 'id' => 'company-form',
                                 'fieldConfig' => [
@@ -35,18 +35,14 @@
                                 'enableClientValidation'=>false,
                                 'validateOnSubmit' => true,
                             ]); ?>
-                        <?php if($form->errorSummary( $model )) {?>
-                            <div class="alert alert-danger">
-                                <?php echo $form->errorSummary( $model );?>
-                            </div>
-                                <?php }?>
+                        <?php echo $form->errorSummary( $model , array('class'=>'alert alert-danger'));?>
                         <?php if( Yii::$app->session->getFlash('success')) { ?>
                             <div class="alert alert-success">
                                 <?= Yii::$app->session->getFlash('success') ?>
                             </div>
                         <?php } ?>
                 <?php
-                    $form = ActiveForm::begin([
+                    /*$form = ActiveForm::begin([
                         'id' => 'user-form',
                         'fieldConfig' => [
                             'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",
@@ -55,11 +51,7 @@
                         ],
                         'enableClientValidation'=>false,
                         //'focus' => array($model,'username'),
-                    ]); 
-                    /* $form = ActiveForm::begin([
-                        'id' => 'ride-form',
-                         // this is redundant because it's true by default
-                    ]);*/
+                    ]); */
                     ?>
                     <div class="row">
                         <div class="col-lg-12">
@@ -69,7 +61,9 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <?= $form->field($model, 'username')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 60, 'maxlength' => 128 )])->label('User Name *') ?>
+                                <?= $form->field($model, 'username')->textInput([
+                                    'class'=>"form-control col-lg-6", 
+                                    array( 'size' => 60, 'maxlength' => 128 )])->label('User Name *') ?>
                             </div>
                                 <?php //Html::error($model,'username', ['class' => 'help-block']); ?>
                         </div>

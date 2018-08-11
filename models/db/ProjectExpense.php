@@ -5,6 +5,8 @@ use Yii;
 use yii\db\ActiveRecord;
 use yii\data\Sort;
 use yii\data\ActiveDataProvider;
+use app\models\enums\ExpenseType;
+use app\models\enums\ExpensePaymentMethod;
 
 /**
  * This is the model class for table "user_project_cost".
@@ -51,7 +53,7 @@ class ProjectExpense extends ActiveRecord {
     /**
      * @return string the associated database table name
      */
-    public function tableName() {
+    public static function tableName() {
         return ProjectExpense::TABLE_USER_PROJECT_COST;
     }
     

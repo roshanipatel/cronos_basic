@@ -53,7 +53,7 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
                 <script type="text/javascript">
                     function makeReport( frm )
                     {
-                        frm.action = '<?php echo $this->createUrl('report-task/export-activity'); ?>';
+                        frm.action = '<?php echo Yii::$app->urlManager->createUrl('report-task/export-activity'); ?>';
                         frm.target = '_blank';
                         return true;
                     }

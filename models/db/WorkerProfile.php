@@ -95,7 +95,7 @@ class WorkerProfile extends ActiveRecord
 
     public function getDataForDropDown()
     {
-        $values = self::model()->findAll();
+        $values = self::find()->all();
         $result = array( );
         
         foreach( $values as $value )

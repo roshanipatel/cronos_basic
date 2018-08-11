@@ -222,7 +222,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             // Number of tasks
             'taskCount' => array(self::STAT, 'UserProjectTask', 'user_id'),
             // Roles
-            'roles' => array(self::HAS_MANY, AuthAssignment::model()->tableName(), 'userid'),
+            'roles' => array(self::HAS_MANY, AuthAssignment::tableName(), 'userid'),
         );
     }
 
@@ -371,7 +371,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         if ($this->id == self::ADMIN_USER_ID)
             return false;
 
-        AuthAssignment::model()->deleteAll('userid=:userid', array('userid' => $this->id));
+        AuthAssignment::find()->where('userid=:userid', array('userid' => $this->id))->delete();
         return parent::beforeDelete();
     }
 

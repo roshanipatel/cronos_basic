@@ -1,4 +1,7 @@
 <?php
+namespace app\models\form;
+
+use yii\db\ActiveRecord;
 
 /**
  * Model for making Expense Search
@@ -16,7 +19,7 @@
  * @property integer $paymentMethod
  * 
  */
-class ExpenseSearch extends CFormModel {
+class ExpenseSearch extends ActiveRecord {
     // Search fields
 
     const FLD_DATE_INI = 1;

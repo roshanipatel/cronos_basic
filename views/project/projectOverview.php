@@ -1,3 +1,14 @@
+<?php 
+use yii\helpers\Html;
+use yii\grid\GridView;
+use app\services\ServiceFactory;
+use yii\widgets\ActiveForm;
+use app\models\enums\ProjectStatus;
+use app\models\enums\ProjectCategories;
+use yii\data\ActiveDataProvider;
+use app\components\utils\PHPUtils;
+
+?>
 <h1>Estado de Proyectos</h1>
 <?php /* * ********** SEARCH FORM  ****************** */ ?>
 <?php
@@ -6,10 +17,12 @@ assert(isset($projectsProvider));
 $showExportButton = TRUE;
 $searchFieldsToHide = array();
 $showManager = Yii::$app->user->hasDirectorPrivileges();
-$form = $this->beginWidget('CActiveForm', array(
-    'method' => 'get',
-    'action' => $this->createUrl('projectOveriew'),
-         ));
+
+$form = ActiveForm::begin([
+     'method' => 'get',
+    'action' => Yii::$app->urlManager->createUrl(['projectOveriew'])
+    ]); 
+
 if ($showManager) {
     $managersProvider = ServiceFactory::createUserService()->findProjectManagers();
 } else {
@@ -36,25 +49,25 @@ if ($showManager) {
         <tr>
             <?php
             echo "<td>\n";
-            echo $form->textField($model, 'open_time', array(
+            echo $form->field($model, 'open_time')->textInput(array(
                 'maxlength' => 20,
             ));
             echo "</td>\n";
             echo "<td>\n";
-            echo $form->textField($model, 'close_time', array(
+            echo $form->field($model, 'close_time')->textInput(array(
                 'maxlength' => 20,
             ));
             echo "</td>\n";
             echo "<td>\n";
-            echo $form->hiddenField($model, 'company_id', array('id' => 'company_id'));
-            echo $form->textField($model, 'company_name', array(
+            echo $form->field($model, 'company_id')->hiddenInput(array('id' => 'company_id'));
+            echo $form->field($model, 'company_name')->textInput(array(
                 'id' => 'company_name',
                 'style' => 'width: 160px'
             ));
             echo "<span id=\"loadingCustomers\"></span>\n";
             echo "</td>\n";
             echo "<td>\n";
-            echo $form->dropDownList($model, 'id', CHtml::listData($projectsProvider, 'id', 'name'), array(
+            echo $form->field($model, 'id')->dropDownList(\yii\helpers\ArrayHelper::map($projectsProvider, 'id', 'name'), array(
                 'prompt' => 'Todos',
                 'style' => 'width: 200px'
             ));
@@ -62,7 +75,7 @@ if ($showManager) {
             echo "</td>\n";
             if ($showManager) {
                 echo "<td>\n";
-                echo $form->dropDownList($model, 'manager_id', CHtml::listData($managersProvider, 'id', 'name'), array(
+                echo $form->field($model, 'manager_id')->dropDownList(\yii\helpers\ArrayHelper::map($managersProvider, 'id', 'name'), array(
                     'prompt' => 'Todos',
                     'style' => 'width: 120px'
                 ));
@@ -70,81 +83,79 @@ if ($showManager) {
                 echo "</td>\n";
             }
             echo "<td>\n";
-            echo $form->dropDownList($model, 'status', ProjectStatus::getDataForDropDown(), array(
+            echo $form->field($model, 'status')->dropDownList( ProjectStatus::getDataForDropDown(), array(
                 'prompt' => 'Todos',
                 'style' => 'width: 100px'
             ));
             echo "</td>\n";
             echo "<td>\n";
-            echo $form->dropDownList($model, 'statuscommercial', ProjectStatus::getDataForDropDown(), array(
+            echo $form->field($model, 'statuscommercial')->dropDownList( ProjectStatus::getDataForDropDown(), array(
                 'prompt' => 'Todos',
                 'style' => 'width: 100px'
             ));
             echo "</td>\n";
             echo "<td>\n";
-            echo $form->dropDownList($model, 'cat_type', ProjectCategories::getDataForDropDown(), array(
+            echo $form->field($model, 'cat_type')->dropDownList( ProjectCategories::getDataForDropDown(), array(
                 'prompt' => 'Todas',
                 'style' => 'width: 150px'
             ));
             echo "</td>\n";
             echo "<td>\n";
-            echo $form->dropDownList($model, 'reporting', array("0" => "Con Informe", "1" => "Sin Informe"), array(
+            echo $form->field($model, 'reporting')->dropDownList( array("0" => "Con Informe", "1" => "Sin Informe"), array(
                 'prompt' => 'Todas',
                 'style' => 'width: 90px'
             ));
             echo "</td>\n";
             ?>
-    </tr>
-    <tr>
-        <td class="title_search_field">Tipo imputación</td>        
-    </tr>
-    <tr>
-        <?php
-        echo "<td>\n";
-        echo $form->dropDownList($model, 'imputetype', CHtml::listData($projectImputetypes, 'id', 'name'),
-                        array(
-                'style' => 'width: 120px',
-                'multiple' => 'multiple',
-                'id' => 'imputetype_projects',
-        ));
-        
-        echo "</td>\n";
-        ?>
-    </tr>
-    <tr>
-        <td colspan="9" align="center">
-            <br>
-            <script type="text/javascript">
-                function projectSearch( frm )
-                {
-                    frm.action = '';
-                    frm.target = '_self';
-                    return true;
-                }
-            </script>
-<?php
-echo CHtml::submitButton('Buscar', array(
-    'onClick' => 'return projectSearch( this.form );',
-));
-?>
-            <?php if ($showExportButton) { ?>
+        </tr>
+        <tr>
+            <td class="title_search_field">Tipo imputación</td>        
+        </tr>
+        <tr>
+            <?php
+            echo "<td>\n";
+            echo $form->field($model, 'imputetype')->dropDownList(\yii\helpers\ArrayHelper::map($projectImputetypes, 'id', 'name'),
+                            array(
+                    'style' => 'width: 120px',
+                    'multiple' => 'multiple',
+                    'id' => 'imputetype_projects',
+            ));
+            
+            echo "</td>\n";
+            ?>
+        </tr>
+        <tr>
+            <td colspan="9" align="center">
+                <br>
                 <script type="text/javascript">
-                    function exportToCSV( frm )
+                    function projectSearch( frm )
                     {
-                        frm.action = '<?php echo $this->createUrl('project/exportToCSV'); ?>';
-                        frm.target = '_blank';
+                        frm.action = '';
+                        frm.target = '_self';
                         return true;
                     }
                 </script>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <?php
-    echo CHtml::submitButton('Exportar a CSV', array(
-        'onClick' => 'return exportToCSV( this.form );',
-    ));
-    ?>
-            <?php } ?>
-        </td>
-    </tr>
+                    <?php echo Html::submitButton( 'Buscar' , ['class'=>'btn btn-success','onClick' => 'return projectSearch( this.form );']); ?>
+                
+                    <?php if ($showExportButton) { ?>
+                    <script type="text/javascript">
+                        function exportToCSV( frm )
+                        {
+                            frm.action = '<?php echo Yii::$app->urlManager->createUrl("project/exportToCSV"); ?>';
+                            frm.target = '_blank';
+                            return true;
+                        }
+                    </script>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <?php
+                    echo Html::submitButton('Exportar a CSV', array(
+                        'class'=>'btn btn-success',
+                        'onClick' => 'return exportToCSV( this.form );',
+                    ));
+                    ?>
+                    <?php } ?>
+            </td>
+        </tr>
 </table>
 <script type="text/javascript">
     jQuery(document).ready((function() {
@@ -169,7 +180,7 @@ echo CHtml::submitButton('Buscar', array(
     }));
 </script>
 <?php
-$this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
+echo $this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
     'projectStatus' => (!isset($projectStatus)) ? NULL : $projectStatus,
     'onlyManagedByUser' => false,
     'onlyUserEnvolved' => true
@@ -185,103 +196,145 @@ $this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
         defineAutocompleteCustomers( options );
     });
 </script>
-<?php
-$this->endWidget();
-?>
+<?php ActiveForm::end(); ?>
 <?php /* * ********** END SEARCH FORM  ****************** */ ?>
 
 <?php
-$cs = Yii::$app->clientScript;
-$cs->registerScriptFile('js/plugins/jquery.progressbar.min.js', CClientScript::POS_BEGIN);
+//$cs = Yii::$app->clientScript;
+$this->registerJsFile('js/plugins/jquery.progressbar.min.js',['position' => \yii\web\View::POS_BEGIN]);
 
-$this->widget('zii.widgets.grid.CGridView', array(
+GridView::widget(array(
     'id' => 'project-grid',
-    'dataProvider' => $model->search(),
-    'filter' => null,
-    'selectableRows' => 0,
-    'summaryText' => 'Mostrando {end} de {count} resultado(s)',
-    'ajaxUpdate' => FALSE,
+    'dataProvider' => new ActiveDataProvider(array('query' =>$model->find())),
+   // 'filterModel'=>$model,
+    //'filter' => null,
+    //'selectableRows' => 0,
+    'summary' => 'Mostrando {end} de {count} resultado(s)',
+    //'ajaxUpdate' => FALSE,
     'columns' => array(
-        //'code',
+        ['class' => 'yii\grid\SerialColumn'],
         array(
-            'header' => 'Cliente',
-            'name' => 'company_custom',
-            'value' => '$data->company_custom',
+
+            'label' => 'Cliente',
+            'value' => function ($data) {
+                           return $data->company_custom;
+                        },
+            //'name' => 'company_custom',
+           // 'value' => '$data->company_custom',
         ),
         array(
-            'header' => 'Proyecto',
-            'name' => 'name',
+            'class' => 'yii\grid\DataColumn', 
+            'label' => 'Proyecto',
+            'value' => function ($data) {
+                           return $data->name;
+                        },
+            //'name' => 'name',
         ),
         array(
-            'name' => 'open_time',
-            'header' => 'Apertura',
-            'value' => 'PHPUtils::removeHourPartFromDate($data->open_time)',
-            'htmlOptions' => array(
+            'class' => 'yii\grid\DataColumn', 
+            //'name' => 'open_time',
+            'label' => 'Apertura',
+            'value' => function ($data) {
+                           return PHPUtils::removeHourPartFromDate($data->open_time);
+                        },
+            /*'htmlOptions' => array(
                 'style' => 'width: 60px'
-            ),
+            ),*/
         ),
         array(
-            'name' => 'close_time',
-            'header' => 'Cierre',
-            'value' => 'PHPUtils::removeHourPartFromDate($data->close_time)',
-            'htmlOptions' => array(
+            'class' => 'yii\grid\DataColumn', 
+            //'name' => 'close_time',
+            'label' => 'Cierre',
+            'value' => function ($data) {
+                           return PHPUtils::removeHourPartFromDate($data->close_time);
+                        },
+            //'value' => 'PHPUtils::removeHourPartFromDate($data->close_time)',
+            /*'htmlOptions' => array(
                 'style' => 'width: 60px'
-            ),
+            ),*/
         ),
         array(
-            'name' => 'manager_custom',
+            'class' => 'yii\grid\DataColumn', 
+            //'name' => 'manager_custom',
             'visible' => $showManager,
-            'header' => 'Manager',
-            'value' => '$data->manager_custom'
+            'label' => 'Manager',
+            'value' => function ($data) {
+                           return $data->manager_custom;
+                        },
+           // 'value' => '$data->manager_custom'
         ),
         array(
-            'name' => 'commercial_custom',
+            'class' => 'yii\grid\DataColumn', 
+            //'name' => 'commercial_custom',
             'visible' => $showManager,
-            'header' => 'Comercial',
-            'value' => '$data->commercial_custom'
+            'label' => 'Comercial',
+            'value' => function ($data) {
+                           return $data->commercial_custom;
+                        },
         ),
         array(
-            'name' => 'status',
-            'value' => 'ProjectStatus::toString($data->status)',
+            'class' => 'yii\grid\DataColumn', 
+            //'name' => 'status',
+            'value' => function ($data) {
+                           return ProjectStatus::toString($data->status);
+                        },
             'filter' => ProjectStatus::getDataForDropdown(),
-            'htmlOptions' => array(
+            /*'htmlOptions' => array(
                 'style' => 'width: 50px'
-            ),
+            ),*/
         ),
         array(
-            'name' => 'statuscommercial',
-            'value' => 'ProjectStatus::toString($data->statuscommercial)',
+            'class' => 'yii\grid\DataColumn', 
+            //'name' => 'statuscommercial',
+            'value' => function ($data) {
+                           return ProjectStatus::toString($data->statuscommercial);
+                        },
             'filter' => ProjectStatus::getDataForDropdown(),
-            'htmlOptions' => array(
+            /*'htmlOptions' => array(
                 'style' => 'width: 50px'
-            ),
+            ),*/
         ),
         array(
-            'name' => 'category_name',
+            'class' => 'yii\grid\DataColumn', 
+//            'name' => 'category_name',
+            'value' => function ($data) {
+                           return $data->category_name;
+                        },
             'filter' => ProjectCategories::getDataForDropdown(),
-            'htmlOptions' => array('style' => 'text-align: left; width:140px'),
+            //'htmlOptions' => array('style' => 'text-align: left; width:140px'),
+        ),
+        /*array(
+            'label' => 'Horas',
+            //'class' => 'ProjectHoursProgressBarColumn',
+            //'htmlOptions' => array('style' => 'text-align: left; width:130px'),
+        ),*/
+        array(
+            'class' => 'yii\grid\DataColumn',
+            'value' => function ($data) {
+                           return $data->totalSeconds;
+                        }, 
+            //'name' => 'totalSeconds',
+            'label' => 'Hours Executed',
+            //'htmlOptions' => array('style' => 'text-align: left; width:20px'),
         ),
         array(
-            'header' => 'Horas',
-            'class' => 'ProjectHoursProgressBarColumn',
-            'htmlOptions' => array('style' => 'text-align: left; width:130px'),
+            'class' => 'yii\grid\DataColumn', 
+            'label' => 'Max Hours',
+            'value' => function ($data) {
+                           return $data->max_hours;
+                        }, 
+            //'htmlOptions' => array('style' => 'text-align: left; width:20px'),
         ),
         array(
-            'name' => 'totalSeconds',
-            'header' => 'Hours Executed',
-            'htmlOptions' => array('style' => 'text-align: left; width:20px'),
+            'class' => 'yii\grid\DataColumn',
+            'value' => function ($data) {
+                           return $data->executed;
+                        },  
+            //'name' => 'executed',
+            'label' => '% Executed',
+            //'htmlOptions' => array('style' => 'text-align: left; width:20px'),
         ),
-        array(
-            'header' => 'Max Hours',
-            'value' => '$data->max_hours',
-            'htmlOptions' => array('style' => 'text-align: left; width:20px'),
-        ),
-        array(
-            'name' => 'executed',
-            'header' => '% Executed',
-            'htmlOptions' => array('style' => 'text-align: left; width:20px'),
-        ),
-        array(
+        /*array(
             'class' => 'CButtonColumn',
             'visible' => 'Yii::$app->user->hasDirectorPrivileges()',
             'buttons' => array(
@@ -305,7 +358,16 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'headerHtmlOptions' => array(
                 'style' => 'width: 40px',
             ),
-        ),
-    ),
-));
+        ),*/
+       /* array(
+            'class' => 'yii\grid\DataColumn', 
+            'label' => 'Cliente',
+           // 'name' => 'company_custom',
+            'value' => function ($data) {
+                return $data->company_custom;
+            }
+            //'value' => '$data->company_custom',
+        ),*/
+    )
+)); 
 ?>

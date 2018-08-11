@@ -48,7 +48,7 @@ class ExpenseSearchService {
         
         $tasksCriteria = ServiceFactory::createProjectExpenseService()->getCriteriaFromExpenseSearch($search);
         Yii::import('ext.csv.CSVExport');
-        $data = ProjectExpense::model()->findAll($tasksCriteria);
+        $data = ProjectExpense::findAll($tasksCriteria);
         $csv = new CSVExport($data);
         $csv->includeColumnHeaders = true;
         $csv->headers = array(

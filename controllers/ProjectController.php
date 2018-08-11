@@ -7,6 +7,8 @@ use app\models\db\Project;
 use app\models\db\Imputetype;
 use yii\data\ActiveDataProvider;
 use app\services\ServiceFactory;
+use app\models\db\Company;
+use app\models\db\Role;
 
 class ProjectController extends CronosController {
 
@@ -181,10 +183,7 @@ class ProjectController extends CronosController {
             $model->attributes = $_POST['Project'];
         }
         
-        $criteria = new CDbCriteria(array(
-                    'order' => 't.name asc',
-                ));
-        $companies = Company::model()->findAll($criteria);
+        $companies = Company::find()->orderBy('name asc')->all();
         if (!empty($model->company_id)) {
             // UPDATING PROJECT
             $companyToLoad = $model->company_id;
@@ -210,7 +209,7 @@ class ProjectController extends CronosController {
             'projectWorkers' => $us->findProjectWorkers(true, $model->id),
             'projectCommercials' => $us->findCommercials(true, $model->id),
             'projectImputetypes' => $oImputetypeService->findImputetypes(),
-            'projectTargets' => Role::model()->findAllByAttributes(array()),
+            'projectTargets' => Role::find()->all(),
             // If no companies, empty array
             'projectCustomers' => ( count($companies) == 0 ) ? array() : $us->findProjectCustomersByCompany($companyToLoad),
         ));
@@ -291,9 +290,9 @@ class ProjectController extends CronosController {
      */
     public function loadModel($id, $loadRelations = false) {
         if ($loadRelations) {
-            $model = Project::model()->with('company')->findByPk((int) $id);
+            $model = Project::find()->joinWith('company')->findOne((int) $id);
         } else {
-            $model = Project::model()->findByPk((int) $id);
+            $model = Project::findOne((int) $id);
         }
         if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
@@ -328,6 +327,7 @@ class ProjectController extends CronosController {
             $model->imputetype = Imputetype::getDefaultImputetypesFilter();
         }
         
+        
         $projectsCriteria = new yii\db\Query();
         $projectsCriteria->select = 't.id, t.name';
         $projectsCriteria->orderBy = 't.id desc';
@@ -341,8 +341,8 @@ class ProjectController extends CronosController {
         $oImputetypeService = ServiceFactory::createImputetypeService();
         $this->render('projectOverview', array(
             'model' => $model,
-            'projectsProvider' => $projectsProvider,
-            'projectImputetypes' => $oImputetypeService->findImputetypes(),
+            'projectsProvider' => [], //$projectsProvider,
+            'projectImputetypes' => [] //$oImputetypeService->findImputetypes(),
         ));
     }
 

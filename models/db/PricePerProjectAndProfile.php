@@ -21,7 +21,7 @@ class PricePerProjectAndProfile extends ActiveRelationalRecord
     /**
      * @return string the associated database table name
      */
-    public function tableName()
+    public static function tableName()
     {
         return 'price_per_project_and_profile';
     }

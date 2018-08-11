@@ -20,7 +20,7 @@ class ProjectExpenseService implements CronosService {
     public function approveCost($expenseId, CronosUser $sessionUser) {
         assert(is_numeric($expenseId));
         // Throws an exception if not found.
-        if (!( $oProjectExpense = ProjectExpense::model()->findByPk((int) $expenseId) ))
+        if (!( $oProjectExpense = ProjectExpense::findOne((int) $expenseId) ))
             throw new CHttpException(404, 'The requested page does not exist.');
 
         // Check if project belongs to manager!
@@ -95,7 +95,7 @@ class ProjectExpenseService implements CronosService {
      */
     public function refuseCost(CronosUser $user, $expenseId) {
         // Is task approved so it can be refused
-        $oProjectExpense = ProjectExpense::model()->findByPk($expenseId);
+        $oProjectExpense = ProjectExpense::findOne($expenseId);
         if ($this->ensureCanRefuseCost($user, $oProjectExpense, $expenseId) === false)
             return false;
 
@@ -197,7 +197,7 @@ class ProjectExpenseService implements CronosService {
      * @param type $userId
      */
     public function addCriteriaForProjectManagers(CDbCriteria $criteria, $userId) {
-        $criteria->join = 'INNER JOIN ' . ProjectManager::model()->tableName() . ' managers ON managers.project_id = t.project_id';
+        $criteria->join = 'INNER JOIN ' . ProjectManager::tableName() . ' managers ON managers.project_id = t.project_id';
         $criteria->addColumnCondition(array('managers.user_id' => $userId));
     }
 
@@ -209,9 +209,9 @@ class ProjectExpenseService implements CronosService {
         $criteria = $expenseSearch->buildCriteria();
         $criteria->with = array('worker', 'project', 'project.company');
         //$criteria->select = "*";
-        $criteria->join = ' INNER JOIN ' . Project::model()->tableName() . ' proj ON t.project_id = proj.id 
-                                INNER JOIN ' . User::model()->tableName() . ' us ON t.user_id = us.id 
-                                INNER JOIN ' . Company::model()->tableName() . ' com ON proj.company_id = com.id';
+        $criteria->join = ' INNER JOIN ' . Project::tableName() . ' proj ON t.project_id = proj.id 
+                                INNER JOIN ' . User::tableName() . ' us ON t.user_id = us.id 
+                                INNER JOIN ' . Company::tableName() . ' com ON proj.company_id = com.id';
 
         if ($expenseSearch->sort == "") {
             $criteria->order = 'com.name asc, proj.name, us.name';
@@ -304,9 +304,9 @@ class ProjectExpenseService implements CronosService {
     public function findUserProjectCostsInTime($sStartDate, $sEndDate, $onlyBillable = true, $iCustomer = "", $iProject = "", $iWorker = "") {
 
         $criteria = new CDbCriteria(array(
-                    'join' => ' INNER JOIN ' . Project::model()->tableName() . ' proj ON t.project_id = proj.id 
-                                INNER JOIN ' . User::model()->tableName() . ' us ON t.user_id = us.id 
-                                INNER JOIN ' . Company::model()->tableName() . ' com ON proj.company_id = com.id',
+                    'join' => ' INNER JOIN ' . Project::tableName() . ' proj ON t.project_id = proj.id 
+                                INNER JOIN ' . User::tableName() . ' us ON t.user_id = us.id 
+                                INNER JOIN ' . Company::tableName() . ' com ON proj.company_id = com.id',
                     'order' => 'com.name asc, proj.name, us.name',
                     'select' => '*, 
                          com.name as companyName,
@@ -346,7 +346,7 @@ class ProjectExpenseService implements CronosService {
             $criteria->compare('t.date_ini', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
         }
 
-        return ProjectExpense::model()->findAll($criteria);
+        return ProjectExpense::findAll($criteria);
     }
 
     const TIME_PRECISION = 4;

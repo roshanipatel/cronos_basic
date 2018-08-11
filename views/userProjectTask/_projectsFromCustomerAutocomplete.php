@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @param string $projectStatus [optional]
  * @param string $projectStatusCom [optional]
@@ -7,9 +8,7 @@
 
 assert(isset($onlyManagedByUser));
 
-Yii::$app->clientScript->registerScriptFile(
-        'js/ajax_loading_image.js',
-        CClientScript::POS_HEAD );
+$this->registerJsFile('js/ajax_loading_image.js',['position' => \yii\web\View::POS_HEAD]);
 
 ?>
 <script type="text/javascript">
@@ -213,13 +212,13 @@ Yii::$app->clientScript->registerScriptFile(
         if( ! options['srcImageAJAXLoader'] )
             options['srcImageAJAXLoader'] = 'images/ajax-loader-2.gif';
         if( ! options['companiesForAutocomplete'] )
-            options['companiesForAutocomplete'] = '<?php echo $this->createUrl( 'AJAX/retrieveCustomersByTermForAutocomplete' ) ?>';
+            options['companiesForAutocomplete'] = '<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveCustomersByTermForAutocomplete' ) ?>';
         if( ! options['urlProjectsFromCustomer'] )
-            options['urlProjectsFromCustomer'] = '<?php echo $this->createUrl( 'AJAX/retrieveProjectsFromCustomerIdAsListOptions' ) ?>';
+            options['urlProjectsFromCustomer'] = '<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveProjectsFromCustomerIdAsListOptions' ) ?>';
         if( ! options['urlWorkers'] )
-            options['urlWorkers'] = '<?php echo $this->createUrl( 'AJAX/retrieveWorkers' ) ?>';
+            options['urlWorkers'] = '<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveWorkers' ) ?>';
         if( ! options['urlManagers'] )
-            options['urlManagers'] = '<?php echo $this->createUrl( 'AJAX/retrieveManagers' ) ?>';
+            options['urlManagers'] = '<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveManagers' ) ?>';
         if( ! options['promptNoProjects'] )
             options['promptNoProjects'] = 'Cliente sin proyectos';
         if( ! options['promptAllProjects'] )

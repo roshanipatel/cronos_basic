@@ -192,7 +192,7 @@ class UserController extends CronosController {
      * @param integer the ID of the model to be loaded
      */
     public function loadModel($id) {
-        $model = User::model()->findByPk((int) $id);
+        $model = User::findOne((int) $id);
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;

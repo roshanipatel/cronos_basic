@@ -1,6 +1,10 @@
 <?php
 namespace app\services\models;
 
+use app\models\db\Company;
+use app\models\db\Project;
+use app\models\db\UserProjectTask;
+use app\components\utils\PHPUtils;
 use app\services\CronosService;
 /**
  * Description of ProjectService
@@ -21,14 +25,14 @@ class CompanyService implements CronosService
         $criteria = new yii\db\Query();
         $criteria->addSearchCondition('name', $substr);
         $criteria->order = 'id desc';
-        return Company::model()->findAll($criteria);
+        return Company::findAll($criteria);
     }
     
     
     public function findCustomerForDropdown($companyId, CronosUser $sessionUser) {
         assert(is_numeric($companyId));
         // Load project to get it's company
-        $company = Company::model()->findByPk($companyId);
+        $company = Company::findOne($companyId);
         if (empty($company)) {
             Yii::log("Company $companyId not found", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
             return array();
@@ -36,7 +40,7 @@ class CompanyService implements CronosService
         // Build search criteria depending on the user
         $criteria = new CDbCriteria;
         $criteria->order = 't.name asc';
-        $models = Company::model()->findAll($criteria);
+        $models = Company::findAll($criteria);
         $result = array();
         foreach ($models as $company)
             $result[$company->id] = $company->name;
@@ -57,8 +61,8 @@ class CompanyService implements CronosService
         }
         
         $criteria = new CDbCriteria(array(
-                    'join' => ' INNER JOIN ' . Project::model()->tableName() . ' proj ON proj.company_id = t.id 
-                                INNER JOIN ' . UserProjectTask::model()->tableName() . ' upt ON upt.project_id = proj.id ',
+                    'join' => ' INNER JOIN ' . Project::tableName() . ' proj ON proj.company_id = t.id 
+                                INNER JOIN ' . UserProjectTask::tableName() . ' upt ON upt.project_id = proj.id ',
                     'order' => $sOrder,
                     'select' => 't.name, 
                                  t.id,
@@ -91,7 +95,7 @@ class CompanyService implements CronosService
             $criteria->compare('upt.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
         }
         
-        return Company::model()->findAll($criteria);
+        return Company::findAll($criteria);
     }
 }
 ?>

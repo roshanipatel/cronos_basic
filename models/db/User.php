@@ -173,7 +173,7 @@ class User extends ActiveRecord {
             // its "safeness" in that
             array('newPasswordRepeat, role', 'safe'),
             // Never massive-assign a password (it shouldn't be in any view)
-            array('password', 'unsafe'),
+            //array('password', 'unsafe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('username, hourcost, name, email, company_id, worker_dflt_profile, company_name', 'safe', 'on' => 'search'),
@@ -195,7 +195,7 @@ class User extends ActiveRecord {
             // Number of tasks
             'taskCount' => array(self::STAT, 'UserProjectTask', 'user_id'),
             // Roles
-            'roles' => array(self::HAS_MANY, AuthAssignment::model()->tableName(), 'userid'),
+            'roles' => array(self::HAS_MANY, AuthAssignment::tableName(), 'userid'),
         );
     }
 
@@ -311,7 +311,7 @@ class User extends ActiveRecord {
         return parent::beforeSave();
     }
 
-    public  function afterFind() {
+    public function afterFind() {
         if(isset($this->roles)){
             if ((!isset($this->roles[0]) ) || (!( $this->roles[0] instanceof AuthAssignment ) ))
                 throw new Exception("User $this->username has no role assigned");
@@ -338,7 +338,7 @@ class User extends ActiveRecord {
         if ($this->id == self::ADMIN_USER_ID)
             return false;
 
-        AuthAssignment::model()->deleteAll('userid=:userid', array('userid' => $this->id));
+        AuthAssignment::find()->where('userid=:userid', array('userid' => $this->id))->delete();
         return parent::beforeDelete();
     }
 

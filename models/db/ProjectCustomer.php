@@ -19,7 +19,7 @@ class ProjectCustomer extends ActiveRelationalRecord
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
+	public static function tableName()
 	{
 		return 'project_customer';
 	}

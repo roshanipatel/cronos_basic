@@ -55,12 +55,12 @@ class UserService {
             
             //Retrieve its role and down to them.
             if ($sSqlFilter != "") {
-                $criteria->addCondition(' t.id IN ( SELECT userid FROM ' . AuthAssignment::model()->tableName() . " WHERE itemname in (".$sSqlFilter.") ) or t.id = '".Yii::$app->user->id."'");
+                $criteria->addCondition(' t.id IN ( SELECT userid FROM ' . AuthAssignment::tableName() . " WHERE itemname in (".$sSqlFilter.") ) or t.id = '".Yii::$app->user->id."'");
             } else {
                 $criteria->addCondition(" t.id = '".Yii::$app->user->id."'");
             }
         } else {
-                $criteria->addCondition(' t.id IN ( SELECT userid FROM ' . AuthAssignment::model()->tableName() . 
+                $criteria->addCondition(' t.id IN ( SELECT userid FROM ' . AuthAssignment::tableName() . 
                     " WHERE itemname in ('".Roles::UT_DIRECTOR_OP."', '".
                                             Roles::UT_PROJECT_MANAGER."', '".
                                             Roles::UT_COMERCIAL."', '".
@@ -95,7 +95,7 @@ class UserService {
             $criteria->params[':end_open'] = PhpUtils::convertStringToDBDateTime($sEndFilter);
             
         }
-        return User::model()->findAll($criteria);
+        return User::findAll($criteria);
     }
     
     
@@ -106,8 +106,8 @@ class UserService {
     public function findWorkersWithProjectInTime($sStartDate, $sEndDate, $onlyBillable = false, $iCustomer = "", $sProjectName = "") {
         
         $criteria = new CDbCriteria(array(
-                    'join' => ' INNER JOIN ' . UserProjectTask::model()->tableName() . ' upt ON upt.user_id = t.id 
-                                INNER JOIN ' . Project::model()->tableName() . ' proj ON upt.project_id = proj.id ',
+                    'join' => ' INNER JOIN ' . UserProjectTask::tableName() . ' upt ON upt.user_id = t.id 
+                                INNER JOIN ' . Project::tableName() . ' proj ON upt.project_id = proj.id ',
                     'order' => 'totalhours desc',
                     'select' => 't.id, t.name, 
                                 -sum(round((unix_timestamp(upt.date_ini) - unix_timestamp(upt.date_end))/3600,2)) as totalhours',
@@ -146,7 +146,7 @@ class UserService {
             $criteria->compare('upt.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
         }
         
-        return User::model()->findAll($criteria);
+        return User::findAll($criteria);
     }
 
     /**
@@ -182,13 +182,13 @@ class UserService {
     public function findWorkersByManager($bCurrent = false, $iPerson = "") {
         
         $sWhere = " (( exists ( SELECT pm.* FROM " .Project::TABLE_PROJECT_MANAGER. " pm WHERE pm.user_id = ".$iPerson."  and exists (select pw.* from " .Project::TABLE_PROJECT_WORKER. " pw WHERE id = pw.user_id and pm.project_id = pw.project_id)) 
-            and id IN ( SELECT userid FROM " . AuthAssignment::model()->tableName(). " WHERE   itemname = '".Roles::UT_WORKER."')) OR id = ".$iPerson." ) ";
+            and id IN ( SELECT userid FROM " . AuthAssignment::tableName(). " WHERE   itemname = '".Roles::UT_WORKER."')) OR id = ".$iPerson." ) ";
         
         if ($bCurrent) {
             $sWhere .= " and endcontract is null ";            
         }
         
-        return User::model()->findAll(array(
+        return User::findAll(array(
                     'condition' => $sWhere
                     ));
     }
@@ -231,8 +231,8 @@ class UserService {
     }
 
     public function findProjectCustomersByCompany($companyId) {
-        return User::model()->findAllByAttributes(
-                        array("company_id" => $companyId), 'id IN ( SELECT userid FROM ' . AuthAssignment::model()->tableName()
+        return User::findAll(
+                        array("company_id" => $companyId), 'id IN ( SELECT userid FROM ' . AuthAssignment::tableName()
                         . ' WHERE itemname = :role )', array('role' => Roles::UT_CUSTOMER));
     }
 
