@@ -1,7 +1,6 @@
 <?php 
-error_reporting(E_ALL); ini_set('display_errors', TRUE);
 use yii\helpers\Html;
-use yii\grid\GridView;
+use fedemotta\datatables\DataTables;
 use app\services\ServiceFactory;
 use yii\widgets\ActiveForm;
 use app\models\enums\ProjectStatus;
@@ -118,10 +117,23 @@ use app\components\utils\PHPUtils;
                     </div>
                 </div>
                 <?php ActiveForm::end(); ?>
-            </div>
-        </div>
-    </div>
-</div>
+
+<link href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+            
+<?= $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/jquery-1.6.2.js',['position' => \yii\web\View::POS_BEGIN]); ?>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
+    <?php
+    echo $this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
+        'projectStatus' => (!isset($projectStatus)) ? NULL : $projectStatus,
+        'onlyManagedByUser' => false,
+        'onlyUserEnvolved' => true
+    ]);
+    ?>
+
+<?php
+echo $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/plugins/jquery.progressbar.min.js',['position' => \yii\web\View::POS_BEGIN]);
+?>
+
 <script type="text/javascript">
     jQuery(document).ready((function() {
         jQuery( 'input[id^="Project_open_time"],input[id^="Project_close_time"]' )
@@ -144,32 +156,12 @@ use app\components\utils\PHPUtils;
         jQuery( "div.ui-datepicker" ).css("font-size", "80%");
     }));
 </script>
-    <?php
-    /*echo $this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
-        'projectStatus' => (!isset($projectStatus)) ? NULL : $projectStatus,
-        'onlyManagedByUser' => false,
-        'onlyUserEnvolved' => true
-    ]);*/
-    ?>
-<script type="text/javascript">
-    jQuery(document).ready(function(){
-        var options = new Object();
-        options['companyIdInputSelector'] = '#company_id';
-        options['companyNameInputSelector'] = '#company_name';
-        options['projectSelectSelector'] = '#Project_id';
-        options['managerSelectSelector'] = '#Project_manager_id';
-        defineAutocompleteCustomers( options );
-    });
-</script>
+<div class="row">
+<div class="col-lg-12">
 <?php
-$this->registerJsFile('js/plugins/jquery.progressbar.min.js',['position' => \yii\web\View::POS_BEGIN]);
-
-GridView::widget(array(
-    'id' => 'project-grid',
+echo DataTables::widget(array(
+    'id' => 'dataTables-example',
     'dataProvider' => new ActiveDataProvider(array('query' =>$model->find())),
-   // 'filterModel'=>$model,
-    //'filter' => null,
-    //'selectableRows' => 0,
     'summary' => 'Mostrando {end} de {count} resultado(s)',
     //'ajaxUpdate' => FALSE,
     'columns' => array(
@@ -332,3 +324,33 @@ GridView::widget(array(
     )
 )); 
 ?>
+</div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        var options = new Object();
+        options['companyIdInputSelector'] = '#company_id';
+        options['companyNameInputSelector'] = '#company_name';
+        options['projectSelectSelector'] = '#Project_id';
+        options['managerSelectSelector'] = '#Project_manager_id';
+        defineAutocompleteCustomers( options );
+    });
+</script>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+    var table = $('#datatables_dataTables-example').DataTable( {
+        scrollY:        "300px",
+        scrollX:        true,
+        scrollCollapse: true,
+        //paging:         false,
+        columnDefs: [
+            { width: '20%', targets: 0 }
+        ],
+        fixedColumns: true
+    } );
+} );
+</script>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,16 +1,15 @@
 <?php
-
 /**
  * @param string $projectStatus [optional]
  * @param string $projectStatusCom [optional]
  * @param bool $managedByUser [optional]
  */
-
 assert(isset($onlyManagedByUser));
 
-$this->registerJsFile('js/ajax_loading_image.js',['position' => \yii\web\View::POS_HEAD]);
+echo $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/ajax_loading_image.js',['position' => \yii\web\View::POS_HEAD]);
 
 ?>
+
 <script type="text/javascript">
 
     var ajaxLoadingProjects;

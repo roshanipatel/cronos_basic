@@ -87,7 +87,7 @@ class Calendar extends ActiveRecord
      * Make sure the admin company doesn't get deleted
      * @return <type>
      */
-    protected function beforeDelete()
+    public function beforeDelete()
     {
         return parent::beforeDelete();
     }
