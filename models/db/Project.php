@@ -66,8 +66,11 @@ class Project extends ActiveRecord {
     public $imputetype;
     public $imputetypes;
     public $workerProfiles;    
-
-
+    public $reportingtarget;
+    public $commercials;
+    public $managers;
+    public $workers;
+    public $customers;
     /**
      * @return string the associated database table name
      */
@@ -129,7 +132,7 @@ class Project extends ActiveRecord {
            // ['workerProfiles', 'unsafe'],
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            [['id', 'code', 'name', 'status', 'manager_custom', 'commercial_custom', 'company_custom', 'totalSeconds', 'company_name', 'open_time', 'close_time', 'manager_id', 'imputetype'],'safe', 'on' => 'search'],
+            [['id', 'code', 'name', 'status', 'manager_custom', 'reportingtarget','commercial_custom', 'company_custom', 'totalSeconds', 'company_name', 'open_time', 'close_time', 'manager_id', 'imputetype'],'safe', 'on' => 'search'],
         ];
     }
 

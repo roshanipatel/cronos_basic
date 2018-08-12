@@ -5,6 +5,8 @@ use Yii;
 use app\services\CronosService;
 use app\models\enums\ProjectStatus;
 use app\components\utils\PHPUtils;
+use app\models\db\PricePerProjectAndProfile;
+use app\models\enums\WorkerProfiles;
 
 /**
  * Description of ProjectService
@@ -43,11 +45,11 @@ class ProjectService implements CronosService {
                 throw new CHttpException(400, 'Invalid request', 400);
             }
             $model->worker_profile_id = $profileId;
-            if ((!is_numeric($priceArr['price']) )
-                    || ( ((float) $priceArr['price']) < 0 )) {
+            if ((!is_numeric($priceArr) )
+                    || ( ((float) $priceArr) < 0 )) {
                 $model->price = 0.0;
             } else {
-                $model->price = $priceArr['price'];
+                $model->price = $priceArr;
             }
         }
         return $result;
@@ -65,7 +67,8 @@ class ProjectService implements CronosService {
         unset($newData['close_time']);
         
         // Massively set attributes
-        $model->attributes = $newData;
+
+        $model->setAttributes($newData);
         //$model->close_time = null;
         //die();
         
@@ -272,7 +275,7 @@ class ProjectService implements CronosService {
         $criteria->innerJoin(Company::tableName().' customers','customers.id = project.company_id');
         $criteria->where('customers.name=:customerName '.$sQuery);
         $criteria->params(array('customerName' => $customerName));
-        $criteria->scopes('open')
+        $criteria->scopes('open');
         $criteria->orderBy('project.name asc');
 
         return $criteria->all();
