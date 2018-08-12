@@ -4,6 +4,7 @@ namespace app\models\db;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\data\ActiveDataProvider;
+use app\models\db\Calendar;
 
 /**
  * This is the model class for table "calendar".
@@ -100,7 +101,7 @@ class Calendar extends ActiveRecord
     {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
-        $criteria =  new Yii\db\Query();
+        $criteria =  Calendar::find();
        /* $criteria = new CDbCriteria( array(
                     'order' => 't.day asc',
                         ) );*/
@@ -115,7 +116,7 @@ class Calendar extends ActiveRecord
             ]);
         $criteria->orderBy = 't.day asc';
         return new ActiveDataProvider( array(
-            'query' => Calender::findAll($criteria),
+            'query' => $criteria,
                 ) );
     }
 

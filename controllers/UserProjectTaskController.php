@@ -11,7 +11,7 @@ use app\models\LoginForm;
 use app\models\form\TaskSearch;
 use app\services\ServiceFactory;
 use yii\data\ActiveDataProvider;
-
+use app\models\db\Calendar;
 class UserProjectTaskController extends CronosController {
    
     const MY_LOG_CATEGORY = 'controllers.UserProjectTaskController';
@@ -102,7 +102,7 @@ class UserProjectTaskController extends CronosController {
         $model->scenario = 'search';
         //$model->unsetAttributes();  // clear any default values
         
-        $this->render('_calendarUpload', array('model' => $model, 'errorMessage' => $sErrorMessage));
+        $this->render('/UserProjectTask/_calendarUpload', array('model' => $model, 'errorMessage' => $sErrorMessage));
     }
 
     public function actionCalendar($taskId = NULL) {
