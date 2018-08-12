@@ -9,6 +9,7 @@ use yii\data\ActiveDataProvider;
 use app\services\ServiceFactory;
 use app\models\db\Company;
 use app\models\db\Role;
+use yii\db\Query;
 
 class ProjectController extends CronosController {
 
@@ -327,7 +328,7 @@ class ProjectController extends CronosController {
             $model->imputetype = Imputetype::getDefaultImputetypesFilter();
         }
         
-        $projectsCriteria = new yii\db\Query();
+        $projectsCriteria = new Query;
         $projectsCriteria->select = 't.id, t.name';
         $projectsCriteria->orderBy = 't.id desc';
       
