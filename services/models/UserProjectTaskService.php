@@ -261,7 +261,8 @@ class UserProjectTaskService implements CronosService {
      * @param TaskSearch $taskSearch
      * @return type
      */
-    public function getCriteriaFromTaskSearchSummaryProject(TaskSearch $taskSearch) {
+    public function getCriteriaFromTaskSearchSummaryProject($taskSearch) {
+        
         
         $criteria = new CDbCriteria(array(
                     'order' => 'totalhours desc',

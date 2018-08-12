@@ -59,26 +59,24 @@ class CompanyService implements CronosService
         } else {
             $sOrder = "t.name asc ";
         }
-        
-        $criteria = new CDbCriteria(array(
-                    'join' => ' INNER JOIN ' . Project::tableName() . ' proj ON proj.company_id = t.id 
-                                INNER JOIN ' . UserProjectTask::tableName() . ' upt ON upt.project_id = proj.id ',
-                    'order' => $sOrder,
-                    'select' => 't.name, 
+        $criteria = Company::find();
+        $criteria->innerJoin(Project::tableName().' proj','company.id = proj.company_id')
+                 ->innerJoin(UserProjectTask::tableName() . ' upt','upt.project_id = proj.id');
+        $criteria->orderBy = $sOrder;
+        $criteria->select =  't.name, 
                                  t.id,
-                                -sum(round((unix_timestamp(upt.date_ini) - unix_timestamp(upt.date_end))/3600,2)) as totalhours',
-                    'group' => 't.name, t.id'
-                ));
+                                -sum(round((unix_timestamp(upt.date_ini) - unix_timestamp(upt.date_end))/3600,2)) as totalhours';
+        $criteria->groupBy = 't.name, t.id';
 
         if ($worker != "") {
-            $criteria->where(" upt.user_id = ".$worker);
+            $criteria->andWhere(" upt.user_id = ".$worker);
         }
         
         if (!empty($sStartDate) && !empty($sEndDate)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
 
-            $criteria->where("
+            $criteria->andWhere("
                             (:start_open <= upt.date_ini AND :start_open <= upt.date_end) and   
                             (:end_open >= upt.date_ini AND :end_open >= upt.date_end)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
@@ -86,16 +84,16 @@ class CompanyService implements CronosService
         } else
         if (!empty($sStartDate)) {
             $sStartDate = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
-            $criteria->where("
+            $criteria->andWhere("
                             (:start_open <= upt.date_ini AND :start_open <= upt.date_end)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
         } else
         if (!empty($sEndDate)) {
             $sEndDate = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
-            $criteria->compare('upt.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
+            $criteria->andWhere('upt.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
         }
         
-        return Company::findAll($criteria);
+        return $criteria->all();
     }
 }
 ?>
