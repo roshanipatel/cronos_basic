@@ -1,5 +1,8 @@
 <h1>Gestionar Tareas</h1>
+<?php
+use fedemotta\datatables\DataTables;
 
+?>
 <!--
 <p>
 You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
