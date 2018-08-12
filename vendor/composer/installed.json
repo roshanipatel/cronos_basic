@@ -85,6 +85,76 @@
         ]
     },
     {
+        "name": "bower-asset/datatables",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "git@github.com:DataTables/DataTables.git",
+            "reference": "156faa83386460c578e00c460eca9766e38a0c5f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/DataTables/DataTables/zipball/156faa83386460c578e00c460eca9766e38a0c5f",
+            "reference": "156faa83386460c578e00c460eca9766e38a0c5f",
+            "shasum": null
+        },
+        "require": {
+            "bower-asset/jquery": ">=1.7.0"
+        },
+        "type": "bower-asset",
+        "installation-source": "dist",
+        "license": [
+            "MIT"
+        ]
+    },
+    {
+        "name": "bower-asset/datatables-bootstrap3",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "git@github.com:Jowin/Datatables-Bootstrap3.git",
+            "reference": "45802ec4d337bdba6750f03b6472ddbb1d34608c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Jowin/Datatables-Bootstrap3/zipball/45802ec4d337bdba6750f03b6472ddbb1d34608c",
+            "reference": "45802ec4d337bdba6750f03b6472ddbb1d34608c",
+            "shasum": null
+        },
+        "require": {
+            "bower-asset/datatables": ">=1.9.4"
+        },
+        "type": "bower-asset",
+        "installation-source": "dist",
+        "license": [
+            "README.md"
+        ]
+    },
+    {
+        "name": "bower-asset/datatables-tabletools",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "git@github.com:DataTables/TableTools.git",
+            "reference": "45b5b56b66c2f9526f4d20178ce01f99a6ee2ad7"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/DataTables/TableTools/zipball/45b5b56b66c2f9526f4d20178ce01f99a6ee2ad7",
+            "reference": "45b5b56b66c2f9526f4d20178ce01f99a6ee2ad7",
+            "shasum": null
+        },
+        "require": {
+            "bower-asset/datatables": ">=1.9.0",
+            "bower-asset/jquery": ">=1.7.0"
+        },
+        "type": "bower-asset",
+        "installation-source": "dist"
+    },
+    {
         "name": "bower-asset/inputmask",
         "version": "3.3.11",
         "version_normalized": "3.3.11.0",
@@ -611,6 +681,62 @@
         ]
     },
     {
+        "name": "fedemotta/yii2-widget-datatables",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/fedemotta/yii2-widget-datatables.git",
+            "reference": "0fc4fe00f336e5060d959bebef3b44a52bb7097b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/fedemotta/yii2-widget-datatables/zipball/0fc4fe00f336e5060d959bebef3b44a52bb7097b",
+            "reference": "0fc4fe00f336e5060d959bebef3b44a52bb7097b",
+            "shasum": ""
+        },
+        "require": {
+            "bower-asset/datatables": ">= 1.9.4",
+            "bower-asset/datatables-bootstrap3": "*",
+            "bower-asset/datatables-tabletools": "*",
+            "bower-asset/jquery": ">= 1.7.0",
+            "yiisoft/yii2": "*"
+        },
+        "time": "2017-03-21T11:24:44+00:00",
+        "type": "yii2-extension",
+        "extra": {
+            "asset-installer-paths": {
+                "bower-asset-library": "vendor/bower"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "fedemotta\\datatables\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Federico Nicolás Motta",
+                "email": "fedemotta@gmail.com"
+            }
+        ],
+        "description": "DataTables widget for Yii2",
+        "keywords": [
+            "datatables",
+            "extension",
+            "javascript",
+            "jquery",
+            "library",
+            "table",
+            "yii2"
+        ]
+    },
+    {
         "name": "fzaninotto/faker",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -1002,7 +1128,7 @@
                 "dev-master": "1.7.x-dev"
             }
         },
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-0": {
                 "Prophecy\\": "src/"
@@ -2616,7 +2742,7 @@
                 "dev-master": "1.8-dev"
             }
         },
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "Symfony\\Polyfill\\Ctype\\": ""
@@ -2676,7 +2802,7 @@
                 "dev-master": "1.8-dev"
             }
         },
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "Symfony\\Polyfill\\Mbstring\\": ""

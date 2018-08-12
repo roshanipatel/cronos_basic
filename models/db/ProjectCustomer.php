@@ -3,6 +3,8 @@ namespace app\models\db;
 
 use Yii;
 use app\components\ActiveRelationalRecord;
+use yii\data\ActiveDataProvider;
+
 /**
  * This is the model class for table "project_customer".
  *
@@ -17,7 +19,7 @@ class ProjectCustomer extends ActiveRelationalRecord
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
+	public static function tableName()
 	{
 		return 'project_customer';
 	}
@@ -31,7 +33,7 @@ class ProjectCustomer extends ActiveRelationalRecord
 		// will receive user inputs.
 		return array(
 			array('user_id, project_id', 'required'),
-			array('user_id, project_id', 'numerical', 'integerOnly'=>true),
+			array('user_id, project_id', 'integer'),
             array( 'user_id', 'exist', 'className' => 'User', 'attributeName' => 'id' ),
             array( 'project_id', 'exist', 'className' => 'Project', 'attributeName' => 'id' ),
 			// The following rule is used by search().
@@ -64,19 +66,22 @@ class ProjectCustomer extends ActiveRelationalRecord
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
 	public function search()
 	{
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
-		$criteria=new CDbCriteria;
+		$criteria=ProjectCustomer::find();
 
-		$criteria->compare('user_id',$this->user_id);
-		$criteria->compare('project_id',$this->project_id);
-
-		return new CActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
+		$criteria->andFilterWhere([
+                'or',
+                ['like', 'user_id',$this->user_id],
+                ['like','project_id',$this->project_id],
+            ]);
+		
+		return new ActiveDataProvider(array(
+			'query'=>$criteria,
 		));
 	}
 

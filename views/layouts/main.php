@@ -13,6 +13,8 @@ use app\assets\AppAsset;
 AppAsset::register($this);
 
 ?>
+
+
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
@@ -23,15 +25,9 @@ AppAsset::register($this);
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
      <?php $this->head() ?>
-    
-    <?php
-    
-    //$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jquery-ui.min.js',['position' => \yii\web\View::POS_HEAD]);
-    ?>
-    <!-- <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jquery-1.6.2.js' ?>></script>
-    <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jquery-ui-1.8.8.custom.js' ?>></script>
-    <script type="text/javascript" src=<?= Yii::$app->request->BaseUrl.'/js/jqueryslidemenu.js' ?>></script> -->
-    
+     <?php
+        $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/bootstrap.min.js',['position' => \yii\web\View::POS_END]);
+     ?>    
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -93,4 +89,4 @@ AppAsset::register($this);
 <?php $this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage();  ?>
+<?php  $this->endPage();die; ?>

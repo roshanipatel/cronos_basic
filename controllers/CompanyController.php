@@ -1,4 +1,11 @@
 <?php
+namespace app\controllers;
+
+use Yii;
+use app\components\CronosController;
+use app\models\db\Company;
+use yii\data\Sort;
+use yii\data\ActiveDataProvider;
 
 class CompanyController extends CronosController
 {
@@ -7,8 +14,6 @@ class CompanyController extends CronosController
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
-    public $layout = '//layouts/top_menu';
-
     /**
      * @return array action filters
       public function filters()
@@ -38,7 +43,7 @@ class CompanyController extends CronosController
     {
         $model = new Company;
         // Clean
-        $model->unsetAttributes();
+//        $model->unsetAttributes();
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
@@ -47,7 +52,7 @@ class CompanyController extends CronosController
             $model->attributes = $_POST['Company'];
             if( $model->save() )
             {
-                Yii::$app->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Empresa ' . $model->name . ' guardada con éxito' );
+                Yii::$app->session->setFlash('success', 'Empresa ' . $model->name . ' guardado con éxito');
                 $this->redirect( array( 'update', 'id' => $model->id ) );
             }
         }
@@ -74,7 +79,7 @@ class CompanyController extends CronosController
             $model->attributes = $_POST['Company'];
             if( $model->save() )
             {
-                Yii::$app->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Empresa ' . $model->name . ' guardada con éxito' );
+                Yii::$app->session->setFlash('success', 'Empresa ' . $model->name . ' guardado con éxito');
                 $this->redirect( array( 'update', 'id' => $model->id ) );
             }
         }
@@ -109,7 +114,8 @@ class CompanyController extends CronosController
      */
     public function actionIndex()
     {
-        $dataProvider = new CActiveDataProvider( 'Company' );
+        $query = Company::find();
+        $dataProvider = new ActiveDataProvider(['query' =>$query]);
         $this->render( 'index', array(
             'dataProvider' => $dataProvider,
                 ) );
@@ -120,31 +126,34 @@ class CompanyController extends CronosController
      */
     public function actionAdmin()
     {
-        $filter = new Company( 'search' );
-        $filter->unsetAttributes();  // clear any default values
+        $filter = new Company();
+        $filter->scenario =  'search' ;
+       // $filter->unsetAttributes();  // clear any default values
         
-        $criteria = new CDbCriteria();
+
+        $query = Company::find();
         if( isset( $_GET['Company']['name'] ) )
-            $criteria->compare('t.name', $_GET['Company']['name']);
+            $query->andFilterWhere([
+                'or',
+                ['like', 't.name', $_GET['Company']['name']],
+            ]);
+           // $query->compare('t.name', $_GET['Company']['name']);
         
-        $sort = new CSort();
-		$sort->attributes = array(
-			'name' => array(
-				'asc' => 't.name ASC',
-				'desc' => 't.name DESC',
-			)
-		);
-
-        $oModel = new CActiveDataProvider(
-						'Company',
-						array(
-							'criteria' => $criteria,
-							'pagination' => array(
-								'pageSize' => Yii::$app->params->default_page_size,
-							),
-							'sort' => $sort,
-				));
-
+        
+        $sort = new Sort();
+        $sort->attributes = array(
+            'name' => array(
+                'asc' => 't.name ASC',
+                'desc' => 't.name DESC',
+            )
+        );
+        $oModel = new ActiveDataProvider([
+                                'query' =>$query,
+                                'pagination' => array(
+                                    'pageSize' => Yii::$app->params['default_page_size'],
+                                ),
+                                'sort' => $sort,
+                                ]);
         $this->render( 'admin', array(
             'model' => $oModel,
             'filter' => $filter,
@@ -158,7 +167,7 @@ class CompanyController extends CronosController
      */
     public function loadModel( $id )
     {
-        $model = Company::model()->findByPk( (int)$id );
+        $model = Company::findOne((int)$id);
         if( $model === null )
             throw new CHttpException( 404, 'The requested page does not exist.' );
         return $model;

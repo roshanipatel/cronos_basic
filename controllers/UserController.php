@@ -1,4 +1,13 @@
 <?php
+namespace app\controllers;
+
+use Yii;
+use app\components\CronosController;
+use app\models\User;
+use yii\data\Sort;
+use yii\data\ActiveDataProvider;
+use app\models\db\AuthAssignment;
+use app\models\Constants;
 
 class UserController extends CronosController {
 
@@ -8,7 +17,7 @@ class UserController extends CronosController {
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
-    public $layout = '//layouts/top_menu';
+    //public $layout = '/top_menu';
 
     /**
      * @return array action filters
@@ -36,17 +45,26 @@ class UserController extends CronosController {
 
         if (isset($_POST['User'])) {
             $model->attributes = $_POST['User'];
-            $transaction = $model->dbConnection->beginTransaction();
+
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                if ($model->save()) {
-                    // We have the userid. Let's save the role
-                    if (AuthAssignment::saveRoles($model->id, $model->role)) {
-                        $transaction->commit();
-                        Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, 'Usuario ' . $model->username . ' guardado con éxito');
-                        Yii::$app->user->setFlash('oldUser', $model);
-                        $this->refresh();
-                    }
-                }
+             if($model->validate()){
+                // print_r($model->attributes);die;
+              
+                  if ($model->save()) {
+                      // We have the userid. Let's save the role
+                   // if (AuthAssignment::saveRoles($model->id, $model->role)) {
+                      if (1) {
+                          $transaction->commit();
+                          Yii::$app->session->setFlash('success', 'Usuario ' . $model->username . ' guardado con éxito');
+
+                         // Yii::$app->user->setFlash(Constants::FLASH_OK_MESSAGE, 'Usuario ' . $model->username . ' guardado con éxito');
+                          //Yii::$app->user->setFlash('oldUser', $model);
+                          $this->refresh();
+                      }
+                  }
+              }
+                
             } catch (Exception $e) {
                 Yii::log('Error saving User ' . $e, CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
                 $transaction->rollback();
@@ -63,9 +81,10 @@ class UserController extends CronosController {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
-        $model = new User('create');
+        $model = new User();
+        $model->scenario = 'create';
         // Clean default values
-        $model->unsetAttributes();
+       // $model->unsetAttributes();
         $this->createUpdateRefactor($model, 'create');
     }
 
@@ -112,11 +131,10 @@ class UserController extends CronosController {
      * Lists all models.
      */
     public function actionIndex() {
-        $dataProvider = new CActiveDataProvider('User', array(
-                    'criteria' => array(
-                        'with' => array('company'),
-                    ),
-                        ));
+        $query = User::find()->joinWith(['company']);
+        $dataProvider = new ActiveDataProvider(
+                    ['query' =>$query]);
+        
         $this->render('index', array(
             'dataProvider' => $dataProvider,
         ));
@@ -127,18 +145,20 @@ class UserController extends CronosController {
      */
     public function actionAdmin() {
         
-        $filter = new User( 'search' );
-        $filter->unsetAttributes();  // clear any default values
+        $filter = new User();
+        $filter->scenario =  'search' ;
+        //$filter->unsetAttributes();  // clear any default values
         
-        $criteria = new CDbCriteria();
+        /*$criteria = new yii\db\Query();
         if( isset( $_GET['User']['name'] ) )
             $criteria->compare('t.name', $_GET['User']['name'], true);
         if( isset( $_GET['User']['username'] ) )
             $criteria->compare('t.username', $_GET['User']['username'], true);
         if( isset( $_GET['User']['company_name'] ) )
             $criteria->compare('t.company_name', $_GET['User']['company_name'], true);
-        
-        $sort = new CSort();
+        */
+
+        $sort = new Sort();
 		$sort->attributes = array(
 			'name' => array(
 				'asc' => 't.name ASC',
@@ -146,15 +166,30 @@ class UserController extends CronosController {
 			)
 		);
 
-        $oModel = new CActiveDataProvider(
-						'User',
-						array(
-							'criteria' => $criteria,
-							'pagination' => array(
-								'pageSize' => Yii::$app->params->default_page_size,
-							),
-							'sort' => $sort,
-				));
+        $query = User::find()->joinWith(['company']);
+        if( isset( $_GET['User']['name'] ) )
+            $query->andFilterWhere([
+                'or',
+                ['like', 't.name', $_GET['User']['name']],
+            ]);
+        if( isset( $_GET['User']['username'] ) )
+            $query->andFilterWhere([
+                'or',
+                ['like', 't.username', $_GET['User']['username']],
+            ]);
+        if( isset( $_GET['User']['company_name'] ) )
+            $query->andFilterWhere([
+                'or',
+                ['like', 't.company_name', $_GET['User']['company_name']],
+            ]);
+        
+        $oModel = new ActiveDataProvider([
+                                'query' =>$query,
+                                'pagination' => array(
+                                    'pageSize' => Yii::$app->params['default_page_size'],
+                                ),
+                                'sort' => $sort,
+                                ]); 
         $this->render( 'admin', array(
             'model' => $oModel,
             'filter' => $filter,
@@ -167,7 +202,7 @@ class UserController extends CronosController {
      * @param integer the ID of the model to be loaded
      */
     public function loadModel($id) {
-        $model = User::model()->findByPk((int) $id);
+        $model = User::findOne((int) $id);
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
@@ -185,3 +220,4 @@ class UserController extends CronosController {
     }
 
 }
+    

@@ -1,4 +1,7 @@
 <?php
+namespace app\models\form;
+
+use yii\db\ActiveRecord;
 
 /**
  * Model for making Expense Search
@@ -16,7 +19,7 @@
  * @property integer $paymentMethod
  * 
  */
-class ExpenseSearch extends CFormModel {
+class ExpenseSearch extends ActiveRecord {
     // Search fields
 
     const FLD_DATE_INI = 1;
@@ -57,8 +60,8 @@ class ExpenseSearch extends CFormModel {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array(ExpenseSearch::FLD_NAME_DATE_INI, 'type', 'type' => 'datetime', 'datetimeFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
-            array(ExpenseSearch::FLD_NAME_DATE_END, 'type', 'type' => 'datetime', 'datetimeFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
+            array(ExpenseSearch::FLD_NAME_DATE_INI, 'datetime', 'format' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
+            array(ExpenseSearch::FLD_NAME_DATE_END, 'datetime', 'format' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválido'),
             array(ExpenseSearch::FLD_NAME_DATE_INI . "," .
                 ExpenseSearch::FLD_NAME_DATE_END . "," .
                 ExpenseSearch::FLD_NAME_PROJECT_ID . "," .
@@ -147,7 +150,7 @@ class ExpenseSearch extends CFormModel {
 
         // Fields for managers
         if (User::isValidID($this->owner)) {
-            $criteria->addCondition("( t.project_id in (select project_id from project_manager where user_id = '" . $this->owner . "') OR "
+            $criteria->where("( t.project_id in (select project_id from project_manager where user_id = '" . $this->owner . "') OR "
                     . " t.user_id = '" . $this->owner . "') ");
         }
 

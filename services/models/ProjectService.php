@@ -1,6 +1,9 @@
 <?php
 namespace app\services\models;
 
+use Yii;
+use app\services\CronosService;
+
 /**
  * Description of ProjectService
  *
@@ -91,19 +94,19 @@ class ProjectService implements CronosService {
                 
                 $aCostManagers = array();
                 foreach($managers as $worker) {
-                    $oCurrentUser = User::model()->findByAttributes( array( "id" => $worker ) );
+                    $oCurrentUser = User::find()->where( array( "id" => $worker ) )->all();
                     $aCostManagers[$worker] = $oCurrentUser->hourcost;
                 }
                 
                 $aCostWorkers = array();
                 foreach($workers as $worker) {
-                    $oCurrentUser = User::model()->findByAttributes( array( "id" => $worker ) );
+                    $oCurrentUser = User::find()->where( array( "id" => $worker ) )->all();
                     $aCostWorkers[$worker] = $oCurrentUser->hourcost;
                 }
                 
                 $aCostCommercials = array();
                 foreach($commercials as $worker) {
-                    $oCurrentUser = User::model()->findByAttributes( array( "id" => $worker ) );
+                    $oCurrentUser = User::find()->where( array( "id" => $worker ) )->all();
                     $aCostCommercials[$worker] = $oCurrentUser->hourcost;
                 }
 
@@ -142,7 +145,7 @@ class ProjectService implements CronosService {
      * @return boolean
      */
     public function createProject(Project $model, array $newData) {
-        $model->unsetAttributes();
+        //$model->unsetAttributes();
         // Default attributes
         // TODO : implement variable time behaviour
         $model->fixed_time = 0;
@@ -168,14 +171,14 @@ class ProjectService implements CronosService {
      * @return boolean
      */
     public function isManagerOfProject($userId, $projectId) {
-        return ( ProjectManager::model()->findByPk(array(
+        return ( ProjectManager::findOne(array(
                     'user_id' => $userId,
                     'project_id' => $projectId,
                 )) != null );
     }
     
     public function isWorkerOfProject($userId, $projectId) {
-        return ( ProjectWorker::model()->findByPk(array(
+        return ( ProjectWorker::findOne(array(
                     'user_id' => $userId,
                     'project_id' => $projectId,
                 )) != null );
@@ -188,7 +191,7 @@ class ProjectService implements CronosService {
      * @return boolean
      */
     public function isCustomerOfProject($customerId, $projectId) {
-        return ( ProjectCustomer::model()->findByPk(array(
+        return ( ProjectCustomer::findOne(array(
                     'user_id' => $customerId,
                     'project_id' => $projectId,
                 )) != null );
@@ -201,7 +204,7 @@ class ProjectService implements CronosService {
      * @return type
      */
     public function isCommercialOfProject($commercial, $projectId) {
-        return ( ProjectCommercial::model()->findByPk(array(
+        return ( ProjectCommercial::findOne(array(
                     'user_id' => $commercial,
                     'project_id' => $projectId,
                 )) != null );
@@ -220,7 +223,7 @@ class ProjectService implements CronosService {
                     'params' => array('cust_id' => $cust_id),
                     'order' => 't.name asc',
                 ));
-        return Project::model()->findAll($criteria);
+        return Project::findAll($criteria);
     }
     
     /**
@@ -235,7 +238,7 @@ class ProjectService implements CronosService {
                     'params' => array('cust_id' => $cust_id),
                     'order' => 't.name asc',
                 ));
-        return Project::model()->findAll($criteria);
+        return Project::findAll($criteria);
     }
 
     /**
@@ -265,7 +268,7 @@ class ProjectService implements CronosService {
                     'params' => array('customerName' => $customerName),
                     'order' => 't.name',
                 ));
-        return Project::model()->findAll($criteria);
+        return Project::findAll($criteria);
     }
 
     /**
@@ -288,13 +291,13 @@ class ProjectService implements CronosService {
             return array();
         }
         if ($projectCriteria === null) {
-            $criteria = new CDbCriteria();
+            $criteria = new yii\db\Query();
         } else {
             $criteria = $projectCriteria;
         }
 
         if (!empty($customerId)) {
-            $criteria->addCondition('t.company_id=:companyId');
+            $criteria->where('t.company_id=:companyId');
             $criteria->params['companyId'] = $customerId;
         }
 
@@ -302,7 +305,7 @@ class ProjectService implements CronosService {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartFilter, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndFilter, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (t.open_time <= :start_open AND t.close_time IS NULL) OR                            
                             (t.open_time <= :end_open AND t.close_time IS NULL) OR   
                             (t.open_time <= :start_open AND t.close_time >= :start_open) OR 
@@ -313,14 +316,14 @@ class ProjectService implements CronosService {
             $criteria->params[':end_open'] = PhpUtils::convertStringToDBDateTime($sEndFilter);
         } else if (!empty($sStartFilter)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartFilter, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open >= t.open_time AND :start_open <= t.close_time) OR 
                             (:start_open >= t.open_time AND t.close_time IS NULL) OR                            
                             (:start_open <= t.open_time)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
         } else if (!empty($sEndFilter)) {
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndFilter, "23:59");
-            $criteria->addCondition("
+            $criteria->where("
                             (t.open_time <= :end_open AND :end_open >= t.close_time) OR 
                             (t.open_time <= :end_open AND :end_open <= t.close_time) OR                            
                             (t.open_time <= :end_open AND t.close_time IS NULL)");
@@ -331,20 +334,20 @@ class ProjectService implements CronosService {
         // Project manager
         if ($onlyManagedByUser) {
             $criteria->join = 'INNER JOIN ' . ProjectManager::model()->tableName() . ' managers ON managers.project_id = t.id';
-            $criteria->addCondition('managers.user_id=:user_id');
+            $criteria->where('managers.user_id=:user_id');
             $criteria->params['user_id'] = $user->id;
         }
         
         //Only when the user is involved
         if ($onlyUserEnvolved && !Yii::$app->user->isAdmin()) {
-            $criteria->addCondition('
+            $criteria->where('
                 (exists (select * from ' . ProjectManager::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.') OR 
                 exists (select * from ' . ProjectWorker::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.') OR
                 exists (select * from ' . ProjectCommercial::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.'))');
         }
         
         $criteria->order = 't.name asc';
-        return Project::model()->findAll($criteria);
+        return Project::findAll($criteria);
     }
 
     /**
@@ -362,13 +365,13 @@ class ProjectService implements CronosService {
      * @return array List of Projects (models) which manager has access to AND ARE OPEN
      */
     public function findProjectsByProjectManager($userId, $onlyOpen = TRUE) {
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria->order = 't.name asc';
         $this->addCriteriaForProjectManagers($criteria, $userId);
         if ($onlyOpen) {
             $criteria->scopes = 'open';
         }
-        return Project::model()->findAll($criteria);
+        return Project::findAll($criteria);
     }
     
     public function addCriteriaForWorker(CDbCriteria $criteria, $userId) {
@@ -377,13 +380,13 @@ class ProjectService implements CronosService {
     }
     
     public function findProjectsByWorker($userId, $onlyOpen = TRUE) {
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria->order = 't.name asc';
         $this->addCriteriaForWorker($criteria, $userId);
         if ($onlyOpen) {
             $criteria->scopes = 'open';
         }
-        return Project::model()->findAll($criteria);
+        return Project::findAll($criteria);
     }
     
     
@@ -397,13 +400,13 @@ class ProjectService implements CronosService {
      * @return array List of Projects (models) which manager has access to AND ARE OPEN
      */
     public function findProjectsByCommercial($userId, $onlyOpen = TRUE) {
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria->order = 't.name asc';
         $this->addCriteriaForCommercial($criteria, $userId);
         if ($onlyOpen) {
             $criteria->scopes = 'open';
         }
-        return Project::model()->findAll($criteria);
+        return Project::findAll($criteria);
     }
     
     /**
@@ -411,7 +414,7 @@ class ProjectService implements CronosService {
      * @param int $project
      */
     public function sendProjectStatusReport($project, $bForce = false) {
-        $oProject = Project::model()->findByPk($project);
+        $oProject = Project::findOne($project);
         
         $aRoleToBeIncluded = array();
         foreach($oProject->reportingtarget as $oRole) {
@@ -500,17 +503,17 @@ class ProjectService implements CronosService {
     public function findProjectsForCustomerAndManagerForDropdown($projectId, CronosUser $sessionUser, $bAllStatus = false) {
         assert(is_numeric($projectId));
         // Load project to get it's company
-        $project = Project::model()->findByPk($projectId);
+        $project = Project::findOne($projectId);
         if (empty($project)) {
             Yii::log("Project $projectId not found", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
             return array();
         }
         // Build search criteria depending on the user
         $criteria = new CDbCriteria;
-        $criteria->addCondition('company_id = :companyId');
+        $criteria->where('company_id = :companyId');
         $criteria->params['companyId'] = $project->company_id;
         if (!$bAllStatus) {
-            $criteria->addCondition('statuscommercial = :status');
+            $criteria->where('statuscommercial = :status');
             $criteria->params['status'] = ProjectStatus::PS_OPEN;
         }
         
@@ -520,22 +523,22 @@ class ProjectService implements CronosService {
 //        } else if ($sessionUser->hasProjectManagerPrivileges()) {
 //            $criteria->join = 'INNER JOIN ' . ProjectManager::model()->tableName()
 //                    . ' managers ON managers.project_id = t.id';
-//            $criteria->addCondition('managers.user_id = :user_id');
+//            $criteria->where('managers.user_id = :user_id');
 //            $criteria->params['user_id'] = $sessionUser->id;
 //        } else if ($sessionUser->hasCommercialPrivileges()) {
 //            $criteria->join = 'INNER JOIN ' . ProjectCommercial::model()->tableName()
 //                    . ' managers ON managers.project_id = t.id';
-//            $criteria->addCondition('managers.user_id = :user_id');
+//            $criteria->where('managers.user_id = :user_id');
 //            $criteria->params['user_id'] = $sessionUser->id;
 //        } else {
 //            $criteria->join = 'INNER JOIN ' . ProjectWorker::model()->tableName()
 //                    . ' managers ON managers.project_id = t.id';
-//            $criteria->addCondition('managers.user_id = :user_id');
+//            $criteria->where('managers.user_id = :user_id');
 //            $criteria->params['user_id'] = $sessionUser->id;
 //        }
         
         $criteria->order = 't.name asc';
-        $models = Project::model()->findAll($criteria);
+        $models = Project::findAll($criteria);
         $result = array();
         foreach ($models as $project)
             $result[$project->id] = $project->name;
@@ -559,7 +562,7 @@ class ProjectService implements CronosService {
                     'order' => 't.name',
                 ));
 
-        return User::model()->findAll($criteria);
+        return User::findAll($criteria);
     }
     
     public function findProjectManagersByProject($project_id) {
@@ -572,7 +575,7 @@ class ProjectService implements CronosService {
                     'order' => 't.name',
                 ));
 
-        return User::model()->findAll($criteria);
+        return User::findAll($criteria);
     }
 
     /**
@@ -590,7 +593,7 @@ class ProjectService implements CronosService {
                     'order' => 't.name',
                 ));
 
-        return User::model()->findAll($criteria);
+        return User::findAll($criteria);
     }
     
     public function getMailWorkersProject($projectId) {
@@ -645,7 +648,7 @@ class ProjectService implements CronosService {
                     'order' => 't.name',
                 ));
 
-        return User::model()->findAll($criteria);
+        return User::findAll($criteria);
     }
 
     /**
@@ -662,45 +665,57 @@ class ProjectService implements CronosService {
                     'order' => 't.name',
                 ));
 
-        return User::model()->findAll($criteria);
+        return User::findAll($criteria);
     }
 
     /**
      * @param Project $model
      * @return CDbCriteria
      */
-    public function getCriteriaFromModel(Project $model) {
+    public function getCriteriaFromModel($model) {
 
-        $criteria = new CDbCriteria();
+        $criteria = new Yii\db\Query();
 //        $isManager = (!Yii::$app->user->hasDirectorPrivileges()) && (!Yii::$app->user->hasCommercialPrivileges());
 //
 //        if (!$isManager) {
 //            $criteria->with[] = 'managers';
 //        }
-        $criteria->compare('t.id', $model->id);
+        $criteria->andFilterWhere([
+            'or',
+            ['like', 't.id', $model->id],
+        ]);
         if (isset($model->company_id)) {
-            $criteria->compare('t.company_id', $model->company_id);
+            $criteria->andFilterWhere([
+                'or',
+                ['like', 't.company_id', $model->company_id],
+            ]);
         }
         if ((!isset($model->company_id)) && isset($model->company_name)) {
-            $criteria->addSearchCondition('company.name', $model->company_name);
+            $criteria->andFilterWhere([
+                'or',
+                ['like', 'company.name', $model->company_name],
+            ]);
+          //  $criteria->addSearchCondition('company.name', $model->company_name);
         }
-        $criteria->compare('t.code', $model->code, true);
-        $criteria->compare('t.name', $model->name, true);
-        $criteria->compare('t.status', $model->status, false);
+        $criteria->andFilterWhere([
+            'or',
+            ['like', 't.code', $model->code],
+            ['like', 't.name', $model->name],
+            ['like', 't.status', $model->status],
+            ['like','t.statuscommercial', $model->statuscommercial],
+            ['like','t.cat_type', $model->cat_type],
+            ['like','managers.id', $model->manager_id],
+        ]);
         if ($model->reporting == "0") {
-            $criteria->addCondition("t.reporting <> 'NONE'");
+            $criteria->where("t.reporting <> 'NONE'");
         } else if ($model->reporting == "1") {
-            $criteria->addCondition("t.reporting = 'NONE'");
+            $criteria->where("t.reporting = 'NONE'");
         }
-        
-        $criteria->compare('t.statuscommercial', $model->statuscommercial, false);
-        $criteria->compare('t.cat_type', $model->cat_type, false);
-        //$criteria->compare('managers.id', $model->manager_id);
         if (!empty($model->open_time) && !empty($model->close_time)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($model->open_time, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($model->close_time, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (t.open_time <= :start_open AND t.close_time IS NULL) OR                            
                             (t.open_time <= :end_open AND t.close_time IS NULL) OR   
                             (t.open_time <= :start_open AND t.close_time >= :start_open) OR 
@@ -712,7 +727,7 @@ class ProjectService implements CronosService {
         } else
         if (!empty($model->open_time)) {
             $model->open_time = PHPUtils::addHourToDateIfNotPresent($model->open_time, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open >= t.open_time AND :start_open <= t.close_time) OR 
                             (:start_open >= t.open_time AND t.close_time IS NULL) OR                            
                             (:start_open <= t.open_time)");
@@ -720,10 +735,10 @@ class ProjectService implements CronosService {
         } else
         if (!empty($model->close_time)) {
             $model->close_time = PHPUtils::addHourToDateIfNotPresent($model->close_time, "23:59");
-            $criteria->compare('t.close_time', '<=' . PhpUtils::convertStringToDBDateTime($model->close_time));
+            $criteria->where('t.close_time', '<=' . PhpUtils::convertStringToDBDateTime($model->close_time));
         }
         if (!empty($model->manager_id)) {
-            $criteria->addCondition("
+            $criteria->where("
                             exists (select * from " . ProjectManager::model()->tableName() . " managers where managers.project_id = t.id and managers.user_id = :id_manager )");
             $criteria->params[':id_manager'] = $model->manager_id;
             
@@ -756,7 +771,7 @@ class ProjectService implements CronosService {
                     ( select description from project_category where name = t.cat_type ) as category_name ";
         Yii::import('ext.csv.CSVExport');
         $criteria->order = "t.name asc";
-        $data = Project::model()->findAll($criteria);
+        $data = Project::findAll($criteria);
         $csv = new CSVExport($data);
         $csv->includeColumnHeaders = true;
         $csv->headers = array(
@@ -824,7 +839,7 @@ class ProjectService implements CronosService {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= upt.date_ini AND :start_open <= upt.date_end) and   
                             (:end_open >= upt.date_ini AND :end_open >= upt.date_end)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
@@ -832,7 +847,7 @@ class ProjectService implements CronosService {
         } else
         if (!empty($sStartDate)) {
             $sStartDate = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= upt.date_ini AND :start_open <= upt.date_end)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
         } else
@@ -841,7 +856,7 @@ class ProjectService implements CronosService {
             $criteria->compare('upt.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
         }
         
-        return Project::model()->findAll($criteria);
+        return Project::findAll($criteria);
     }
 }
 

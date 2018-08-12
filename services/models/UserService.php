@@ -4,7 +4,8 @@ namespace app\services\models;
 use app\models\enums\Roles;
 use app\models\db\User;
 use app\models\db\AuthAssignment;
-
+use app\models\db\UserProjectTask;
+use app\models\db\Project;
 /**
  * Description of AlertService
  *
@@ -38,8 +39,8 @@ class UserService {
      */
     public function getWorkers($orderBy = 'name', $sStartFilter = "", $sEndFilter = "", $bOnlyManagers = false) {
         
-        $criteria = new CDbCriteria();
-        $criteria->addCondition('t.company_id=:companyId');
+        $criteria = new yii\db\Query();
+        $criteria->where('t.company_id=:companyId');
         $criteria->params['companyId'] = Company::OPEN3S_ID;
         $criteria->order = "username asc";
         
@@ -55,12 +56,12 @@ class UserService {
             
             //Retrieve its role and down to them.
             if ($sSqlFilter != "") {
-                $criteria->addCondition(' t.id IN ( SELECT userid FROM ' . AuthAssignment::model()->tableName() . " WHERE itemname in (".$sSqlFilter.") ) or t.id = '".Yii::$app->user->id."'");
+                $criteria->where(' t.id IN ( SELECT userid FROM ' . AuthAssignment::tableName() . " WHERE itemname in (".$sSqlFilter.") ) or t.id = '".Yii::$app->user->id."'");
             } else {
-                $criteria->addCondition(" t.id = '".Yii::$app->user->id."'");
+                $criteria->where(" t.id = '".Yii::$app->user->id."'");
             }
         } else {
-                $criteria->addCondition(' t.id IN ( SELECT userid FROM ' . AuthAssignment::model()->tableName() . 
+                $criteria->where(' t.id IN ( SELECT userid FROM ' . AuthAssignment::tableName() . 
                     " WHERE itemname in ('".Roles::UT_DIRECTOR_OP."', '".
                                             Roles::UT_PROJECT_MANAGER."', '".
                                             Roles::UT_COMERCIAL."', '".
@@ -71,7 +72,7 @@ class UserService {
         if (!empty($sStartFilter) && !empty($sEndFilter)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartFilter, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndFilter, "23:59");
-            $criteria->addCondition("
+            $criteria->where("
                             (t.startcontract <= :start_open AND t.endcontract IS NULL) OR                            
                             (t.startcontract <= :end_open AND t.endcontract IS NULL) OR   
                             (t.startcontract <= :start_open AND t.endcontract >= :start_open) OR 
@@ -82,20 +83,20 @@ class UserService {
             $criteria->params[':end_open'] = PhpUtils::convertStringToDBDateTime($sEndFilter);
         } else if (!empty($sStartFilter)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartFilter, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= t.endcontract) OR 
                             (t.startcontract <= :start_open AND t.endcontract IS NULL) OR
                             (t.startcontract >= :start_open AND t.endcontract IS NULL)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
         } else if (!empty($sEndFilter)) {
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndFilter, "23:59");
-            $criteria->addCondition("
+            $criteria->where("
                             (t.startcontract <= :end_open) OR
                             (t.endcontract <= :end_open)");
             $criteria->params[':end_open'] = PhpUtils::convertStringToDBDateTime($sEndFilter);
             
         }
-        return User::model()->findAll($criteria);
+        return User::findAll($criteria);
     }
     
     
@@ -104,49 +105,48 @@ class UserService {
      * @return CActiveRecord
      */
     public function findWorkersWithProjectInTime($sStartDate, $sEndDate, $onlyBillable = false, $iCustomer = "", $sProjectName = "") {
+        $query =  (new \yii\db\Query());
+        $query->join = ' INNER JOIN ' . UserProjectTask::tableName() . ' upt ON upt.user_id = t.id 
+                                INNER JOIN ' . Project::tableName() . ' proj ON upt.project_id = proj.id ';
+        $query->select = 't.id, t.name, 
+                                -sum(round((unix_timestamp(upt.date_ini) - unix_timestamp(upt.date_end))/3600,2)) as totalhours';
+        $query->groupBy = 't.id,t.name' ;
+        $query->orderBy = 'totalhours desc';                                           
         
-        $criteria = new CDbCriteria(array(
-                    'join' => ' INNER JOIN ' . UserProjectTask::model()->tableName() . ' upt ON upt.user_id = t.id 
-                                INNER JOIN ' . Project::model()->tableName() . ' proj ON upt.project_id = proj.id ',
-                    'order' => 'totalhours desc',
-                    'select' => 't.id, t.name, 
-                                -sum(round((unix_timestamp(upt.date_ini) - unix_timestamp(upt.date_end))/3600,2)) as totalhours',
-                    'group' => 't.id,t.name'
-                ));
 
         if ($onlyBillable) {
-            $criteria->addCondition("upt.is_billable = 1");
+            $query->where("upt.is_billable = 1");
         }
         if ($iCustomer != "") {
-            $criteria->addCondition("proj.company_id = ".$iCustomer);
+            $query->where("proj.company_id = ".$iCustomer);
         }
         if ($sProjectName != "") {
-            $criteria->addCondition("proj.name like '%".$sProjectName."%'");
+            $query->where("proj.name like '%".$sProjectName."%'");
         }
         
         if (!empty($sStartDate) && !empty($sEndDate)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
             
-            $criteria->addCondition("
+            $query->where("
                             (:start_open <= upt.date_ini AND :start_open <= upt.date_end) and   
                             (:end_open >= upt.date_ini AND :end_open >= upt.date_end)");
             
-            $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
-            $criteria->params[':end_open'] = PhpUtils::convertStringToDBDateTime($sEndFilter);
+            $query->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
+            $query->params[':end_open'] = PhpUtils::convertStringToDBDateTime($sEndFilter);
         } else
         if (!empty($sStartDate)) {
             $sStartDate = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
-            $criteria->addCondition("
+            $query->where("
                             (:start_open <= upt.date_ini AND :start_open <= upt.date_end)");
-            $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
+            $query->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
         } else
         if (!empty($sEndDate)) {
             $sEndDate = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
-            $criteria->compare('upt.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
+            $query->compare('upt.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
         }
         
-        return User::model()->findAll($criteria);
+        return User::findAll($query);
     }
 
     /**
@@ -182,13 +182,13 @@ class UserService {
     public function findWorkersByManager($bCurrent = false, $iPerson = "") {
         
         $sWhere = " (( exists ( SELECT pm.* FROM " .Project::TABLE_PROJECT_MANAGER. " pm WHERE pm.user_id = ".$iPerson."  and exists (select pw.* from " .Project::TABLE_PROJECT_WORKER. " pw WHERE id = pw.user_id and pm.project_id = pw.project_id)) 
-            and id IN ( SELECT userid FROM " . AuthAssignment::model()->tableName(). " WHERE   itemname = '".Roles::UT_WORKER."')) OR id = ".$iPerson." ) ";
+            and id IN ( SELECT userid FROM " . AuthAssignment::tableName(). " WHERE   itemname = '".Roles::UT_WORKER."')) OR id = ".$iPerson." ) ";
         
         if ($bCurrent) {
             $sWhere .= " and endcontract is null ";            
         }
         
-        return User::model()->findAll(array(
+        return User::findAll(array(
                     'condition' => $sWhere
                     ));
     }
@@ -231,8 +231,8 @@ class UserService {
     }
 
     public function findProjectCustomersByCompany($companyId) {
-        return User::model()->findAllByAttributes(
-                        array("company_id" => $companyId), 'id IN ( SELECT userid FROM ' . AuthAssignment::model()->tableName()
+        return User::findAll(
+                        array("company_id" => $companyId), 'id IN ( SELECT userid FROM ' . AuthAssignment::tableName()
                         . ' WHERE itemname = :role )', array('role' => Roles::UT_CUSTOMER));
     }
 

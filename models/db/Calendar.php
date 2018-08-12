@@ -3,6 +3,9 @@ namespace app\models\db;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\data\ActiveDataProvider;
+use app\models\db\Calendar;
+
 /**
  * This is the model class for table "calendar".
  *
@@ -42,7 +45,7 @@ class Calendar extends ActiveRecord
     /**
      * @return string the associated database table name
      */
-    public function tableName()
+    public static function tableName()
     {
         return Calendar::TABLE_NAME;
     }
@@ -85,29 +88,35 @@ class Calendar extends ActiveRecord
      * Make sure the admin company doesn't get deleted
      * @return <type>
      */
-    protected function beforeDelete()
+    public function beforeDelete()
     {
         return parent::beforeDelete();
     }
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search()
     {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
-
-        $criteria = new CDbCriteria( array(
+        $criteria =  Calendar::find();
+       /* $criteria = new CDbCriteria( array(
                     'order' => 't.day asc',
-                        ) );
+                        ) );*/
 
-        $criteria->compare( 'day', $this->day, true );
-        $criteria->compare( 'city', $this->city, true );
-
-        return new CActiveDataProvider( get_class( $this ), array(
-            'criteria' => $criteria,
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'city', $this->city],
+            ]);
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'day', $this->day],
+            ]);
+        $criteria->orderBy = 't.day asc';
+        return new ActiveDataProvider( array(
+            'query' => $criteria,
                 ) );
     }
 

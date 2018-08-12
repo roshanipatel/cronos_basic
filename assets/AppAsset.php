@@ -23,13 +23,14 @@ class AppAsset extends AssetBundle
         'css/jquery-ui-1.8.8.custom.css',
         'css/bootstrap.min.css',
         'css/metisMenu.min.css',
+        'css/dataTables.bootstrap.css',
+        'css/dataTables.responsive.css',
         'css/sb-admin-2.css',
         'css/font-awesome.min.css',
        // 'css/morris.css',
         'css/site.css',
     ];
     public $js = [
-        'js/bootstrap.min.js',
       //  'js/jquery-ui.min.js',
         'js/metisMenu.min.js',
         'js/sb-admin-2.js',
@@ -39,8 +40,5 @@ class AppAsset extends AssetBundle
        
        
     ];
-    public $depends = [
-        'yii\bootstrap\BootstrapAsset',
-        'yii\web\YiiAsset',
-    ];
+    public $depends = [];
 }

@@ -48,4 +48,13 @@ return array (
       '@yii/faker' => $vendorDir . '/yiisoft/yii2-faker/src',
     ),
   ),
+  'fedemotta/yii2-widget-datatables' => 
+  array (
+    'name' => 'fedemotta/yii2-widget-datatables',
+    'version' => '9999999-dev',
+    'alias' => 
+    array (
+      '@fedemotta/datatables' => $vendorDir . '/fedemotta/yii2-widget-datatables',
+    ),
+  ),
 );

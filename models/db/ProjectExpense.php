@@ -3,6 +3,11 @@ namespace app\models\db;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\data\Sort;
+use yii\data\ActiveDataProvider;
+use app\models\enums\ExpenseType;
+use app\models\enums\ExpensePaymentMethod;
+
 /**
  * This is the model class for table "user_project_cost".
  *
@@ -48,7 +53,7 @@ class ProjectExpense extends ActiveRecord {
     /**
      * @return string the associated database table name
      */
-    public function tableName() {
+    public static function tableName() {
         return ProjectExpense::TABLE_USER_PROJECT_COST;
     }
     
@@ -67,17 +72,17 @@ class ProjectExpense extends ActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('user_id, project_id', 'required'),
-            array('user_id, project_id', 'numerical', 'integerOnly' => true),
-            array('user_id', 'exist', 'className' => 'User', 'attributeName' => 'id'),
-            array('project_id', 'exist', 'className' => 'Project', 'attributeName' => 'id'),
-            array('companyName', 'exist', 'className' => 'Company', 'attributeName' => 'name'),
-            array('companyId', 'exist', 'className' => 'Company', 'attributeName' => 'id'),
-            array('importe', 'numerical', 'min'=>0, 'max'=>100000),
+            array(['user_id', 'project_id'], 'required'),
+            array(['user_id', 'project_id'], 'integer'),
+            array('user_id', 'exist', 'targetClass' => 'User', 'targetAttribute' => 'id'),
+            array('project_id', 'exist', 'targetClass' => 'Project', 'targetAttribute' => 'id'),
+            array('companyName', 'exist', 'targetClass' => 'Company', 'targetAttribute' => 'name'),
+            array('companyId', 'exist', 'targetClass' => 'Company', 'targetAttribute' => 'id'),
+            array('importe', 'integer', 'min'=>0, 'max'=>100000),
             array('costtype', 'in', 'range' => ExpenseType::getValidValues()),
             array('paymentMethod', 'in', 'range' => ExpensePaymentMethod::getValidValues()),
-            array('date_ini', 'type', 'type' => 'datetime', 'datetimeFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválida'),
-            array('status, origen, destino, motivo, comentario, company, transporttype', 'length', 'max' => 1024)
+            array('date_ini', 'datetime', 'format' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha inválida'),
+            array(['status', 'origen', 'destino', 'motivo', 'comentario', 'company', 'transporttype'], 'string', 'max' => 1024)
         );
     }
     
@@ -119,13 +124,13 @@ class ProjectExpense extends ActiveRecord {
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search() {
         $criteria = ServiceFactory::createProjectExpenseService()->getCriteriaFromModel($this);
         $criteria->order = "";
         $criteria->select = "*";
-        return new CActiveDataProvider(get_class($this), array(
+        return new ActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                     'pagination' => array(
                         'pageSize' => Yii::$app->params->default_page_size,
@@ -135,7 +140,7 @@ class ProjectExpense extends ActiveRecord {
     }
     
     private function getSort() {
-        $sort = new CSort();
+        $sort = new Sort();
         $sort->attributes = array(
             'date_ini' => array(
                 'asc' => 't.date_ini ASC',

@@ -3,6 +3,8 @@ namespace app\models\db;
 
 use Yii;
 use app\components\ActiveRelationalRecord;
+use yii\data\ActiveDataProvider;
+
 /**
  * This is the model class for table "project_manager".
  *
@@ -17,7 +19,7 @@ class ProjectManager extends ActiveRelationalRecord {
     /**
      * @return string the associated database table name
      */
-    public function tableName() {
+    public static function tableName() {
         return 'project_manager';
     }
 
@@ -28,11 +30,11 @@ class ProjectManager extends ActiveRelationalRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('user_id, project_id', 'required'),
-            array('user_id, project_id', 'numerical', 'integerOnly' => true),
+            array(['user_id', 'project_id'], 'required'),
+            array(['user_id', 'project_id'], 'integer'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('user_id, project_id', 'safe', 'on' => 'search'),
+            array(['user_id', 'project_id'], 'safe', 'on' => 'search'),
         );
     }
 
@@ -59,7 +61,7 @@ class ProjectManager extends ActiveRelationalRecord {
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search() {
         // Warning: Please modify the following code to remove attributes that
@@ -69,7 +71,7 @@ class ProjectManager extends ActiveRelationalRecord {
         $criteria->compare('user_id', $this->user_id);
         $criteria->compare('project_id', $this->project_id);
 
-        return new CActiveDataProvider(get_class($this), array(
+        return new ActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                 ));
     }

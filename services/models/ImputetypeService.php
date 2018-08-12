@@ -1,6 +1,6 @@
 <?php
 namespace app\services\models;
-
+use app\models\db\Imputetype;
 /**
  * Description of AlertService
  *
@@ -18,15 +18,15 @@ class ImputetypeService {
      * @return type
      */
     private function findImputetypesFilter($iProject = "") {
-        $criteria = new CDbCriteria();
+        $criteria = new \yii\db\Query();
         if ($iProject != "") {
-            $criteria->addCondition(" exists (select * from " . Project::model()->tableName() . " proj,"
-                    . " " . ProjectImputetype::model()->tableName() . " projimpute "
+            $criteria->where(" exists (select * from " . Project::tableName() . " proj,"
+                    . " " . ProjectImputetype::tableName() . " projimpute "
                     . " where :projectId = proj.id and projimpute.project_id = proj.id and t.id = projimpute.imputetype_id ) ");
             
             $criteria->params['projectId'] = $iProject;
         }
-        return Imputetype::model()->findAll($criteria);
+        return Imputetype::find($criteria)->all();
     }
     
     public function findImputetypes($iProject = "") {
@@ -41,7 +41,7 @@ class ImputetypeService {
         }
         
         if ($imputetype_id != "") {
-            $oImputeType = Imputetype::model()->findByPk($imputetype_id);
+            $oImputeType = Imputetype::findOne($imputetype_id);
             if (!isset($result[$imputetype_id])) {
                 $result[$imputetype_id] = $oImputeType->name;
             }

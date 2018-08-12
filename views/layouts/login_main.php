@@ -23,6 +23,12 @@ AppAsset::register($this);
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+    <?php
+    $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/jquery.min.js',['position' => \yii\web\View::POS_BEGIN]);
+    $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/bootstrap.min.js',['position' => \yii\web\View::POS_END]);
+    
+//$this->registerJsFile( Yii::$app->request->BaseUrl .'/js/jquery-ui-1.8.8.custom.js',['position' => \yii\web\View::POS_BEGIN]);
+?>
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -79,4 +85,4 @@ AppAsset::register($this);
 <?php $this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage(); die; ?>
+<?php $this->endPage(); ?>

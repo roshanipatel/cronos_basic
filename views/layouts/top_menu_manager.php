@@ -1,24 +1,24 @@
 <?php use yii\helpers\Html; ?>
-<li><?php echo Html::a( 'Tareas<span class="fa arrow"></span>', array( 'userProjectTask/calendar' ) ) ?>
+<li><a href="javascript:void(0);">Tareas<span class="fa arrow"></span></a>
 	<ul class="nav nav-second-level">
-		<li><?php echo Html::a( 'Calendario', array( 'userProjectTask/calendar' ) ) ?></li>
-		<li><?php echo Html::a( 'Consultar mis horas', array( 'userProjectTask/searchTasksWorker' ) ) ?></li>
-                <li><?php echo Html::a( 'Calendario laboral', array( 'userProjectTask/calendarUpload' ) ) ?></li>
+		<li><?php echo Html::a( 'Calendario', array( 'user-project-task/calendar' ) ) ?></li>
+		<li><?php echo Html::a( 'Consultar mis horas', array( 'user-project-task/search-tasks-worker' ) ) ?></li>
+                <li><?php echo Html::a( 'Calendario laboral', array( 'user-project-task/calendar-upload' ) ) ?></li>
 	</ul>
 </li>
-<li><?php echo Html::a( 'Gestión<span class="fa arrow"></span>', array( 'userProjectTask/approveTasks' ) ) ?>
+<li><a href="javascript:void(0);">Gestión<span class="fa arrow"></span></a>
 	<ul class="nav nav-second-level">
-		<li><?php echo Html::a( 'Aprobar Horas', array( 'userProjectTask/approveTasks' ) ) ?></li>
-                <li><?php echo Html::a( 'Modificación Horas', array( 'userProjectTask/updateTasks' ) ) ?></li>
-		<li><?php echo Html::a( 'Consultar horas', array( 'userProjectTask/searchTasksManager' ) ) ?></li>
-		<li><?php echo Html::a( 'Consultar proyectos', array( 'project/projectOverview' ) ) ?></li>                
+		<li><?php echo Html::a( 'Aprobar Horas', array( 'user-project-task/approve-tasks' ) ) ?></li>
+                <li><?php echo Html::a( 'Modificación Horas', array( 'user-project-task/update-tasks' ) ) ?></li>
+		<li><?php echo Html::a( 'Consultar horas', array( 'user-project-task/search-tasks-manager' ) ) ?></li>
+		<li><?php echo Html::a( 'Consultar proyectos', array( 'project/project-overview' ) ) ?></li>                
 	</ul>
 </li>
-<li><?php echo Html::a( 'Gastos<span class="fa arrow"></span>', array( 'projectExpense/expenses' ) ) ?>
+<li><a href="javascript:void(0);">Gastos<span class="fa arrow"></span></a>
 	<ul class="nav nav-second-level">
-		<li><?php echo Html::a( 'Imputar', array( 'projectExpense/create' ) ) ?></li>
-                <li><?php echo Html::a( 'Consultar', array( 'projectExpense/expenses' ) ) ?></li>
-		<li><?php echo Html::a( 'Aprobar', array( 'projectExpense/approveExpenses' ) ) ?></li>
+		<li><?php echo Html::a( 'Imputar', array( 'project-expense/create' ) ) ?></li>
+                <li><?php echo Html::a( 'Consultar', array( 'project-expense/expenses' ) ) ?></li>
+		<li><?php echo Html::a( 'Aprobar', array( 'project-expense/approve-expenses' ) ) ?></li>
 	</ul>
 </li>
 

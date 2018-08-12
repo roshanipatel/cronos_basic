@@ -3,6 +3,8 @@ namespace app\models\db;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\data\ActiveDataProvider;
+
 
 use app\models\enums\Roles;
 /**
@@ -152,26 +154,26 @@ class User extends ActiveRecord {
             array('username, hourcost, email, name, company_id, role, worker_dflt_profile, startcontract, weeklyhours', 'required'),
             array('username', 'unique'),
             array('email', 'email'),
-            array('company_id', 'numerical', 'integerOnly' => true),
+            array('company_id', 'integer'),
             array('company_id', 'exist', 'className' => 'Company', 'attributeName' => 'id'),
-            array('imputacionanterior', 'numerical', 'max' => 90, 'min' => 1),
-            array('weeklyhours', 'numerical', 'max' => 40, 'min' => 0),
-            array('username, password, email', 'length', 'max' => 128),
-            array('name', 'length', 'max' => 256),
-            array('startcontract', 'type', 'type' => 'date', 'dateFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha invÃ¡lido'),
-            array('endcontract', 'type', 'type' => 'date', 'dateFormat' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha invÃ¡lido'),
+            array('imputacionanterior', 'integer', 'max' => 90, 'min' => 1),
+            array('weeklyhours', 'integer', 'max' => 40, 'min' => 0),
+            array('username, password, email', 'string', 'max' => 128),
+            array('name', 'string', 'max' => 256),
+            array('startcontract', 'date', 'format' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha invÃ¡lido'),
+            array('endcontract', 'date', 'format' => self::DATE_FORMAT_ON_CHECK, 'message' => 'Formato de fecha invÃ¡lido'),
             // Enum
             array('role', 'in', 'range' => User::getPriorityUserIds(Yii::$app->user->role)),
             array('worker_dflt_profile', 'in', 'range' => WorkerProfiles::getValidValues()),
             // Stuff for new/changing password
             array('newPassword, newPasswordRepeat', 'required', 'on' => 'create'),
-            array('newPassword', 'length', 'max' => 50),
+            array('newPassword', 'string', 'max' => 50),
             array('newPassword', 'compare', 'compareAttribute' => 'newPasswordRepeat',),
             // Make it safe (since it doesn't appear in any other rule and Yii bases
             // its "safeness" in that
             array('newPasswordRepeat, role', 'safe'),
             // Never massive-assign a password (it shouldn't be in any view)
-            array('password', 'unsafe'),
+            //array('password', 'unsafe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('username, hourcost, name, email, company_id, worker_dflt_profile, company_name', 'safe', 'on' => 'search'),
@@ -193,7 +195,7 @@ class User extends ActiveRecord {
             // Number of tasks
             'taskCount' => array(self::STAT, 'UserProjectTask', 'user_id'),
             // Roles
-            'roles' => array(self::HAS_MANY, AuthAssignment::model()->tableName(), 'userid'),
+            'roles' => array(self::HAS_MANY, AuthAssignment::tableName(), 'userid'),
         );
     }
 
@@ -223,7 +225,7 @@ class User extends ActiveRecord {
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search() {
         $criteria = new CDbCriteria(array(
@@ -240,7 +242,7 @@ class User extends ActiveRecord {
         }
         $criteria->compare('t.worker_dflt_profile', $this->worker_dflt_profile, true);
 
-        return new CActiveDataProvider(get_class($this), array(
+        return new ActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                 ));
     }
@@ -287,7 +289,7 @@ class User extends ActiveRecord {
     /**
      * Before saving, if new record generate a random salt
      */
-    public function beforeSave() {
+    public function beforeSave($insert) {
         // Let's do some aggressive optimizing:
         // If new password is empty, it means it's an update with blank password,
         // so we leave it untouched
@@ -305,11 +307,10 @@ class User extends ActiveRecord {
         } else {
             $this->endcontract = null;
         }
-
         return parent::beforeSave();
     }
 
-    public  function afterFind() {
+    public function afterFind() {
         if(isset($this->roles)){
             if ((!isset($this->roles[0]) ) || (!( $this->roles[0] instanceof AuthAssignment ) ))
                 throw new Exception("User $this->username has no role assigned");
@@ -336,7 +337,7 @@ class User extends ActiveRecord {
         if ($this->id == self::ADMIN_USER_ID)
             return false;
 
-        AuthAssignment::model()->deleteAll('userid=:userid', array('userid' => $this->id));
+        AuthAssignment::find()->where('userid=:userid', array('userid' => $this->id))->delete();
         return parent::beforeDelete();
     }
 

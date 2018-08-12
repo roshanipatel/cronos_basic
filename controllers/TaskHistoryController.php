@@ -1,4 +1,10 @@
 <?php
+namespace app\controllers;
+
+use Yii;
+use app\components\CronosController;
+use yii\data\ActiveDataProvider;
+
 
 class TaskHistoryController extends Controller
 {
@@ -127,7 +133,7 @@ class TaskHistoryController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('TaskHistory');
+		$dataProvider=new ActiveDataProvider('TaskHistory');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -138,8 +144,9 @@ class TaskHistoryController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$model=new TaskHistory('search');
-		$model->unsetAttributes();  // clear any default values
+		$model=new TaskHistory();
+        $model->scenario = 'search';
+		//$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['TaskHistory']))
 			$model->attributes=$_GET['TaskHistory'];
 
@@ -155,7 +162,7 @@ class TaskHistoryController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=TaskHistory::model()->findByPk((int)$id);
+		$model=TaskHistory::findOne((int)$id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;

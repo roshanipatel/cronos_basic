@@ -32,6 +32,10 @@ class ComposerStaticInit183a4c5ec1f43f6f02dc924c6d462347
         array (
             'phpDocumentor\\Reflection\\' => 25,
         ),
+        'f' => 
+        array (
+            'fedemotta\\datatables\\' => 21,
+        ),
         'c' => 
         array (
             'cebe\\markdown\\' => 14,
@@ -113,6 +117,10 @@ class ComposerStaticInit183a4c5ec1f43f6f02dc924c6d462347
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+        ),
+        'fedemotta\\datatables\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/fedemotta/yii2-widget-datatables',
         ),
         'cebe\\markdown\\' => 
         array (

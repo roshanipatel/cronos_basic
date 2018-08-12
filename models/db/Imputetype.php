@@ -22,7 +22,7 @@ class Imputetype extends ActiveRecord
     /**
      * @return string the associated database table name
      */
-    public function tableName()
+    public static function tableName()
     {
         return 'imputetype';
     }
@@ -36,7 +36,7 @@ class Imputetype extends ActiveRecord
         // will receive user inputs.
         return array(
             array( 'name', 'required' ),
-            array( 'name', 'length', 'max' => 256 ),
+            array( 'name', 'string', 'max' => 256 ),
             array( 'name', 'unique' ),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
@@ -65,7 +65,7 @@ class Imputetype extends ActiveRecord
         );
     }
     
-    protected function afterFind() {
+    public function afterFind() {
         $this->name = (utf8_decode($this->name));
         return parent::afterFind();
     }

@@ -1,21 +1,29 @@
 <?php
+namespace app\controllers;
+
+use Yii;
+use app\components\CronosController;
+use app\services\ServiceFactory;
+use app\models\db\Project;
+use app\models\enums\ExpenseType;
+use app\extensions\PHPExcel\Style\PHPExcel_Style_Border;
 
 class ReportTaskController extends CronosController {
 
     const MY_LOG_CATEGORY = 'controllers.ReportTaskController';
     const PARAM_SELECT_CUSTOMER = 'sel_customer';
 
-    public $layout = '//layouts/top_menu';
+    //public $layout = '//layouts/top_menu';
 
     /**
      * Action to display the filter.
      */
     public function actionActivity() {
-        $this->render('reportTask');
+        $this->render('/ReportTask/reportTask');
     }
 
     public function actionCost() {
-        $this->render('reportCost');
+        $this->render('/ReportTask/reportCost');
     }
 
     /**
@@ -43,24 +51,26 @@ class ReportTaskController extends CronosController {
      * Style for header
      * @return array
      */
-    private function getStyleHeader() {
+    public function getStyleHeader() {
+        /** PHPExcel */
+        //include '../extensions/PHPExcel/Style/Border.php';
         return array(
             'borders' => array(
                 'top' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+                    'style' => \PHPExcel_Style_Border::BORDER_MEDIUM
                 ),
                 'bottom' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+                    'style' => \PHPExcel_Style_Border::BORDER_MEDIUM
                 ),
                 'left' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+                    'style' => \PHPExcel_Style_Border::BORDER_MEDIUM
                 ),
                 'right' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+                    'style' => \PHPExcel_Style_Border::BORDER_MEDIUM
                 )
             ),
             'fill' => array(
-                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'type' => \PHPExcel_Style_Fill::FILL_SOLID,
                 'color' => array('rgb' => '000000')
             ),
             'font' => array(
@@ -88,13 +98,13 @@ class ReportTaskController extends CronosController {
         ini_set('include_path', ini_get('include_path') . ';/var/www/cronos-test.open3s.int/protected/extensions');
 
         /** PHPExcel */
-        include 'PHPExcel.php';
+        include '../extensions/PHPExcel.php';
 
         /** PHPExcel_Writer_Excel2007 */
-        include 'PHPExcel/Writer/Excel2007.php';
+        include '../extensions/PHPExcel/Writer/Excel2007.php';
 
         // Create new PHPExcel object
-        $objPHPExcel = new PHPExcel();
+        $objPHPExcel = new \PHPExcel();
 
         // Set properties
         $objPHPExcel->getProperties()->setCreator("Open3s");
@@ -204,10 +214,11 @@ class ReportTaskController extends CronosController {
         ini_set('include_path', ini_get('include_path') . ';/var/www/cronos-test.open3s.int/protected/extensions');
 
         /** PHPExcel */
-        include 'PHPExcel.php';
+        include '../extensions/PHPExcel.php';
 
         /** PHPExcel_Writer_Excel2007 */
-        include 'PHPExcel/Writer/Excel2007.php';
+        include '../extensions/PHPExcel/Writer/Excel2007.php';
+
 
         // Create new PHPExcel object
         $objPHPExcel = new PHPExcel();

@@ -1,4 +1,9 @@
 <?php
+namespace app\services\other;
+
+use yii;
+use yii\data\Sort;
+use yii\data\ActiveDataProvider;
 
 /**
  * Some help functions for task search duties
@@ -21,7 +26,7 @@ class ExpenseSearchService {
     public function getExpenseSearchFormProviders(ExpenseSearch $expenseSearch) {
         $providers = array();
         $tasksCriteria = ServiceFactory::createProjectExpenseService()->getCriteriaFromExpenseSearch($expenseSearch);
-        $providers["costsProvider"] = new CActiveDataProvider(
+        $providers["costsProvider"] = new ActiveDataProvider(
                 'ProjectExpense', array(
             'criteria' => $tasksCriteria,
             'pagination' => array(
@@ -43,7 +48,7 @@ class ExpenseSearchService {
         
         $tasksCriteria = ServiceFactory::createProjectExpenseService()->getCriteriaFromExpenseSearch($search);
         Yii::import('ext.csv.CSVExport');
-        $data = ProjectExpense::model()->findAll($tasksCriteria);
+        $data = ProjectExpense::findAll($tasksCriteria);
         $csv = new CSVExport($data);
         $csv->includeColumnHeaders = true;
         $csv->headers = array(
@@ -78,7 +83,7 @@ class ExpenseSearchService {
      * @return CSort
      */
     private function getSort() {
-        $sort = new CSort();
+        $sort = new Sort();
         $sort->attributes = array(
             'companyName' => array(
                 'asc' => 'com.name ASC',

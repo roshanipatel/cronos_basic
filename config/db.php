@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=sch_cronos_test',
+    'dsn' => 'mysql:host=localhost;dbname=sch_cronon',
     'username' => 'root',
     'password' => '',
     'charset' => 'utf8',

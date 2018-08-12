@@ -1,16 +1,19 @@
 <h1>Report: Gastos Proyecto</h1>
 <?php /* * ********** SEARCH FORM  ****************** */ ?>
 <?php
+use app\services\ServiceFactory;
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use app\models\enums\ExpenseType;
 // Required fields
 $showManager = Yii::$app->user->hasDirectorPrivileges();
 $onlyManagedByUser = !$showManager;
 
 $managersProvider = ServiceFactory::createUserService()->findProjectWorkers(true);
 
-$form = $this->beginWidget('CActiveForm', array(
-    //'action' => $actionURL,
-    'method' => 'get',
-        ));
+ $form = ActiveForm::begin([
+            'method' => 'get',
+        ]);
 
 $aDiaActual = split("/", date("d/m/Y"));
 $beginDay = mktime(0,0,0,$aDiaActual[1], 1, $aDiaActual[2]);
@@ -41,7 +44,7 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
         </td>
         <td>
             <?php
-            echo CHtml::dropDownList('ReportCost_projectId', "", array(), array(
+            echo Html::dropDownList('ReportCost_projectId', "", array(), array(
             'prompt' => 'Todos',
             'style' => 'width: 100px'
         ));?>
@@ -49,14 +52,14 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
         </td>
         <td>
             <?php
-            echo CHtml::dropDownList('ReportCost_worker', "", CHtml::listData($managersProvider, 'id', 'name'), array(
+            echo Html::dropDownList('ReportCost_worker', "", \yii\helpers\ArrayHelper::map($managersProvider, 'id', 'name'), array(
             'prompt' => 'Todos',
             'style' => 'width: 100px'
         ));?>
         </td>
         <td>
             <?php
-            echo CHtml::dropDownList('ReportCost_costtype', "", ExpenseType::getDataForDropDown(), array(
+            echo Html::dropDownList('ReportCost_costtype', "", ExpenseType::getDataForDropDown(), array(
             'prompt' => 'Todos',
             'style' => 'width: 100px'
         ));?>
@@ -76,14 +79,15 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
                 <script type="text/javascript">
                     function makeReport( frm )
                     {
-                        frm.action = '<?php echo $this->createUrl('reportTask/exportCosts'); ?>';
+                        frm.action = '<?php echo Yii::$app->urlManager->createUrl(['report-task/export-costs']); ?>';
                         frm.target = '_blank';
                         return true;
                     }
                 </script>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <?php
-    echo CHtml::submitButton('Make report', array(
+    echo Html::submitButton('Make report', array(
+        'class'=>'btn btn-success',
         'onClick' => 'return makeReport( this.form );',
     ));
     ?>
@@ -113,7 +117,7 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
     }));
 </script>
 <?php
-Yii::$app->controller->renderPartial('../userProjectTask/_projectsFromCustomerAutocomplete', [
+$this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
     'onlyManagedByUser' => $onlyManagedByUser,
     'onlyUserEnvolved' => true
 ]);
@@ -129,6 +133,4 @@ Yii::$app->controller->renderPartial('../userProjectTask/_projectsFromCustomerAu
         defineAutocompleteCustomers( options );
     });
 </script>
-<?php
-$this->endWidget();
-?>
+ <?php ActiveForm::end(); ?>

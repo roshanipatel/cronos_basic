@@ -2,6 +2,13 @@
 namespace app\services\models;
 
 use app\services\CronosService;
+use app\models\db\Project;
+use app\models\User;
+use app\models\db\Company;
+use app\models\enums\TaskStatus;
+use app\components\utils\PHPUtils;
+use app\models\db\UserProjectTask;
+
 /**
  * Description of UserProjectTaskService
  *
@@ -19,7 +26,7 @@ class UserProjectTaskService implements CronosService {
 
         $dbCommand = Yii::$app->db->createCommand()
                 ->select('count(*)')
-                ->from(UserProjectTask::model()->tableName())
+                ->from(UserProjectTask::tableName())
                 ->where('user_id = :user'
                         . ' AND ( date_ini < :dateend AND :dateini < date_end)'
                         . ' AND id != :task_id')
@@ -37,7 +44,7 @@ class UserProjectTaskService implements CronosService {
      * @return CDbCriteria the data provider that can return the models based on the search/filter conditions.
      */
     public function findNewByManager($mngr_id = null) {
-        $criteria = new CDbCriteria();
+        $criteria = new yii\db\Query();
         $criteria->with = array('worker', 'project');
         $criteria->addColumnCondition(array('t.status' => TaskStatus::TS_NEW));
         if (isset($mngr_id)) {
@@ -58,7 +65,7 @@ class UserProjectTaskService implements CronosService {
         $taskSearch = new TaskSearch;
         $taskSearch->projectId = $projectId;
         $taskSearch->status = TaskStatus::TS_NEW;
-        return UserProjectTask::model()->count($taskSearch->buildCriteria()) > 0;
+        return UserProjectTask::count($taskSearch->buildCriteria()) > 0;
     }
 
     /**
@@ -71,13 +78,13 @@ class UserProjectTaskService implements CronosService {
         assert(is_numeric($taskId));
         assert(is_numeric($newProject));
         // Throws an exception if not found.
-        if (!( $task = UserProjectTask::model()->findByPk((int) $taskId) ))
+        if (!( $task = UserProjectTask::findOne((int) $taskId) ))
             throw new CHttpException(404, 'The requested page does not exist.');
 
         if (!WorkerProfiles::isValidValue($newProfile))
             throw new CHttpException(404, 'The requested page does not exist.');
 
-        if (!( Project::model()->findByPk((int) $newProject) ))
+        if (!( Project::findOne((int) $newProject) ))
             throw new CHttpException(404, 'The requested page does not exist.');
 
         // Check if project belongs to manager!
@@ -106,13 +113,13 @@ class UserProjectTaskService implements CronosService {
         assert(is_numeric($newProject));
         
         // Throws an exception if not found.
-        if (!( $task = UserProjectTask::model()->findByPk((int) $taskId) ))
+        if (!( $task = UserProjectTask::findOne((int) $taskId) ))
             throw new CHttpException(404, 'The requested page does not exist.');
 
         if (!WorkerProfiles::isValidValue($newProfile))
             throw new CHttpException(404, 'The requested page does not exist.');
 
-        if (!( Project::model()->findByPk((int) $newProject) ))
+        if (!( Project::findOne((int) $newProject) ))
             throw new CHttpException(404, 'The requested page does not exist.');
 
         //Check if project belongs to manager!
@@ -278,7 +285,7 @@ class UserProjectTaskService implements CronosService {
                 
         $criteria->group = 't.project_id';
         $criteria->limit = 10;
-        return UserProjectTask::model()->findAll($criteria);
+        return UserProjectTask::findAll($criteria);
     }
     
     /**
@@ -364,7 +371,7 @@ class UserProjectTaskService implements CronosService {
         ServiceFactory::createTaskSearchService()->getTaskSearchFormProvidersForProfile($taskSearch, $user, $searchFlag);
         $tasksCriteria = $this->getCriteriaFromTaskSearch($taskSearch);
         Yii::import('ext.csv.CSVExport');
-        $data = UserProjectTask::model()->findAll($tasksCriteria);
+        $data = UserProjectTask::findAll($tasksCriteria);
         
         $csv = new CSVExport($data);
         $csv->includeColumnHeaders = true;
@@ -390,7 +397,7 @@ class UserProjectTaskService implements CronosService {
                     $results[] = $row->project->company->name;
                     $results[] = $row->project->name;
                     $results[] = WorkerProfiles::toString($row->profile_id);
-                    $oImputetype = Imputetype::model()->findByPk($row->imputetype_id);
+                    $oImputetype = Imputetype::findOne($row->imputetype_id);
                     $results[] = $oImputetype->name;
                     $results[] = $row->getLongDateIni();
                     $results[] = $row->getLongDateEnd();
@@ -417,55 +424,57 @@ class UserProjectTaskService implements CronosService {
      */
     public function findUserProjectTasksInTime($sStartDate, $sEndDate, $onlyBillable = true, $iCustomer = "", $iProject = "", $iWorker = "") {
 
-        $criteria = new CDbCriteria(array(
-                    'join' => ' INNER JOIN ' . Project::model()->tableName() . ' proj ON t.project_id = proj.id 
-                                INNER JOIN ' . User::model()->tableName() . ' us ON t.user_id = us.id 
-                                INNER JOIN ' . Company::model()->tableName() . ' com ON proj.company_id = com.id',
-                    'order' => 'com.name asc, proj.name, us.name',
-                    'select' => '*, 
+        $criteria = UserProjectTask::find();
+        $criteria->innerJoin(Project::tableName().' proj','user_project_task.project_id = proj.id')
+                 ->innerJoin(User::tableName().' us','user_project_task.user_id = us.id')
+                ->innerJoin(Company::tableName().' com','proj.company_id = com.id');
+        
+        $criteria->orderBy('com.name asc, proj.name, us.name');
+        $criteria->select('*, 
                          com.name as companyName,
                          proj.name as projectName,
                          us.name as workerName,
-                         us.hourcost as workerCost'
-                ));
-
+                         us.hourcost as workerCost');
+       
         if ($iWorker != "") {
-            $criteria->addCondition(" t.user_id = '".$iWorker."' ");
+            $criteria->andWhere(" user_project_task.user_id = '".$iWorker."' ");
         }
         if ($onlyBillable) {
-            $criteria->addCondition("t.is_billable = 1");
-            $criteria->addCondition("t.status = '" . TaskStatus::TS_APPROVED . "'");
+            $criteria->andWhere("user_project_task.is_billable = 1");
+            $criteria->andWhere("user_project_task.status = '" . TaskStatus::TS_APPROVED . "'");
         }
         if ($iCustomer != "") {
-            $criteria->addCondition("proj.company_id = " . $iCustomer);
+            $criteria->andWhere("proj.company_id = " . $iCustomer);
         }
         if ($iProject != "") {
-            $criteria->addCondition("t.project_id = " . $iProject);
+           $criteria->andWhere("user_project_task.project_id = :project ")->params(['project'=>$iProject]);
+         
         }
+            
 
         if (!empty($sStartDate) && !empty($sEndDate)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
 
-            $criteria->addCondition("
-                            (:start_open <= t.date_ini AND :start_open <= t.date_end) and   
-                            (:end_open >= t.date_ini AND :end_open >= t.date_end)");
+            $criteria->andWhere("
+                            (:start_open <= user_project_task.date_ini AND :start_open <= user_project_task.date_end) and   
+                            (:end_open >= user_project_task.date_ini AND :end_open >= user_project_task.date_end)");
 
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
             $criteria->params[':end_open'] = PhpUtils::convertStringToDBDateTime($sEndFilter);
         } else
         if (!empty($sStartDate)) {
             $sStartDate = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
-            $criteria->addCondition("
-                            (:start_open <= t.date_ini AND :start_open <= t.date_end)");
+            $criteria->andWhere("
+                            (:start_open <= user_project_task.date_ini AND :start_open <= user_project_task.date_end)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
         } else
         if (!empty($sEndDate)) {
             $sEndDate = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
-            $criteria->compare('t.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
+            $criteria->andWhere('user_project_task.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
         }
         
-        return UserProjectTask::model()->findAll($criteria);
+        return $criteria->all();
     }
 
     /**
@@ -492,7 +501,7 @@ class UserProjectTaskService implements CronosService {
         $ts->dateEnd = PHPUtils::converPHPDateTimeToString(PHPUtils::getEndOfWeek($dateObj));
         // Build the query
         $tasksCriteria = ServiceFactory::createUserProjectTaskService()->getCriteriaFromTaskSearch($ts);
-        return UserProjectTask::model()->findAll($tasksCriteria);
+        return UserProjectTask::findAll($tasksCriteria);
     }
 
     private function ensureCustomerCanRefuseTask(CronosUser $user, $task, $taskId) {
@@ -539,7 +548,7 @@ class UserProjectTaskService implements CronosService {
      */
     public function refuseTask(CronosUser $user, $taskId, $motive) {
         // Is task approved so it can be refused
-        $task = UserProjectTask::model()->findByPk($taskId);
+        $task = UserProjectTask::findOne($taskId);
         if ($this->ensureCustomerCanRefuseTask($user, $task, $taskId) === false)
             return false;
 
@@ -612,7 +621,7 @@ class UserProjectTaskService implements CronosService {
         if ($hourValues['warnThresholdExceeded']) {
             Yii::log("Hours warning threshold for project {$task->project->name} exceeded!", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);            
             $as = ServiceFactory::createAlertService();
-            $project = Project::model()->findByPk($task->project_id);
+            $project = Project::findOne($task->project_id);
             $as->notify(Alerts::PROJECT_HOURS_WARNING, array(
                 Alerts::MESSAGE_REPLACEMENTS => array(
                     'project.name' => $task->project->name,
@@ -627,9 +636,9 @@ class UserProjectTaskService implements CronosService {
         if ($hourValues['maxHoursExceeded']) {
             Yii::log("Hours assigned for project {$task->project->name} exceeded!", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);
             if (!isset($project)) {
-                $project = Project::model()->findByPk($task->project_id);
+                $project = Project::findOne($task->project_id);
             }
-            $project = Project::model()->findByPk($task->project_id);
+            $project = Project::findOne($task->project_id);
             // Notify always
             $as = ServiceFactory::createAlertService();
             $as->notify(Alerts::PROJECT_HOURS_EXCEEDED, array(
@@ -662,8 +671,8 @@ class UserProjectTaskService implements CronosService {
      */
     private function checkIfTaskExceedsLimitsOfProject(UserProjectTask $task) {
         $result = array();
-        //$project = Project::model()->findByPk($task->project_id);
-        $criteria = new CDbCriteria();
+        //$project = Project::findOne($task->project_id);
+        $criteria = new yii\db\Query();
         $criteria->select = "*, 
                     ( select user.name from " . Project::TABLE_PROJECT_MANAGER . " inner join " . User::TABLE_USER . " on user.id = user_id where project_id = t.id order by user.name limit 1 ) as manager_custom,
                     ( select user.name from " . Project::TABLE_PROJECT_COMMERCIAL . " inner join " . User::TABLE_USER . " on user.id = user_id where project_id = t.id order by user.name limit 1 ) as commercial_custom,
@@ -672,7 +681,7 @@ class UserProjectTaskService implements CronosService {
                     ( select roundResult( ( roundResult(sum( unix_timestamp(date_end) - unix_timestamp(date_ini)) / 3600) / resultExist(max_hours) ) * 100) from user_project_task where t.id = user_project_task.project_id ) as executed,
                     ( select description from project_category where name = t.cat_type ) as category_name ";
         $criteria->compare('t.id', $task->project_id);
-        $project = Project::model()->find($criteria);
+        $project = Project::find()->where($criteria)->all();
         
         if ($project->hours_warn_threshold == 0 && $project->max_hours == 0) {
             $result['warnThresholdExceeded'] = false;
@@ -687,7 +696,7 @@ class UserProjectTaskService implements CronosService {
             // Take into account that if the task is not new => the project already
             // contains its hours
             if (!$task->isNewRecord) {
-                $oldTask = UserProjectTask::model()->findByPk($task->id);
+                $oldTask = UserProjectTask::findOne($task->id);
                 $factor = $oldTask->getDuration();
             } else {
                 $factor = 0.0;

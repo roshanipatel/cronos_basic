@@ -29,7 +29,7 @@ if(!isset($showExportButton)) {
 $hasToDefineForm = !isset($form);
 if($hasToDefineForm) {
 	$form = $this->beginWidget('CActiveForm', array(
-                'action' => $this->createUrl($actionURL),
+                'action' => Yii::$app->urlManager->createUrl($actionURL),
 		'method' => 'get',
 			));
 }
@@ -97,7 +97,7 @@ if($hasToDefineForm) {
 		}
 		if(!in_array(TaskSearch::FLD_PROJECT_ID, $searchFieldsToHide)) {
 			echo "<td>\n";
-			echo $form->dropDownList($taskSearch, 'projectId', CHtml::listData($projectsProvider, 'id', 'name'),
+			echo $form->field($taskSearch, 'projectId')->dropDownList(\yii\helpers\ArrayHelper::map($projectsProvider, 'id', 'name'),
 					array(
 				'id' => 'company_projects',
 				'prompt' => 'Todos',
@@ -108,7 +108,7 @@ if($hasToDefineForm) {
 		}
 		if(!in_array(TaskSearch::FLD_PROJECT_STATUS, $searchFieldsToHide)) {
 			echo "<td>\n";
-			echo $form->dropDownList($taskSearch, 'projectStatus', ProjectStatus::getDataForDropDown(),
+			echo $form->field($taskSearch, 'projectStatus')->dropDownList(ProjectStatus::getDataForDropDown(),
 					array(
 				'prompt' => 'Todos',
 				'style' => 'width: 60px'
@@ -117,7 +117,7 @@ if($hasToDefineForm) {
 		}
                 if(!in_array(TaskSearch::FLD_PROJECT_STATUS_COM, $searchFieldsToHide)) {
 			echo "<td>\n";
-			echo $form->dropDownList($taskSearch, 'projectStatusCom', ProjectStatus::getDataForDropDown(),
+			echo $form->field($taskSearch, 'projectStatusCom')->dropDownList(ProjectStatus::getDataForDropDown(),
 					array(
 				'prompt' => 'Todos',
 				'style' => 'width: 60px'
@@ -126,7 +126,7 @@ if($hasToDefineForm) {
 		}
 		if(!in_array(TaskSearch::FLD_PROJECT_CATEGORY, $searchFieldsToHide)) {
 			echo "<td>\n";
-			echo $form->dropDownList($taskSearch, 'projectCategoryType', ProjectCategories::getDataForDropDown(),
+			echo $form->field($taskSearch, 'projectCategoryType')->dropDownList(ProjectCategories::getDataForDropDown(),
 					array(
 				'prompt' => 'Todas',
 				'style' => 'width: 80px'
@@ -135,7 +135,7 @@ if($hasToDefineForm) {
 		}
 		if(!in_array(TaskSearch::FLD_PROFILE, $searchFieldsToHide)) {
 			echo "<td>\n";
-			echo $form->dropDownList($taskSearch, 'profile', WorkerProfiles::getDataForDropDown(),
+			echo $form->field($taskSearch, 'profile')->dropDownList(WorkerProfiles::getDataForDropDown(),
 					array(
 				'prompt' => 'Todos',
 				'style' => 'width: 60px'
@@ -144,7 +144,7 @@ if($hasToDefineForm) {
 		}
 		if(!in_array(TaskSearch::FLD_CREATOR, $searchFieldsToHide)) {
 			echo "<td>\n";
-			echo $form->dropDownList($taskSearch, 'creator', CHtml::listData($usersProvider, 'id', 'name'),
+			echo $form->field($taskSearch, 'creator')->dropDownList(\yii\helpers\ArrayHelper::map($usersProvider, 'id', 'name'),
 					array(
 				'prompt' => 'Todos',
 				'style' => 'width: 90px'
@@ -154,7 +154,7 @@ if($hasToDefineForm) {
 		}
                 if(!in_array(TaskSearch::FLD_OWNER, $searchFieldsToHide)) {
 			echo "<td>\n";
-			echo $form->dropDownList($taskSearch, 'owner', CHtml::listData($managersProvider, 'id', 'name'),
+			echo $form->field($taskSearch, 'owner')->dropDownList(\yii\helpers\ArrayHelper::map($managersProvider, 'id', 'name'),
 					array(
 				'prompt' => 'Todos',
 				'style' => 'width: 90px'
@@ -164,7 +164,7 @@ if($hasToDefineForm) {
 		}
 		if(!in_array(TaskSearch::FLD_STATUS, $searchFieldsToHide)) {
 			echo "<td>\n";
-			echo $form->dropDownList($taskSearch, 'status', TaskStatus::getDataForDropDown(),
+			echo $form->field($taskSearch, 'status')->dropDownList(TaskStatus::getDataForDropDown(),
 					array(
 				'prompt' => 'Todos',
 				'style' => 'width: 60px'
@@ -242,7 +242,7 @@ if($hasToDefineForm) {
 		}
 		if(!in_array(TaskSearch::FLD_IS_EXTRA, $searchFieldsToHide)) {
 			echo "<td>\n";
-			echo $form->dropDownList($taskSearch, 'isExtra', TaskSearch::getDropdownForFlags(),
+			echo $form->field($taskSearch, 'isExtra')->dropDownList(TaskSearch::getDropdownForFlags(),
 					array(
 				'prompt' => 'Todos',
 				'style' => 'width: 60px'
@@ -251,7 +251,7 @@ if($hasToDefineForm) {
 		}
 		if(!in_array(TaskSearch::FLD_IS_BILLABLE, $searchFieldsToHide)) {
 			echo "<td>\n";
-			echo $form->dropDownList($taskSearch, 'isBillable', TaskSearch::getDropdownForFlags(),
+			echo $form->field($taskSearch, 'isBillable')->dropDownList(TaskSearch::getDropdownForFlags(),
 					array(
 				'prompt' => 'Todos',
 				'style' => 'width: 60px'
@@ -260,7 +260,7 @@ if($hasToDefineForm) {
 		}
                 if(!in_array(TaskSearch::FLD_IMPUTE_TYPE, $searchFieldsToHide)) {
 			echo "<td>\n";
-                        echo $form->dropDownList($taskSearch, 'imputetype', CHtml::listData($projectImputetypes, 'id', 'name'),
+                        echo $form->field($taskSearch, 'imputetype')->dropDownList(\yii\helpers\ArrayHelper::map($projectImputetypes, 'id', 'name'),
                                         array(
                                 'style' => 'width: 120px',
                                 'multiple' => 'multiple',
@@ -290,7 +290,7 @@ if($hasToDefineForm) {
 				<script type="text/javascript">
 					function exportToCSV( frm )
 					{
-						frm.action = '<?php echo $this->createUrl('userProjectTask/exportToCSV'); ?>';
+						frm.action = '<?php echo Yii::$app->urlManager->createUrl('user-project-task/export-toCSV'); ?>';
 						frm.target = '_blank';
 						return true;
 					}
@@ -335,7 +335,7 @@ if($hasToDefineForm) {
 	}));
 </script>
 <?php
-Yii::$app->controller->renderPartial('/userProjectTask/_projectsFromCustomerAutocomplete', [
+$this->render('/userProjectTask/_projectsFromCustomerAutocomplete', [
 	'projectStatus' => (!isset($projectStatus))?NULL : $projectStatus,
         'projectStatusCom' => (!isset($projectStatusCom))?NULL : $projectStatusCom,
 	'onlyManagedByUser' => false, //$onlyManagedByUser,

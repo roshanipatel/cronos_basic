@@ -13,19 +13,18 @@ use app\models\enums\Roles;
 class SiteController extends CronosController {
 
 	static private $indexByRole = array(
-		Roles::UT_ADMIN => 'userProjectTask/calendar',
-                Roles::UT_DIRECTOR_OP => 'userProjectTask/calendar',
-		Roles::UT_CUSTOMER => 'userProjectTask/searchTasksCustomer',
-		Roles::UT_PROJECT_MANAGER => 'userProjectTask/approveTasks',
-		Roles::UT_WORKER => 'userProjectTask/calendar',
-                Roles::UT_ADMINISTRATIVE => 'project/projectOverview',
-                Roles::UT_COMERCIAL => 'project/projectOverview'
+		Roles::UT_ADMIN => 'user-project-task/calendar',
+        Roles::UT_DIRECTOR_OP => 'user-project-task/calendar',
+		Roles::UT_CUSTOMER => 'user-project-task/search-tasks-customer',
+		Roles::UT_PROJECT_MANAGER => 'user-project-task/approve-tasks',
+		Roles::UT_WORKER => 'user-project-task/calendar',
+        Roles::UT_ADMINISTRATIVE => 'project/project-overview',
+        Roles::UT_COMERCIAL => 'project/project-overview'
 	);
 
 	public function allowedActions() {
         return '*';
-	}
-
+    }
 	/**
 	 * This is the default 'index' action that is invoked
 	 * when an action is not explicitly requested by users.
@@ -42,7 +41,9 @@ class SiteController extends CronosController {
         ]);
         }*/ 
 
-
+        if (\Yii::$app->user->isGuest) {
+            return $this->redirect(Yii::$app->urlManager->createUrl(['site/login']));;
+        }
         return $this->render('index');
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
@@ -63,14 +64,15 @@ class SiteController extends CronosController {
 	 * Displays the login page
 	 */
 	public function actionLogin() {
-		
-		$this->layout = "login_main";
+        $this->layout = "login_main";
         if (!\Yii::$app->user->isGuest) {
             return $this->goHome();
         }
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        $model->load(Yii::$app->request->post());
+        
+        if ($model->login()) {
             
             return $this->redirect(Yii::$app->urlManager->createUrl([self::$indexByRole[Yii::$app->user->identity->role]]));
         }

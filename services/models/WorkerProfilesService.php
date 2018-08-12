@@ -2,6 +2,10 @@
 namespace app\services\models;
 
 use app\services\CronosService;
+use app\models\db\Project;
+use app\models\db\WorkerProfile;
+use app\models\db\PricePerProjectAndProfile;
+
 /**
  * Description of WorkerProfilesService
  *
@@ -25,7 +29,7 @@ class WorkerProfilesService implements CronosService
         // If valid ID, try to retrieve values for project
         if( $isValidId )
         {
-            $data = PricePerProjectAndProfile::model()->findAll(
+            $data = PricePerProjectAndProfile::findAll(
                             'project_id=:projid',
                             array( 'projid' => $project_id ) );
             $result = array( );
@@ -36,7 +40,7 @@ class WorkerProfilesService implements CronosService
         // defaults
         if( (!$isValidId ) || ( count( $data ) == 0 ) )
         {
-            $defaults = WorkerProfile::model()->findAll();
+            $defaults = WorkerProfile::find()->all();
             foreach( $defaults as $row )
             {
                 $newPrice = new PricePerProjectAndProfile;
@@ -73,7 +77,7 @@ class WorkerProfilesService implements CronosService
     private function internalSaveProfilesToProject( $profiles, $project )
     {
         // First delete all values
-        PricePerProjectAndProfile::model()->deleteAllByAttributes( array( 'project_id' => $project ) );
+        PricePerProjectAndProfile::find()->where( array( 'project_id' => $project ) )->delete();
         // Insert the profiles
         foreach( $profiles as $workerProfileModel )
         {

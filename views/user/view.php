@@ -1,4 +1,14 @@
-<h1>Ver Usuario <?php echo $model->name; ?></h1>
+<?php 
+  use app\components\utils\PHPUtils;
+  use app\models\enums\Roles;
+  use app\models\enums\WorkerProfiles;
+  use yii\widgets\DetailView;
+?>
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">Ver Usuario <?php echo $model->name; ?></h1>
+  </div>
+</div>
 
 <?php
 
@@ -33,9 +43,13 @@ if( $model->role != Roles::UT_CUSTOMER )
     );
 }
 
-
-$this->widget( 'zii.widgets.CDetailView', array(
+ DetailView::widget([
+    'model' => $model,
+    'attributes' => $attributes,
+]) ?>
+<!-- $this->widget( 'zii.widgets.DetailView', [
     'data' => $model,
     'attributes' => $attributes,
-        )
-); ?>
+        ]
+);  -->
+<?php echo $this->render('_view', ['model'=>$model]); ?>

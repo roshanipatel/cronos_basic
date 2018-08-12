@@ -1,5 +1,8 @@
 <?php
+namespace app\controllers;
 
+use Yii;
+use app\components\CronosController;
 class WorkerProfilesController extends CronosController
 {
 
@@ -23,7 +26,7 @@ class WorkerProfilesController extends CronosController
                 throw new CHttpException( 400, 'Invalid request. Please do not repeat this request again.' );
             foreach( $profiles as $profileId => $profilePrice )
             {
-                $model = WorkerProfile::model()->findByPk( $profileId );
+                $model = WorkerProfile::findOne( $profileId );
                 if( $model === null )
                     throw new CHttpException( 400, 'Invalid request. Please do not repeat this request again.' );
                 $model->dflt_price = (float)$profilePrice;
@@ -33,7 +36,7 @@ class WorkerProfilesController extends CronosController
             $this->refresh();
         }
 
-        $dbValues = WorkerProfile::model()->findAll();
+        $dbValues = WorkerProfile::find()->all();
         $profiles = array( );
         foreach( $dbValues as $profile )
         {

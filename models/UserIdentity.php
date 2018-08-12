@@ -44,11 +44,11 @@ class UserIdentity  extends ActiveRecord implements IdentityInterface {
 		 */
 		// Entering by email?
 		if(strpos($this->username, "@")) {
-			$user = User::model()->findByAttributes(array('email' => $this->username));
+			$user = User::find(array('email' => $this->username))->all();
 		}
 		// Entering by username
 		else {
-			$user = User::model()->findByAttributes(array('username' => $this->username));
+			$user = User::find(array('username' => $this->username))->all();
 		}
 		print_r($user);die;
 		if($user === null) {

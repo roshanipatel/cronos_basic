@@ -1,4 +1,9 @@
 <?php
+namespace app\controllers;
+
+use Yii;
+use app\components\CronosController;
+use app\services\ServiceFactory;
 
 /**
  * Contains actions for filling AJAX requests
@@ -54,7 +59,7 @@ class AJAXController extends CronosController {
             $opt = array( 'prompt' => 'Seleccione proyecto' );
         else
             $opt = array( 'prompt' => 'Cliente sin proyectos' );
-        $output = CHtml::listOptions( array( ), CHtml::listData( $projects, 'id', 'name' ), $opt );
+        $output = CHtml::listOptions( array( ), \yii\helpers\ArrayHelper::map( $projects, 'id', 'name' ), $opt );
         echo $output;
     }
 
@@ -72,7 +77,7 @@ class AJAXController extends CronosController {
         $aImputetypes = ServiceFactory::createImputetypeService()->findImputetypes( $projectId );
         if( count( $aImputetypes ) == 0 )
             $opt = array( 'prompt' => 'Proyecto sin tipos de imputación' );
-        $output = CHtml::listOptions( array( ), CHtml::listData( $aImputetypes, 'id', 'name' ), $opt );
+        $output = CHtml::listOptions( array( ), \yii\helpers\ArrayHelper::map( $aImputetypes, 'id', 'name' ), $opt );
         echo $output;
     }
     
@@ -92,9 +97,8 @@ class AJAXController extends CronosController {
         
         //Filtering by operational status.
         if( ProjectStatus::isValidValue( $projectStatus ) ) {
-            $projectCriteria = new CDbCriteria( array(
-                        'condition' => 't.status =: status',
-                        'params' => array( 'status' => $projectStatus ) ) );
+            $projectCriteria = new \yii\db\Query();
+            $projectCriteria->where('t.status =: status')->params([ 'status' => $projectStatus ]);
         }
         else {
             $projectCriteria = null;
@@ -124,7 +128,7 @@ class AJAXController extends CronosController {
         else{
             $opt = array( 'prompt' => 'Cliente sin proyectos' );
 		}
-        $output = CHtml::listOptions( array( ), CHtml::listData( $projects, 'id', 'name' ), $opt );
+        $output = CHtml::listOptions( array( ), \yii\helpers\ArrayHelper::map( $projects, 'id', 'name' ), $opt );
         echo $output;
     }
 
@@ -148,7 +152,7 @@ class AJAXController extends CronosController {
         else{
             $opt = array( 'prompt' => 'No hay trabajadores' );
 		}
-        $output = CHtml::listOptions( array( ), CHtml::listData( $workers, 'id', 'name' ), $opt );
+        $output = CHtml::listOptions( array( ), \yii\helpers\ArrayHelper::map( $workers, 'id', 'name' ), $opt );
         echo $output;
     }
     
@@ -166,7 +170,7 @@ class AJAXController extends CronosController {
         else{
             $opt = array( 'prompt' => 'No hay clientes' );
 		}
-        $output = CHtml::listOptions( array( ), CHtml::listData( $companies, 'id', 'name' ), $opt );
+        $output = CHtml::listOptions( array( ), \yii\helpers\ArrayHelper::map( $companies, 'id', 'name' ), $opt );
         echo $output;
     }
     
@@ -189,7 +193,7 @@ class AJAXController extends CronosController {
         else{
             $opt = array( 'prompt' => 'No hay managers' );
 		}
-        $output = CHtml::listOptions( array( ), CHtml::listData( $workers, 'id', 'name' ), $opt );
+        $output = CHtml::listOptions( array( ), \yii\helpers\ArrayHelper::map( $workers, 'id', 'name' ), $opt );
         echo $output;
     }
     
@@ -200,7 +204,7 @@ class AJAXController extends CronosController {
         // Build a task search object and set 'creator' and dateIni-dateEnd range
         $creatorId = -1;
         // If not admin, searching is based on current user
-        if( Yii::$app->user->hasDirectorPrivileges() && User::model()->isValidID( $userId ) ) {
+        if( Yii::$app->user->hasDirectorPrivileges() && User::find()->isValidID( $userId ) ) {
             $creatorId = (int)$userId;
         }
         else {

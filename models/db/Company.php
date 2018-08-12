@@ -3,6 +3,7 @@ namespace app\models\db;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\data\ActiveDataProvider;
 
 /**
  * This is the model class for table "company".
@@ -43,10 +44,10 @@ class Company extends ActiveRecord
         // will receive user inputs.
         return array(
             array( 'name', 'required' ),
-            array( 'name', 'length', 'max' => 256 ),
+            array( 'name', 'string', 'max' => 256 ),
             array( 'name', 'unique' ),
             array( 'email', 'email' ),
-            array( 'email', 'length', 'max' => 128 ),
+            array( 'email', 'string', 'max' => 128 ),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array( 'name, email', 'safe', 'on' => 'search' ),
@@ -95,23 +96,32 @@ class Company extends ActiveRecord
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search()
     {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
-
+        $criteria = Company::find();
+        $criteria->joinWith(['userCount', 'projectCount']);
+        $criteria->orderBy = 't.name asc';
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'name', $this->name],
+            ]);
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'email', $this->email],
+            ]);
+        /* 
         $criteria = new CDbCriteria( array(
-                    'with' => array( 'userCount', 'projectCount' ),
+                    'with' => array(  ),
                     'order' => 't.name asc',
                         ) );
-
-        $criteria->compare( 'name', $this->name, true );
-        $criteria->compare( 'email', $this->email, true );
-
-        return new CActiveDataProvider( get_class( $this ), array(
-            'criteria' => $criteria,
+*/
+       
+        return new ActiveDataProvider( array(
+            'query' => $criteria,
                 ) );
     }
     

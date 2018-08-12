@@ -10,7 +10,7 @@ $form = $this->beginWidget( 'CActiveForm', [
                 ] );
 
 /* SEARCH FORM */
-Yii::$app->controller->renderPartial( '/userProjectTask/_searchForm',
+$this->render( '/userProjectTask/_searchForm',
         [
             'taskSearch' => $taskSearch,
             'projectsProvider' => $projectsProvider,
@@ -88,7 +88,7 @@ Yii::$app->controller->renderPartial( '/userProjectTask/_searchForm',
         });
         
         $('#TaskSearch_dateIni').change(function() {
-                            $.get('<?php echo $this->createUrl( 'AJAX/retrieveWorkers' ) ?>',
+                            $.get('<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveWorkers' ) ?>',
                                         {
 						startFilter: function() {
                                                     var startDate = "";
@@ -115,7 +115,7 @@ Yii::$app->controller->renderPartial( '/userProjectTask/_searchForm',
                                         });
                                         
         $('#TaskSearch_dateEnd').change(function() {
-                            $.get('<?php echo $this->createUrl( 'AJAX/retrieveWorkers' ) ?>',
+                            $.get('<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveWorkers' ) ?>',
                                         {
 						startFilter: function() {
                                                     var startDate = "";
@@ -153,7 +153,7 @@ Yii::$app->controller->renderPartial( '/userProjectTask/_searchForm',
 		
                 
                 jQuery.ajax( {
-                    'url':'<?php echo $this->createUrl( 'AJAX/retrieveProjectsFromCustomerIdAsListOptions' ) ?>',
+                    'url':'<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveProjectsFromCustomerIdAsListOptions' ) ?>',
                     'data': {
                         customerId: companySelected,
                         startFilter: function() {
@@ -306,7 +306,7 @@ if(Yii::$app->user->hasDirectorPrivileges()) {
 			'class' => 'CLinkColumn',
 			'labelExpression' => '$data->frm_date_ini',
             'urlExpression' =>
-				'Yii::$app->createUrl("userProjectTask/calendar", array("timestamp" => $data->date_ini->getTimestamp(), "user" => $data->user_id))',
+				'Yii::$app->createUrl("user-project-task/calendar", array("timestamp" => $data->date_ini->getTimestamp(), "user" => $data->user_id))',
             'htmlOptions' => array(
                 'style' => 'text-align: center',
             )
