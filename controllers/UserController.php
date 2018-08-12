@@ -45,6 +45,7 @@ class UserController extends CronosController {
 
         if (isset($_POST['User'])) {
             $model->attributes = $_POST['User'];
+
             $transaction = Yii::$app->db->beginTransaction();
             try {
              if($model->validate()){
@@ -167,11 +168,20 @@ class UserController extends CronosController {
 
         $query = User::find()->joinWith(['company']);
         if( isset( $_GET['User']['name'] ) )
-            $query->compare('t.name', $_GET['User']['name'], true);
+            $query->andFilterWhere([
+                'or',
+                ['like', 't.name', $_GET['User']['name']],
+            ]);
         if( isset( $_GET['User']['username'] ) )
-            $query->compare('t.username', $_GET['User']['username'], true);
+            $query->andFilterWhere([
+                'or',
+                ['like', 't.username', $_GET['User']['username']],
+            ]);
         if( isset( $_GET['User']['company_name'] ) )
-            $query->compare('t.company_name', $_GET['User']['company_name'], true);
+            $query->andFilterWhere([
+                'or',
+                ['like', 't.company_name', $_GET['User']['company_name']],
+            ]);
         
         $oModel = new ActiveDataProvider([
                                 'query' =>$query,
@@ -179,7 +189,7 @@ class UserController extends CronosController {
                                     'pageSize' => Yii::$app->params['default_page_size'],
                                 ),
                                 'sort' => $sort,
-                                ]);
+                                ]); 
         $this->render( 'admin', array(
             'model' => $oModel,
             'filter' => $filter,
@@ -192,7 +202,7 @@ class UserController extends CronosController {
      * @param integer the ID of the model to be loaded
      */
     public function loadModel($id) {
-        $model = User::model()->findByPk((int) $id);
+        $model = User::findOne((int) $id);
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
@@ -210,3 +220,4 @@ class UserController extends CronosController {
     }
 
 }
+    

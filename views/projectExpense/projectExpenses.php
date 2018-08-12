@@ -70,7 +70,7 @@ if (Yii::$app->user->isProjectManager()) {
         echo "<span id=\"loadingCustomers\"></span>\n";
         echo "</td>\n";
         echo "<td>\n";
-        echo $form->dropDownList($model, 'projectId', CHtml::listData($projectsProvider, 'id', 'name'), array(
+        echo $form->field($model, 'projectId')->dropdownList( \yii\helpers\ArrayHelper::map($projectsProvider, 'id', 'name'), array(
             'prompt' => 'Todos',
             'style' => 'width: 200px'
         ));
@@ -78,7 +78,7 @@ if (Yii::$app->user->isProjectManager()) {
         echo "</td>\n";
         if ($isProjectManagerRole) {
             echo "<td>\n";
-            echo $form->dropDownList($model, 'worker', CHtml::listData($workersProvider, 'id', 'name'), array(
+            echo $form->field($model, 'worker')->dropdownList( \yii\helpers\ArrayHelper::map($workersProvider, 'id', 'name'), array(
                 'prompt' => 'Todos',
                 'style' => 'width: 120px'
             ));
@@ -86,13 +86,13 @@ if (Yii::$app->user->isProjectManager()) {
             echo "</td>\n";
         }
         echo "<td>\n";
-        echo $form->dropDownList($model, 'costtype', ExpenseType::getDataForDropDown(), array(
+        echo $form->field($model, 'costtype')->dropdownList( ExpenseType::getDataForDropDown(), array(
             'prompt' => 'Todos',
             'style' => 'width: 100px'
         ));
         echo "</td>\n";
         echo "<td>\n";
-        echo $form->dropDownList($model, 'paymentMethod', ExpensePaymentMethod::getDataForDropDown(), array(
+        echo $form->field($model, 'paymentMethod')->dropdownList( ExpensePaymentMethod::getDataForDropDown(), array(
             'prompt' => 'Todos',
             'style' => 'width: 100px'
         ));
@@ -132,7 +132,7 @@ if (Yii::$app->user->isProjectManager()) {
             <script type="text/javascript">
                     function exportToCSV( frm )
                     {
-                            frm.action = '<?php echo $this->createUrl('projectExpense/exportToCSV'); ?>';
+                            frm.action = '<?php echo Yii::$app->urlManager->createUrl(['project-expense/exportToCSV']); ?>';
                             frm.target = '_blank';
                             return true;
                     }
@@ -272,7 +272,7 @@ $aExpenses = array(
                     'label'=>'Download PDF',
                     'visible' => '$data->pdffile != ""',
                     'imageUrl'=>Yii::$app->request->baseUrl.'/images/pdf.png',
-                    'url'=>'$this->grid->controller->createUrl("/ProjectExpense/downloadPdf/$data->id")',
+                    'url'=>'$this->grid->controller->createUrl("/project-expense/download-pdf/$data->id")',
                     ),
                 'print' => array(
                     'visible' => 'false',

@@ -14,7 +14,6 @@ class CompanyController extends CronosController
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
-    
     /**
      * @return array action filters
       public function filters()
@@ -80,7 +79,7 @@ class CompanyController extends CronosController
             $model->attributes = $_POST['Company'];
             if( $model->save() )
             {
-                Yii::$app->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Empresa ' . $model->name . ' guardada con éxito' );
+                Yii::$app->session->setFlash('success', 'Empresa ' . $model->name . ' guardado con éxito');
                 $this->redirect( array( 'update', 'id' => $model->id ) );
             }
         }
@@ -134,7 +133,11 @@ class CompanyController extends CronosController
 
         $query = Company::find();
         if( isset( $_GET['Company']['name'] ) )
-            $query->compare('t.name', $_GET['Company']['name']);
+            $query->andFilterWhere([
+                'or',
+                ['like', 't.name', $_GET['Company']['name']],
+            ]);
+           // $query->compare('t.name', $_GET['Company']['name']);
         
         
         $sort = new Sort();
@@ -164,7 +167,7 @@ class CompanyController extends CronosController
      */
     public function loadModel( $id )
     {
-        $model = Company::model()->findByPk( (int)$id );
+        $model = Company::findOne((int)$id);
         if( $model === null )
             throw new CHttpException( 404, 'The requested page does not exist.' );
         return $model;

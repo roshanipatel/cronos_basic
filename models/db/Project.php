@@ -6,9 +6,12 @@ use yii\db\ActiveRecord;
 use app\models\enums\ProjectStatus;
 use app\models\enums\ProjectCategories;
 use app\models\enums\ReportingFreq;
+use app\models\db\Company;
+use app\models\db\User;
 use yii\data\Sort;
 use yii\data\ActiveDataProvider;
-
+use app\services\ServiceFactory;
+use app\components\utils\PHPUtils;
 
 /**
  * This is the model class for table "project".
@@ -61,8 +64,9 @@ class Project extends ActiveRecord {
     public $totalhours;
     public $imputetypeName;
     public $imputetype;
+    public $imputetypes;
+    public $workerProfiles;    
 
-    
 
     /**
      * @return string the associated database table name
@@ -122,17 +126,55 @@ class Project extends ActiveRecord {
             ['hours_warn_threshold', 'checkHourWarnThreshold', 'message' => 'Número de horas inválido (debe ser menor que el máximo de horas)'],
             ['cat_type', 'safe'],
             // Declare it unsafe to not massively assign it!!
-            ['workerProfiles', 'unsafe'],
+           // ['workerProfiles', 'unsafe'],
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             [['id', 'code', 'name', 'status', 'manager_custom', 'commercial_custom', 'company_custom', 'totalSeconds', 'company_name', 'open_time', 'close_time', 'manager_id', 'imputetype'],'safe', 'on' => 'search'],
         ];
     }
 
+    public function getWorkerProfiles(){
+        return $this->hasMany(\app\models\User::className(), ['id' => 'user_id'])
+                ->viaTable(\app\models\db\PricePerProjectAndProfile::tableName(), ['project_id' => 'id']);
+        //return $this->hasMany(\app\models\db\PricePerProjectAndProfile::className(), ['id' => 'project_id']);
+    }
+    public function getCompany(){
+         return $this->belongsTo(\app\models\db\Company::className(), ['id' => 'company_id']);
+    }
+    public function getCommercial(){
+         return $this->belongsTo(\app\models\User::className(), ['id' => 'company_id']);
+    }
+    
+    public function getManagers(){
+        return $this->hasMany(\app\models\User::className(), ['id' => 'user_id'])
+                ->viaTable(\app\models\db\ProjectManager::tableName(), ['project_id' => 'id']);
+   }
+    public function getCustomers(){
+        return $this->hasMany(\app\models\User::className(), ['id' => 'user_id'])
+                ->viaTable(\app\models\db\ProjectCustomer::tableName(), ['project_id' => 'id']);
+    }
+    public function getWorkers(){
+
+        return $this->hasMany(\app\models\User::className(), ['id' => 'user_id'])
+                ->viaTable(\app\models\db\ProjectCommercial::tableName(), ['project_id' => 'id']);
+    }
+    public function getCommercials(){
+        return $this->hasMany(\app\models\User::className(), ['id' => 'user_id'])
+                ->viaTable(\app\models\db\ProjectCommercial::tableName(), ['project_id' => 'id']);
+    }
+    public function getImputetypes(){
+         return $this->hasMany(\app\models\db\Imputetype::className(), ['id' => 'imputetype_id'])
+                ->viaTable(\app\models\db\ProjectImputetype::tableName(), ['project_id' => 'id']);
+    }
+    public function getReportingtarget(){
+        return $this->hasMany(\app\models\db\Role::className(), ['id' => 'role_id'])
+                ->viaTable(\app\models\db\ProjectReporting::tableName(), ['project_id' => 'id']);
+    }
+    
     /**
      * @return array relational rules.
      */
-    public function relations() {
+   /* public function getRelations() {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
@@ -146,7 +188,7 @@ class Project extends ActiveRecord {
             'imputetypes' => array(self::MANY_MANY, 'Imputetype', Project::TABLE_PROJECT_IMPUTETYPE . '(project_id, imputetype_id)'),
             'reportingtarget' => array(self::MANY_MANY, 'Role', Project::TABLE_PROJECT_REPORTINGTARGET . '(project_id, role_id)')            
         );
-    }
+    }*/
 
     const PROJECT_LABEL_COMMERCIAL = 'commercial';
 
@@ -243,7 +285,7 @@ class Project extends ActiveRecord {
         }
         $criteria = new yii\db\Query();
         $criteria = ServiceFactory::createProjectService()->getCriteriaFromModel($this);
-        $criteria->order = "";
+        $criteria->orderBy = "";
         $criteria->select = "*, 
                     ( select user.name from " . Project::TABLE_PROJECT_MANAGER . " inner join " . User::TABLE_USER . " on user.id = user_id where project_id = t.id order by user.name limit 1 ) as manager_custom,
                     ( select user.name from " . Project::TABLE_PROJECT_COMMERCIAL . " inner join " . User::TABLE_USER . " on user.id = user_id where project_id = t.id order by user.name limit 1 ) as commercial_custom,
@@ -253,10 +295,10 @@ class Project extends ActiveRecord {
                     ( select roundResult( ( roundResult(sum( unix_timestamp(date_end) - unix_timestamp(date_ini) ) / 3600) / resultExist(max_hours) ) * 100) from user_project_task where t.id = user_project_task.project_id ".$sWhere.") as executed,
                     ( select description from project_category where name = t.cat_type ) as category_name ";
         
-        return new ActiveDataProvider(get_class($this), array(
-                    'criteria' => $criteria,
+        return new ActiveDataProvider(array(
+                    'query' => $criteria,
                     'pagination' => array(
-                        'pageSize' => Yii::$app->params->default_page_size,
+                        'pageSize' => Yii::$app->params['default_page_size'],
                     ),
                     'sort' => $this->getSort(),
                 ));
@@ -403,7 +445,7 @@ class Project extends ActiveRecord {
             return false;
         }
         $id = empty($this->id) ? -1 : (int) $this->id;
-        $projects = Project::model()->findAllByAttributes(array(
+        $projects = Project::find()->where(array(
             'name' => $this->name,
             'company_id' => $this->company_id,
                 ),
@@ -411,7 +453,7 @@ class Project extends ActiveRecord {
                 'id != :id', array(
             'id' => $id
                 )
-        );
+        )->all();
         $res = count($projects) == 0;
         if (!$res) {
             $this->addError('name', 'Ya existe un proyecto con este nombre para este cliente');

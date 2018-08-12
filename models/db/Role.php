@@ -20,7 +20,7 @@ class Role extends ActiveRecord
     /**
      * @return string the associated database table name
      */
-    public function tableName()
+    public static function tableName()
     {
         return 'role';
     }
@@ -63,7 +63,7 @@ class Role extends ActiveRecord
         );
     }
     
-    protected function afterFind() {
+    public function afterFind() {
         $this->name = (utf8_decode($this->name));
         return parent::afterFind();
     }

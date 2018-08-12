@@ -17,7 +17,7 @@ class ActiveRelationalRecord extends ActiveRecord
         assert( is_subclass_of( $clazz, 'ActiveRecord' ) );
         if( $hasToDeleteBefore )
         {
-            $clazz::model()->deleteAll( $fieldPivotName . '=' . $fieldPivotValue );
+            $clazz::find()->where([$fieldPivotName=>$fieldPivotValue])->delete();
         }
         foreach( $fieldVarValues as $val )
         {
@@ -43,7 +43,8 @@ class ActiveRelationalRecord extends ActiveRecord
         assert( is_subclass_of( $clazz, 'ActiveRecord' ) );
         if( $hasToDeleteBefore )
         {
-            $clazz::model()->deleteAll( $fieldPivotName . '=' . $fieldPivotValue );
+            $clazz::find()->where([$fieldPivotName=>$fieldPivotValue])->delete();
+           // $clazz::model()->deleteAll( $fieldPivotName . '=' . $fieldPivotValue );
         }
         foreach( $fieldVarValues as $val )
         {

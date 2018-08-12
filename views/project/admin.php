@@ -1,25 +1,33 @@
 <h1>Gestionar Proyectos</h1>
 
 <?php
-$this->widget( 'zii.widgets.grid.CGridView', array(
+use yii\helpers\Html;
+use yii\grid\GridView;
+use common\components\Common;
+use app\models\enums\Roles;
+use app\models\enums\ProjectStatus;
+use app\models\enums\ProjectCategories;
+
+?>
+<?= GridView::widget(array(
     'id' => 'project-grid',
     'dataProvider' => $model->search(),
-    'filter'=>$model,
-    //'filter' => null,
-    'selectableRows' => 0,
-    'summaryText' => 'Mostrando {start}-{end} resultado(s)',
+    'filterModel'=>$model,
+    //'selectableRows' => 0,
+    'summary' => 'Mostrando {start}-{end} resultado(s)',
     'columns' => array(
         //'code',
         'name',
         array(
-            'header' => 'Empresa',
+            'class' => 'yii\grid\DataColumn', 
+            'label' => 'Empresa',
             'name' => 'company_name',
             'value' => '$data->company->name',
         ),
         array(
             'name' => 'status',
             'value' => 'ProjectStatus::toString($data->status)',
-			'filter' => ProjectStatus::getDataForDropdown(),
+			//'filter' => ProjectStatus::getDataForDropdown(),
 			'htmlOptions' => array(
 				'style' => 'width: 100px'
 			),
@@ -29,7 +37,7 @@ $this->widget( 'zii.widgets.grid.CGridView', array(
             'value' => '(empty($data->cat_type))?"":ProjectCategories::toString($data->cat_type)',
 			'filter' => ProjectCategories::getDataForDropdown(),
         ),
-        array(
+       /* array(
             'class' => 'CButtonColumn',
             'buttons' => array(
                 'delete' => array(
@@ -40,6 +48,6 @@ $this->widget( 'zii.widgets.grid.CGridView', array(
                 ),
             ),
             'htmlOptions' => array( 'style' => 'text-align: left' ),
-        ),
+        ),*/
     ),
 ) ); ?>

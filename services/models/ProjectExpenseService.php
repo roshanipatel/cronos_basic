@@ -20,7 +20,7 @@ class ProjectExpenseService implements CronosService {
     public function approveCost($expenseId, CronosUser $sessionUser) {
         assert(is_numeric($expenseId));
         // Throws an exception if not found.
-        if (!( $oProjectExpense = ProjectExpense::model()->findByPk((int) $expenseId) ))
+        if (!( $oProjectExpense = ProjectExpense::findOne((int) $expenseId) ))
             throw new CHttpException(404, 'The requested page does not exist.');
 
         // Check if project belongs to manager!
@@ -95,7 +95,7 @@ class ProjectExpenseService implements CronosService {
      */
     public function refuseCost(CronosUser $user, $expenseId) {
         // Is task approved so it can be refused
-        $oProjectExpense = ProjectExpense::model()->findByPk($expenseId);
+        $oProjectExpense = ProjectExpense::findOne($expenseId);
         if ($this->ensureCanRefuseCost($user, $oProjectExpense, $expenseId) === false)
             return false;
 
@@ -162,7 +162,7 @@ class ProjectExpenseService implements CronosService {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($model->open_time, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($model->close_time, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (t.open_time <= :start_open AND t.close_time IS NULL) OR                            
                             (t.open_time <= :end_open AND t.close_time IS NULL) OR   
                             (t.open_time <= :start_open AND t.close_time >= :start_open) OR 
@@ -174,7 +174,7 @@ class ProjectExpenseService implements CronosService {
         } else
         if (!empty($model->open_time)) {
             $model->open_time = PHPUtils::addHourToDateIfNotPresent($model->open_time, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open >= t.open_time AND :start_open <= t.close_time) OR 
                             (:start_open >= t.open_time AND t.close_time IS NULL) OR                            
                             (:start_open <= t.open_time)");
@@ -197,7 +197,7 @@ class ProjectExpenseService implements CronosService {
      * @param type $userId
      */
     public function addCriteriaForProjectManagers(CDbCriteria $criteria, $userId) {
-        $criteria->join = 'INNER JOIN ' . ProjectManager::model()->tableName() . ' managers ON managers.project_id = t.project_id';
+        $criteria->join = 'INNER JOIN ' . ProjectManager::tableName() . ' managers ON managers.project_id = t.project_id';
         $criteria->addColumnCondition(array('managers.user_id' => $userId));
     }
 
@@ -209,9 +209,9 @@ class ProjectExpenseService implements CronosService {
         $criteria = $expenseSearch->buildCriteria();
         $criteria->with = array('worker', 'project', 'project.company');
         //$criteria->select = "*";
-        $criteria->join = ' INNER JOIN ' . Project::model()->tableName() . ' proj ON t.project_id = proj.id 
-                                INNER JOIN ' . User::model()->tableName() . ' us ON t.user_id = us.id 
-                                INNER JOIN ' . Company::model()->tableName() . ' com ON proj.company_id = com.id';
+        $criteria->join = ' INNER JOIN ' . Project::tableName() . ' proj ON t.project_id = proj.id 
+                                INNER JOIN ' . User::tableName() . ' us ON t.user_id = us.id 
+                                INNER JOIN ' . Company::tableName() . ' com ON proj.company_id = com.id';
 
         if ($expenseSearch->sort == "") {
             $criteria->order = 'com.name asc, proj.name, us.name';
@@ -304,9 +304,9 @@ class ProjectExpenseService implements CronosService {
     public function findUserProjectCostsInTime($sStartDate, $sEndDate, $onlyBillable = true, $iCustomer = "", $iProject = "", $iWorker = "") {
 
         $criteria = new CDbCriteria(array(
-                    'join' => ' INNER JOIN ' . Project::model()->tableName() . ' proj ON t.project_id = proj.id 
-                                INNER JOIN ' . User::model()->tableName() . ' us ON t.user_id = us.id 
-                                INNER JOIN ' . Company::model()->tableName() . ' com ON proj.company_id = com.id',
+                    'join' => ' INNER JOIN ' . Project::tableName() . ' proj ON t.project_id = proj.id 
+                                INNER JOIN ' . User::tableName() . ' us ON t.user_id = us.id 
+                                INNER JOIN ' . Company::tableName() . ' com ON proj.company_id = com.id',
                     'order' => 'com.name asc, proj.name, us.name',
                     'select' => '*, 
                          com.name as companyName,
@@ -315,20 +315,20 @@ class ProjectExpenseService implements CronosService {
                 ));
 
         if ($onlyBillable) {
-            //$criteria->addCondition("t.status = '" . TaskStatus::TS_APPROVED . "'");
+            //$criteria->where("t.status = '" . TaskStatus::TS_APPROVED . "'");
         }
         if ($iCustomer != "") {
-            $criteria->addCondition("proj.company_id = " . $iCustomer);
+            $criteria->where("proj.company_id = " . $iCustomer);
         }
         if ($iProject != "") {
-            $criteria->addCondition("t.project_id = " . $iProject);
+            $criteria->where("t.project_id = " . $iProject);
         }
 
         if (!empty($sStartDate) && !empty($sEndDate)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= t.date_ini) and   
                             (:end_open >= t.date_ini)");
 
@@ -337,7 +337,7 @@ class ProjectExpenseService implements CronosService {
         } else
         if (!empty($sStartDate)) {
             $sStartDate = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= t.date_ini)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
         } else
@@ -346,7 +346,7 @@ class ProjectExpenseService implements CronosService {
             $criteria->compare('t.date_ini', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
         }
 
-        return ProjectExpense::model()->findAll($criteria);
+        return ProjectExpense::findAll($criteria);
     }
 
     const TIME_PRECISION = 4;

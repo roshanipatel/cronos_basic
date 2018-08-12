@@ -29,7 +29,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     // User role
     //public $role = Roles::UT_WORKER;
     public $role = Roles::UT_ADMIN;
-    public $id;
+    //public $id;
     /* public $username;
      public $password;
      public $name;
@@ -222,12 +222,12 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             // Number of tasks
             'taskCount' => array(self::STAT, 'UserProjectTask', 'user_id'),
             // Roles
-            'roles' => array(self::HAS_MANY, AuthAssignment::model()->tableName(), 'userid'),
+            'roles' => array(self::HAS_MANY, AuthAssignment::tableName(), 'userid'),
         );
     }
 
     /**
-     * @return array customized attribute labels (name=>label)
+     *   @return array customized attribute labels (name=>label)
      */
     public function attributeLabels() {
         return array(
@@ -371,7 +371,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         if ($this->id == self::ADMIN_USER_ID)
             return false;
 
-        AuthAssignment::model()->deleteAll('userid=:userid', array('userid' => $this->id));
+        AuthAssignment::find()->where('userid=:userid', array('userid' => $this->id))->delete();
         return parent::beforeDelete();
     }
 

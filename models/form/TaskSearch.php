@@ -1,4 +1,8 @@
 <?php
+namespace app\models\form;
+
+use yii\db\ActiveRecord;
+
 
 /**
  * Model for making task searchs
@@ -14,7 +18,7 @@
  * @property integer $customerCompany
  * @property string $status
  */
-class TaskSearch extends CFormModel {
+class TaskSearch extends ActiveRecord {
 	// Search fields
 	const FLD_DATE_INI = 1;
 	const FLD_DATE_END = 2;
@@ -28,20 +32,20 @@ class TaskSearch extends CFormModel {
 	const FLD_DESCRIPTION = 10;
 	const FLD_IS_EXTRA = 11;
 	const FLD_IS_BILLABLE = 12;
-        const FLD_TICKET = 13;
-        const FLD_OWNER = 14;
-        const FLD_PROJECT_STATUS_COM = 15;
-        const FLD_IMPUTE_TYPE = 16;
+    const FLD_TICKET = 13;
+    const FLD_OWNER = 14;
+    const FLD_PROJECT_STATUS_COM = 15;
+    const FLD_IMPUTE_TYPE = 16;
 
 	public $dateIni;
 	public $dateEnd;
 	public $projectId;
 	public $projectStatus;
-        public $projectStatusCom;
-        public $imputetype;
+    public $projectStatusCom;
+    public $imputetype;
 	public $projectCategoryType;
 	public $creator;
-        public $owner;
+    public $owner;
 	public $profile;
 	public $companyId;
 	public $companyName;
@@ -56,7 +60,7 @@ class TaskSearch extends CFormModel {
 	// Used only for building criteria
 	public $projectIdsForSearch;
         
-        public $roleSearch;
+    public $roleSearch;
 
 	const DATE_FORMAT_ON_CHECK = 'dd/MM/yyyy';
 
@@ -86,14 +90,14 @@ class TaskSearch extends CFormModel {
 		);
 	}
         
-        const FLD_NAME_DATE_INI = 'dateIni';
-        const FLD_NAME_DATE_END = 'dateEnd';
-        const FLD_NAME_PROJECT_STATUS = 'projectStatus';
-        const FLD_NAME_PROJECT_STATUS_COM = 'projectStatusCom';
-        const FLD_NAME_IMPUTE_TYPE = 'imputetype';
-        const FLD_NAME_TICKET = 'tickedId';
-        const FLD_NAME_DESCRIPTION = 'description';
-        const FLD_NAME_OWNER = 'owner';
+    const FLD_NAME_DATE_INI = 'dateIni';
+    const FLD_NAME_DATE_END = 'dateEnd';
+    const FLD_NAME_PROJECT_STATUS = 'projectStatus';
+    const FLD_NAME_PROJECT_STATUS_COM = 'projectStatusCom';
+    const FLD_NAME_IMPUTE_TYPE = 'imputetype';
+    const FLD_NAME_TICKET = 'tickedId';
+    const FLD_NAME_DESCRIPTION = 'description';
+    const FLD_NAME_OWNER = 'owner';
 
 	public function attributeLabels() {
 		return array(
@@ -173,13 +177,13 @@ class TaskSearch extends CFormModel {
                 // Fields for owners
 		if(User::isValidID($this->owner)) {
                     if ("" == $this->owner && $this->roleSearch == Roles::UT_PROJECT_MANAGER ) {
-                        $criteria->addCondition("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) OR  "
+                        $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) OR  "
                                 . " t.user_id = ".$this->owner.") ");
                     } else if(Yii::$app->user->id != $this->owner && $this->roleSearch == Roles::UT_PROJECT_MANAGER) {
-                        $criteria->addCondition("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) AND  "
+                        $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) AND  "
                                 . " t.user_id = ".Yii::$app->user->id.") ");
                     } else {
-                        $criteria->addCondition("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' )) ");
+                        $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' )) ");
                     }
                 }
                 
@@ -191,7 +195,7 @@ class TaskSearch extends CFormModel {
 		}
 
                 if(Imputetype::isValidID($this->imputetype)) {
-                    $criteria->addCondition("t.imputetype_id in (".implode(",", $this->imputetype).") ");
+                    $criteria->where("t.imputetype_id in (".implode(",", $this->imputetype).") ");
                 }
                 
 		// Fields for status
@@ -216,7 +220,7 @@ class TaskSearch extends CFormModel {
 		}
 
                 if($addJoinProject) {
-                    $criteria->join = ' INNER JOIN ' . Project::model()->tableName() . ' proj ON t.project_id = proj.id ';
+                    $criteria->join = ' INNER JOIN ' . Project::tableName() . ' proj ON t.project_id = proj.id ';
 		}
                 
 		if(empty($this->sort)) {

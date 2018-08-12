@@ -3,22 +3,25 @@ namespace app\controllers;
 
 use Yii;
 use app\components\CronosController;
+use app\services\ServiceFactory;
+use app\models\db\Project;
+
 class ReportTaskController extends CronosController {
 
     const MY_LOG_CATEGORY = 'controllers.ReportTaskController';
     const PARAM_SELECT_CUSTOMER = 'sel_customer';
 
-    public $layout = '//layouts/top_menu';
+    //public $layout = '//layouts/top_menu';
 
     /**
      * Action to display the filter.
      */
     public function actionActivity() {
-        $this->render('reportTask');
+        $this->render('/ReportTask/reportTask');
     }
 
     public function actionCost() {
-        $this->render('reportCost');
+        $this->render('/ReportTask/reportCost');
     }
 
     /**

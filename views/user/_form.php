@@ -14,10 +14,6 @@
     $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/jquery-1.6.2.js',['position' => \yii\web\View::POS_HEAD]);
     $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/jquery-ui-1.8.8.custom.js',['position' => \yii\web\View::POS_HEAD]);
 ?>
-<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">Usuarios</h1>
-    </div>
     <div class="row" >
     <div class="col-lg-12">
         <div class="panel panel-default">
@@ -25,20 +21,33 @@
                 Usuarios
             </div>
             <div class="panel-body">
+                        <?php
+                            $form = ActiveForm::begin([
+                                'id' => 'company-form',
+                                'fieldConfig' => [
+                                    'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",
+                                   // 'labelOptions' => ['class' => 'form-control'],
+                                ],
+                                'enableClientValidation'=>false,
+                                'validateOnSubmit' => true,
+                            ]); ?>
+                        <?php echo $form->errorSummary( $model , array('class'=>'alert alert-danger'));?>
+                        <!-- <?php if( Yii::$app->session->getFlash('success')) { ?>
+                            <div class="alert alert-success">
+                                <?= Yii::$app->session->getFlash('success') ?>
+                            </div>
+                        <?php } ?> -->
                 <?php
-                    $form = ActiveForm::begin([
+                    /*$form = ActiveForm::begin([
                         'id' => 'user-form',
                         'fieldConfig' => [
                             'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",
                            // 'labelOptions' => ['class' => 'form-control'],
+                        
                         ],
                         'enableClientValidation'=>false,
                         //'focus' => array($model,'username'),
-                    ]); 
-                    /* $form = ActiveForm::begin([
-                        'id' => 'ride-form',
-                         // this is redundant because it's true by default
-                    ]);*/
+                    ]); */
                     ?>
                     <div class="row">
                         <div class="col-lg-12">
@@ -46,15 +55,11 @@
                                 <p class="note">Los campos con <span class="required">*</span> son obligatorios.</p>
                             </div>
                         </div>
-                        <div class="col-lg-12">
-                        <?php echo $form->errorSummary( $model ); ?>
-                        <?php if( Yii::$app->session->getFlash('success')) { ?>
-                            <div class="resultOk"><p><?= Yii::$app->session->getFlash('success') ?></p></div>
-                        <?php } ?>
-                        </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <?= $form->field($model, 'username')->textInput(['class'=>"form-control col-lg-6", array( 'size' => 60, 'maxlength' => 128 )])->label('User Name *') ?>
+                                <?= $form->field($model, 'username')->textInput([
+                                    'class'=>"form-control col-lg-6", 
+                                    array( 'size' => 60, 'maxlength' => 128 )])->label('User Name *') ?>
                             </div>
                                 <?php //Html::error($model,'username', ['class' => 'help-block']); ?>
                         </div>
@@ -191,8 +196,9 @@
 
                         <?php if( Yii::$app->user->role == Roles::UT_ADMIN ||
                                   (Yii::$app->user->role != Roles::UT_ADMIN && $model->role != Roles::UT_ADMIN)) { ?>
-                        <div class="row buttons">
+                        <div class="col-lg-12">
                             <?php echo Html::submitButton( $model->isNewRecord ? 'Crear' : 'Guardar' , ['class'=>'btn btn-success']); ?>
+                            <?php echo Html::a( 'Volver',['#'] , ["onclick"=> "history.back();return false;" , "class"=>"btn btn-danger"] ); ?>
                         </div>
                         <?php } ?>
                     </div>

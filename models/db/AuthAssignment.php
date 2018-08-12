@@ -81,7 +81,7 @@ class AuthAssignment extends ActiveRelationalRecord
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
 
-        $criteria = new CDbCriteria;
+        $criteria = new yii\db\Query();
         /*
           $criteria->compare('itemname',$this->itemname,true);
           $criteria->compare('userid',$this->userid,true);

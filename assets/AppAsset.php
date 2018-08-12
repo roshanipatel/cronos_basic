@@ -23,6 +23,8 @@ class AppAsset extends AssetBundle
         'css/jquery-ui-1.8.8.custom.css',
         'css/bootstrap.min.css',
         'css/metisMenu.min.css',
+        'css/dataTables.bootstrap.css',
+        'css/dataTables.responsive.css',
         'css/sb-admin-2.css',
         'css/font-awesome.min.css',
        // 'css/morris.css',

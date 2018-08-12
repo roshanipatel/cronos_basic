@@ -36,13 +36,36 @@ class CronosController extends Controller
      */
     public $breadcrumbs = array( );
 
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => \yii\filters\VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                        'class' => \yii\filters\AccessControl::className(),
+                        'only' => ['index','create','update','view'],
+                        'rules' => [
+                            // allow authenticated users
+                            [
+                                'allow' => true,
+                                'roles' => ['@'],
+                            ],
+                            // everything else is denied
+                        ],
+                    ],            
+        ];
+    }
     /**
      * @return array action filters
      */
-    public function filters()
+    /*public function filters()
     {
         return array(
             'rights', // perform access control for CRUD operations
         );
-    }
+    }*/
 }

@@ -7,7 +7,7 @@ use app\models\db\UserProjectTask;
 use app\models\db\User;
 use app\models\db\Company;
 use app\models\LoginForm;
-
+use app\models\form\TaskSearch;
 use app\services\ServiceFactory;
 use yii\data\ActiveDataProvider;
 
@@ -77,7 +77,7 @@ class UserProjectTaskController extends CronosController {
                     
                     if ($sAction == Calendar::FESTIVO_ELIMINAR) {
                             
-                        $aCalendars = Calendar::model()->findAll("day = '".PHPUtils::convertPHPDateTimeToDBDateTime($sDay)."'");
+                        $aCalendars = Calendar::find()->where("day = '".PHPUtils::convertPHPDateTimeToDBDateTime($sDay)."'")->all();
                         foreach($aCalendars as $oCalendar) {
                             $oCalendar->delete();
                         }
@@ -254,7 +254,7 @@ class UserProjectTaskController extends CronosController {
         $this->render('approveTasks', CMap::mergeArray($providers, array(
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
-                    'actionURL' => $this->createUrl($this->route),
+                    'actionURL' => Yii::$app->urlManager->createUrl($this->route),
                     'onlyManagedByUser' => !Yii::$app->user->hasDirectorPrivileges(),
                     'projectImputetypes' => $oImputetypeService->findImputetypes(),
                     //'projectStatus' => ProjectStatus::PS_OPEN,
@@ -342,15 +342,17 @@ class UserProjectTaskController extends CronosController {
         $this->render('updateTasks', CMap::mergeArray($providers, array(
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
-                    'actionURL' => $this->createUrl($this->route),
+                    'actionURL' => Yii::$app->urlManager->createUrl($this->route),
                     'onlyManagedByUser' => !Yii::$app->user->hasDirectorPrivileges(),
                     'projectImputetypes' => $oImputetypeService->findImputetypes()
                 )));
     }
 
     private function getTaskSearchFromRequest() {
-        $taskSearch = new TaskSearch('search');
-        $taskSearch->unsetAttributes();
+        $taskSearch = new TaskSearch();
+        $taskSearch->scenario = 'search';
+        //$taskSearch->unsetAttributes();
+
         if (isset($_REQUEST['TaskSearch'])) {
             if (isset($_REQUEST['pr'])) {
                 unset($_REQUEST['pr']);
@@ -367,8 +369,9 @@ class UserProjectTaskController extends CronosController {
             if (!$taskSearch->validate()) {
                 Yii::log("TaskSearch not validated", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);
                 Yii::log(print_r($_REQUEST['TaskSearch'], true), CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);
-                $taskSearch = new TaskSearch('search');
-                $taskSearch->unsetAttributes();
+                $taskSearch = new TaskSearch();
+                $taskSearch->scenario = 'search';
+                //$taskSearch->unsetAttributes();
             }
         }
         
@@ -420,7 +423,7 @@ class UserProjectTaskController extends CronosController {
         
         $aProjectSummarized = array();
         foreach ($aProjectSummary as $oProjectSummary) {
-            $aProjectSummarized[Project::model()->findByPk($oProjectSummary->project_id)->name] = $oProjectSummary;
+            $aProjectSummarized[Project::findOne($oProjectSummary->project_id)->name] = $oProjectSummary;
         }
         
         $renderView = 'searchTasksOfProjects';
@@ -431,7 +434,7 @@ class UserProjectTaskController extends CronosController {
                     'projectHours' => $projectCost['hours'],
                     'projectPrice' => $projectCost['price'],
                     'showExportButton' => $showExportButton,
-                    'actionURL' => $this->createUrl($this->route),
+                    'actionURL' => Yii::$app->urlManager->createUrl($this->route),
                     'onlyManagedByUser' => $onlyManagedByUser,
                     'showWorker' => $showWorker,
                     'projectSummarized' => $aProjectSummarized
@@ -494,7 +497,7 @@ class UserProjectTaskController extends CronosController {
                     'projectHours' => $projectCost['hours'],
                     'projectPrice' => $projectCost['price'],
                     'showExportButton' => Yii::$app->user->hasDirectorPrivileges(),
-                    'actionURL' => $this->createUrl($this->route)
+                    'actionURL' => Yii::$app->urlManager->createUrl($this->route)
                 )));
     }
     
@@ -570,7 +573,7 @@ class UserProjectTaskController extends CronosController {
      * @return UserProjectTask
      */
     public function loadModel($id) {
-        $model = UserProjectTask::model()->findByPk((int) $id);
+        $model = UserProjectTask::findOne((int) $id);
         if ($model === null)
             throw new HttpException(404, 'The requested page does not exist.');
         return $model;
@@ -628,7 +631,7 @@ class UserProjectTaskController extends CronosController {
         try {        
             
             $userInfo = Yii::$app->user;
-            $oCurrentUser = User::model()->findByAttributes( array( "id" => $userInfo->id ) );                
+            $oCurrentUser = User::find()->where( array( "id" => $userInfo->id ) )->all();
             $aCurrentDay = mb_split("/", date("d/m/Y"));
             $nexttime = mktime(0,0,0,$aCurrentDay[1],$aCurrentDay[0] - $oCurrentUser->imputacionanterior, $aCurrentDay[2]);
             $maximumAllowedTimeToImpute = DateTime::createFromFormat( PHPUtils::DATE_TIME_FORMAT_ON_CONVERSION . ':s',  date("d/m/Y", $nexttime)." 0:0:0");
@@ -697,7 +700,7 @@ class UserProjectTaskController extends CronosController {
         try {
             
             $userInfo = Yii::$app->user;
-            $oCurrentUser = User::model()->findByAttributes( array( "id" => $userInfo->id ) );                
+            $oCurrentUser = User::find()->where( array( "id" => $userInfo->id ) )->all();
             $aCurrentDay = mb_split("/", date("d/m/Y"));
             $nexttime = mktime(0,0,0,$aCurrentDay[1],$aCurrentDay[0] - $oCurrentUser->imputacionanterior, $aCurrentDay[2]);
             $maximumAllowedTimeToImpute = DateTime::createFromFormat( PHPUtils::DATE_TIME_FORMAT_ON_CONVERSION . ':s',  date("d/m/Y", $nexttime)." 0:0:0");
@@ -708,7 +711,7 @@ class UserProjectTaskController extends CronosController {
                 $model = new UserProjectTask;
                // $model->unsetAttributes();
                 
-                $oProject = Project::model()->findByPk($_POST['UserProjectTask']['project_id']);
+                $oProject = Project::findOne($_POST['UserProjectTask']['project_id']);
                 
                 //The project is closed operative, no new tasks can be added.
                 if ($oProject->status == ProjectStatus::PS_CLOSED) {

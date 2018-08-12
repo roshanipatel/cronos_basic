@@ -88,7 +88,7 @@ $this->render( '/userProjectTask/_searchForm',
         });
         
         $('#TaskSearch_dateIni').change(function() {
-                            $.get('<?php echo $this->createUrl( 'AJAX/retrieveWorkers' ) ?>',
+                            $.get('<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveWorkers' ) ?>',
                                         {
 						startFilter: function() {
                                                     var startDate = "";
@@ -115,7 +115,7 @@ $this->render( '/userProjectTask/_searchForm',
                                         });
                                         
         $('#TaskSearch_dateEnd').change(function() {
-                            $.get('<?php echo $this->createUrl( 'AJAX/retrieveWorkers' ) ?>',
+                            $.get('<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveWorkers' ) ?>',
                                         {
 						startFilter: function() {
                                                     var startDate = "";
@@ -153,7 +153,7 @@ $this->render( '/userProjectTask/_searchForm',
 		
                 
                 jQuery.ajax( {
-                    'url':'<?php echo $this->createUrl( 'AJAX/retrieveProjectsFromCustomerIdAsListOptions' ) ?>',
+                    'url':'<?php echo Yii::$app->urlManager->createUrl( 'AJAX/retrieveProjectsFromCustomerIdAsListOptions' ) ?>',
                     'data': {
                         customerId: companySelected,
                         startFilter: function() {

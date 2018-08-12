@@ -27,7 +27,7 @@ class TaskHistory extends Model
     /**
      * @return string the associated database table name
      */
-    public function tableName()
+    public static function tableName()
     {
         return 'task_history';
     }
@@ -95,14 +95,14 @@ class TaskHistory extends Model
                 ) );
     }
 
-    public function beforeSave()
+    public static function beforeSave()
     {
         // Convert DateTime's to MySql datetime
         $this->timestamp = PHPUtils::convertStringToDBDateTime( $this->timestamp );
         return parent::beforeSave();
     }
 
-    public function afterFind()
+    public static function afterFind()
     {
         // Convert database dates back to PHP
         $this->timestamp = PHPUtils::convertDBDateTimeToString( $this->timestamp );

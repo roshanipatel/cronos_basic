@@ -41,7 +41,7 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
         </td>
         <td>
             <?php
-            echo CHtml::dropDownList('ReportCost_projectId', "", array(), array(
+            echo Html::dropDownList('ReportCost_projectId', "", array(), array(
             'prompt' => 'Todos',
             'style' => 'width: 100px'
         ));?>
@@ -49,14 +49,14 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
         </td>
         <td>
             <?php
-            echo CHtml::dropDownList('ReportCost_worker', "", CHtml::listData($managersProvider, 'id', 'name'), array(
+            echo Html::dropDownList('ReportCost_worker', "", \yii\helpers\ArrayHelper::map($managersProvider, 'id', 'name'), array(
             'prompt' => 'Todos',
             'style' => 'width: 100px'
         ));?>
         </td>
         <td>
             <?php
-            echo CHtml::dropDownList('ReportCost_costtype', "", ExpenseType::getDataForDropDown(), array(
+            echo Html::dropDownList('ReportCost_costtype', "", ExpenseType::getDataForDropDown(), array(
             'prompt' => 'Todos',
             'style' => 'width: 100px'
         ));?>
@@ -76,7 +76,7 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
                 <script type="text/javascript">
                     function makeReport( frm )
                     {
-                        frm.action = '<?php echo $this->createUrl('report-task/export-costs'); ?>';
+                        frm.action = '<?php echo Yii::$app->urlManager->createUrl(['report-task/export-costs']); ?>';
                         frm.target = '_blank';
                         return true;
                     }

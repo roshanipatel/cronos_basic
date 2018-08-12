@@ -21,22 +21,22 @@ $topMenus = array( "user" => "Usuarios",
     </li>
     <li><a href="javascript:void(0);">Calendario<span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
-            <li><?php echo Html::a( 'Calendario laboral', array( 'user-project-task/calendarUpload' ) ) ?></li>
+            <li><?php echo Html::a( 'Calendario laboral', array( 'user-project-task/calendar-upload' ) ) ?></li>
         </ul>
     </li>
     <li>
         <a href="javascript:void(0);">Operaciones portal<span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
-            <li><?php echo Html::a( 'Aprobar Horas', array( 'user-project-task/approveTasks' ) ) ?></li>
-            <li><?php echo Html::a( 'Modificación Horas', array( 'user-project-task/updateTasks' ) ) ?></li>
-            <li><?php echo Html::a( 'Consultar Horas', array( 'user-project-task/searchTasksAdmin' ) ) ?></li>
+            <li><?php echo Html::a( 'Aprobar Horas', array( 'user-project-task/approve-tasks' ) ) ?></li>
+            <li><?php echo Html::a( 'Modificación Horas', array( 'user-project-task/update-tasks' ) ) ?></li>
+            <li><?php echo Html::a( 'Consultar Horas', array( 'user-project-task/search-tasks-admin' ) ) ?></li>
         </ul>
     </li>
     <li><a href="javascript:void(0);">Gastos<span class="fa arrow"></span></a>
 	<ul class="nav nav-second-level">  
-		<li><?php echo Html::a( 'Imputar', array( 'projectExpense/create' ) ) ?></li>
-                <li><?php echo Html::a( 'Consultar', array( 'projectExpense/expenses' ) ) ?></li>
-		<li><?php echo Html::a( 'Aprobar', array( 'projectExpense/approveExpenses' ) ) ?></li>
+		<li><?php echo Html::a( 'Imputar', array( 'project-expense/create' ) ) ?></li>
+                <li><?php echo Html::a( 'Consultar', array( 'project-expense/expenses' ) ) ?></li>
+		<li><?php echo Html::a( 'Aprobar', array( 'project-expense/approve-expenses' ) ) ?></li>
 	</ul>
     </li>
     <li><a href="javascript:void(0);">Reports<span class="fa arrow"></span> </a>
