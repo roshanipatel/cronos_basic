@@ -3,6 +3,8 @@ namespace app\services\models;
 
 use Yii;
 use app\services\CronosService;
+use app\models\enums\ProjectStatus;
+use app\components\utils\PHPUtils;
 
 /**
  * Description of ProjectService
@@ -13,7 +15,7 @@ class ProjectService implements CronosService {
 
     const MY_LOG_CATEGORY = 'services.ProjectService';
 
-    private function manageStatusTimestamps(Project $model, array $newData) {
+    private function manageStatusTimestamps( $model, array $newData) {
         // Manage open/close status timestamps
         if (( $model->status == ProjectStatus::PS_OPEN )
                 && ( $newData['status'] == ProjectStatus::PS_CLOSED )) {
@@ -144,7 +146,7 @@ class ProjectService implements CronosService {
      * @param array $newData
      * @return boolean
      */
-    public function createProject(Project $model, array $newData) {
+    public function createProject( $model, array $newData) {
         //$model->unsetAttributes();
         // Default attributes
         // TODO : implement variable time behaviour
@@ -161,7 +163,7 @@ class ProjectService implements CronosService {
      * @param array $newData
      * @return boolean
      */
-    public function updateProject(Project $model, array $newData) {
+    public function updateProject( $model, array $newData) {
         return $this->saveProject($model, $newData);
     }
 
@@ -370,7 +372,7 @@ class ProjectService implements CronosService {
      * @param CDbCriteria $criteria
      * @param type $userId
      */
-    public function addCriteriaForProjectManagers(CDbCriteria $criteria, $userId) {
+    public function addCriteriaForProjectManagers( $criteria, $userId) {
         $criteria->join = 'INNER JOIN ' . ProjectManager::model()->tableName() . ' managers ON managers.project_id = t.id';
         $criteria->addColumnCondition(array('managers.user_id' => $userId));
     }
@@ -389,7 +391,7 @@ class ProjectService implements CronosService {
         return Project::findAll($criteria);
     }
     
-    public function addCriteriaForWorker(CDbCriteria $criteria, $userId) {
+    public function addCriteriaForWorker( $criteria, $userId) {
         $criteria->join = 'INNER JOIN ' . ProjectWorker::model()->tableName() . ' workers ON workers.project_id = t.id';
         $criteria->addColumnCondition(array('workers.user_id' => $userId));
     }
@@ -405,7 +407,7 @@ class ProjectService implements CronosService {
     }
     
     
-    public function addCriteriaForCommercial(CDbCriteria $criteria, $userId) {
+    public function addCriteriaForCommercial( $criteria, $userId) {
         $criteria->join = 'INNER JOIN ' . ProjectCommercial::model()->tableName() . ' commercials ON commercials.project_id = t.id';
         $criteria->addColumnCondition(array('commercials.user_id' => $userId));
     }
@@ -767,7 +769,7 @@ class ProjectService implements CronosService {
         return $criteria;
     }
 
-    public function getCSVContentFromSearch(Project $model) {
+    public function getCSVContentFromSearch( $model) {
         $criteria = $this->getCriteriaFromModel($model, TRUE);
         $sWhere = "";
         if (isset($model->imputetype)) {
