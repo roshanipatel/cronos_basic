@@ -26,20 +26,26 @@ use app\models\enums\Roles;
                     'id' => 'dataTables-example',
                     'dataProvider' => $model->search(),
                     'filterModel' => $model,
-                    'selectableRows' => 0,
-                    'summaryText' => 'Mostrando {start}-{end} resultado(s)',
-                    'columns' => array(
-                        array(
-                            'header' => 'Día',
-                            'name' => 'day',
-                            'value' => '$data->day',
-                        ),
-                        array(
-                            'header' => 'Ámbito festivo',
-                            'name' => 'city',
-                            'value' => 'Calendar::toString($data->city)',
-                        )
-                    ),
+                    //'selectableRows' => 0,
+                    //'summaryText' => 'Mostrando {start}-{end} resultado(s)',
+                    'columns' => [
+                        [
+                          'class' => 'yii\grid\DataColumn', 
+                          'label' => 'Día',
+                          'value' => function ($data) {
+                             return $data->day;
+                          },
+            //                  'filter' => false,
+                      ],
+                      [
+                          'class' => 'yii\grid\DataColumn', 
+                          'label' => 'Ámbito festivo',
+                          'value' => function ($data) {
+                             return Calendar::toString($data->city);
+                          },
+        //                  'filter' => false,
+                      ],
+                    ],
                 ]);
                 ?>
             </div>
