@@ -23,13 +23,16 @@ use app\models\enums\Roles;
               		'class'=>'table table-striped table-bordered table-hover',
 					'dataProvider'=>$model->search(),
 					'filter'=>null,
-				    'selectableRows' => 0,
+				    //'selectableRows' => 0,
 				    'summaryText' => 'Mostrando {start}-{end} resultado(s)',
-					'columns'=>array(
-						'worker.name:text:Usuario',
-						'project.name:text:Proyecto',
-						array( 'header' => 'Estado',
-				               'value' => 'TaskStatus::toString( $data->status )', ),
+					'columns'=>[
+						'Usuario',
+						'Proyecto',
+						[
+							'header' => 'Estado',
+				            'value' => 'TaskStatus::toString( $data->status )', ),
+
+						], 
 				        array(
 				            'header' => 'Inicio',
 				            'value' => '$data->getLongDateIni()',
