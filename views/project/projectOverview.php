@@ -1,4 +1,5 @@
 <?php 
+error_reporting(E_ALL); ini_set('display_errors', TRUE);
 use yii\helpers\Html;
 use yii\grid\GridView;
 use app\services\ServiceFactory;
@@ -9,154 +10,118 @@ use yii\data\ActiveDataProvider;
 use app\components\utils\PHPUtils;
 
 ?>
-<h1>Estado de Proyectos</h1>
-<?php /* * ********** SEARCH FORM  ****************** */ ?>
-<?php
-assert(isset($projectsProvider));
-// Required fields
-$showExportButton = TRUE;
-$searchFieldsToHide = array();
-$showManager = Yii::$app->user->hasDirectorPrivileges();
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">Estado de Proyectos</h1>
+  </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Proyecto
+            </div>
+            <div class="panel-body">
+                <?php
+                assert(isset($projectsProvider));
+                // Required fields
+                $showExportButton = TRUE;
+                $searchFieldsToHide = array();
+                $showManager = Yii::$app->user->hasDirectorPrivileges();
 
-$form = ActiveForm::begin([
-     'method' => 'get',
-    'action' => Yii::$app->urlManager->createUrl(['projectOveriew'])
-    ]); 
+                $form = ActiveForm::begin([
+                     'method' => 'get',
+                    'action' => Yii::$app->urlManager->createUrl(['projectOveriew'])
+                    ]); 
 
-if ($showManager) {
-    $managersProvider = ServiceFactory::createUserService()->findProjectManagers();
-} else {
-    $managersProvider = array();
-}
-?>
-
-<table id="tableTaskSearch">
-        <tr>
-            <td class="title_search_field">Fecha apertura</td>
-            <td class="title_search_field">Fecha cierre</td>
-            <td class="title_search_field">Cliente</td>
-            <td class="title_search_field">Proyecto</td>
-            <?php
-            if ($showManager) {
-                echo '<td class="title_search_field">Manager</td>';
-            }
-            ?>
-            <td class="title_search_field">Est. proyecto Op.</td>
-            <td class="title_search_field">Est. proyecto Com.</td>
-            <td class="title_search_field">Categoría</td>
-            <td class="title_search_field">Informe</td>
-        </tr>
-        <tr>
-            <?php
-            echo "<td>\n";
-            echo $form->field($model, 'open_time')->textInput(array(
-                'maxlength' => 20,
-            ));
-            echo "</td>\n";
-            echo "<td>\n";
-            echo $form->field($model, 'close_time')->textInput(array(
-                'maxlength' => 20,
-            ));
-            echo "</td>\n";
-            echo "<td>\n";
-            echo $form->field($model, 'company_id')->hiddenInput(array('id' => 'company_id'));
-            echo $form->field($model, 'company_name')->textInput(array(
-                'id' => 'company_name',
-                'style' => 'width: 160px'
-            ));
-            echo "<span id=\"loadingCustomers\"></span>\n";
-            echo "</td>\n";
-            echo "<td>\n";
-            echo $form->field($model, 'id')->dropDownList(\yii\helpers\ArrayHelper::map($projectsProvider, 'id', 'name'), array(
-                'prompt' => 'Todos',
-                'style' => 'width: 200px'
-            ));
-            echo "<span id=\"loadingProjects\"></span>\n";
-            echo "</td>\n";
-            if ($showManager) {
-                echo "<td>\n";
-                echo $form->field($model, 'manager_id')->dropDownList(\yii\helpers\ArrayHelper::map($managersProvider, 'id', 'name'), array(
-                    'prompt' => 'Todos',
-                    'style' => 'width: 120px'
-                ));
-                echo "<span id=\"loadingWorkers\"></span>\n";
-                echo "</td>\n";
-            }
-            echo "<td>\n";
-            echo $form->field($model, 'status')->dropDownList( ProjectStatus::getDataForDropDown(), array(
-                'prompt' => 'Todos',
-                'style' => 'width: 100px'
-            ));
-            echo "</td>\n";
-            echo "<td>\n";
-            echo $form->field($model, 'statuscommercial')->dropDownList( ProjectStatus::getDataForDropDown(), array(
-                'prompt' => 'Todos',
-                'style' => 'width: 100px'
-            ));
-            echo "</td>\n";
-            echo "<td>\n";
-            echo $form->field($model, 'cat_type')->dropDownList( ProjectCategories::getDataForDropDown(), array(
-                'prompt' => 'Todas',
-                'style' => 'width: 150px'
-            ));
-            echo "</td>\n";
-            echo "<td>\n";
-            echo $form->field($model, 'reporting')->dropDownList( array("0" => "Con Informe", "1" => "Sin Informe"), array(
-                'prompt' => 'Todas',
-                'style' => 'width: 90px'
-            ));
-            echo "</td>\n";
-            ?>
-        </tr>
-        <tr>
-            <td class="title_search_field">Tipo imputación</td>        
-        </tr>
-        <tr>
-            <?php
-            echo "<td>\n";
-            echo $form->field($model, 'imputetype')->dropDownList(\yii\helpers\ArrayHelper::map($projectImputetypes, 'id', 'name'),
-                            array(
-                    'style' => 'width: 120px',
-                    'multiple' => 'multiple',
-                    'id' => 'imputetype_projects',
-            ));
-            
-            echo "</td>\n";
-            ?>
-        </tr>
-        <tr>
-            <td colspan="9" align="center">
-                <br>
-                <script type="text/javascript">
-                    function projectSearch( frm )
-                    {
-                        frm.action = '';
-                        frm.target = '_self';
-                        return true;
-                    }
-                </script>
-                    <?php echo Html::submitButton( 'Buscar' , ['class'=>'btn btn-success','onClick' => 'return projectSearch( this.form );']); ?>
-                
-                    <?php if ($showExportButton) { ?>
-                    <script type="text/javascript">
-                        function exportToCSV( frm )
+                if ($showManager) {
+                    $managersProvider = ServiceFactory::createUserService()->findProjectManagers();
+                } else {
+                    $managersProvider = array();
+                }
+                ?>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <?= $form->field($model, 'open_time')->textInput(array('maxlength' => 20,'placeholder'=>'Fecha apertura','id'=>'Project_open_time')); ?>
+                        </div>
+                        <div class="col-lg-3">
+                            <?= $form->field($model, 'close_time')->textInput(array('maxlength' => 20,'placeholder'=>'Fecha cierre','id'=>'Project_close_time')); ?>
+                        </div>
+                        <div class="col-lg-3">
+                            <?= $form->field($model, 'company_name')->textInput(array('maxlength' => 20,'placeholder'=>'Cliente')); ?>
+                            <?= $form->field($model, 'company_id')->hiddenInput(array('id' => 'company_id'))->hiddenInput()->label(false);?>
+                            <span id="loadingCustomers"></span>
+                        </div>
+                        <div class="col-lg-3">
+                            <?= $form->field($model, 'id')->dropDownList(\yii\helpers\ArrayHelper::map($projectsProvider, 'id', 'name'), array('prompt' => 'Todos','style' => 'width: 200px')); ?>
+                            <span id="loadingProjects"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <?= $form->field($model, 'status')->dropDownList( ProjectStatus::getDataForDropDown(), array('prompt' => 'Todos')); ?>
+                        </div>
+                        <div class="col-lg-3">
+                            <?= $form->field($model, 'statuscommercial')->dropDownList( ProjectStatus::getDataForDropDown(), array('prompt' => 'Todos')); ?>
+                        </div>
+                        <div class="col-lg-3">
+                            <?= $form->field($model, 'cat_type')->dropDownList( ProjectCategories::getDataForDropDown(), array('prompt' => 'Todas')); ?>
+                        </div>
+                        <div class="col-lg-3">
+                            <?= $form->field($model, 'reporting')->dropDownList( array("0" => "Con Informe", "1" => "Sin Informe"), array('prompt' => 'Todas')); ?>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <?= $form->field($model, 'imputetype')->dropDownList(\yii\helpers\ArrayHelper::map($projectImputetypes, 'id', 'name'),array('multiple' => 'multiple','id' => 'imputetype_projects')); ?>
+                        </div>
+                        <div class="col-lg-3">
+                            <?php if ($showManager) { ?>
+                               <?= $form->field($model, 'manager_id')->dropDownList(\yii\helpers\ArrayHelper::map($managersProvider, 'id', 'name'), array('prompt' => 'Todos')); ?>
+                               <span id="loadingWorkers"></span>
+                            <?php } ?>
+                        </div>
+                        <div class="col-lg-3">
+                        </div>
+                        <div class="col-lg-3">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <script type="text/javascript">
+                        function projectSearch( frm )
                         {
-                            frm.action = '<?php echo Yii::$app->urlManager->createUrl("project/exportToCSV"); ?>';
-                            frm.target = '_blank';
+                            frm.action = '';
+                            frm.target = '_self';
                             return true;
                         }
-                    </script>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <?php
-                    echo Html::submitButton('Exportar a CSV', array(
-                        'class'=>'btn btn-success',
-                        'onClick' => 'return exportToCSV( this.form );',
-                    ));
-                    ?>
-                    <?php } ?>
-            </td>
-        </tr>
-</table>
+                        </script>
+                        <?php echo Html::submitButton( 'Buscar' , ['class'=>'btn btn-success','onClick' => 'return projectSearch( this.form );']); ?>
+                        <?php if ($showExportButton) { ?>
+                        <script type="text/javascript">
+                            function exportToCSV( frm )
+                            {
+                                frm.action = '<?php echo Yii::$app->urlManager->createUrl("project/exportToCSV"); ?>';
+                                frm.target = '_blank';
+                                return true;
+                            }
+                        </script>
+                        <?php
+                        echo Html::submitButton('Exportar a CSV', array(
+                            'class'=>'btn btn-success',
+                            'onClick' => 'return exportToCSV( this.form );',
+                        ));
+                        ?>
+                        <?php } ?>
+                    </div>
+                </div>
+                <?php ActiveForm::end(); ?>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     jQuery(document).ready((function() {
         jQuery( 'input[id^="Project_open_time"],input[id^="Project_close_time"]' )
@@ -179,13 +144,13 @@ if ($showManager) {
         jQuery( "div.ui-datepicker" ).css("font-size", "80%");
     }));
 </script>
-<?php
-echo $this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
-    'projectStatus' => (!isset($projectStatus)) ? NULL : $projectStatus,
-    'onlyManagedByUser' => false,
-    'onlyUserEnvolved' => true
-]);
-?>
+    <?php
+    /*echo $this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
+        'projectStatus' => (!isset($projectStatus)) ? NULL : $projectStatus,
+        'onlyManagedByUser' => false,
+        'onlyUserEnvolved' => true
+    ]);*/
+    ?>
 <script type="text/javascript">
     jQuery(document).ready(function(){
         var options = new Object();
@@ -196,11 +161,7 @@ echo $this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
         defineAutocompleteCustomers( options );
     });
 </script>
-<?php ActiveForm::end(); ?>
-<?php /* * ********** END SEARCH FORM  ****************** */ ?>
-
 <?php
-//$cs = Yii::$app->clientScript;
 $this->registerJsFile('js/plugins/jquery.progressbar.min.js',['position' => \yii\web\View::POS_BEGIN]);
 
 GridView::widget(array(
