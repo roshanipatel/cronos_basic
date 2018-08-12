@@ -2,6 +2,12 @@
 namespace app\services\models;
 
 use app\services\CronosService;
+use app\models\db\Project;
+use app\models\User;
+use app\models\db\Company;
+use app\models\enums\TaskStatus;
+use app\components\utils\PHPUtils;
+use app\models\db\ProjectExpense;
 /**
  * Description of UserProjectTaskService
  *
@@ -303,50 +309,49 @@ class ProjectExpenseService implements CronosService {
      */
     public function findUserProjectCostsInTime($sStartDate, $sEndDate, $onlyBillable = true, $iCustomer = "", $iProject = "", $iWorker = "") {
 
-        $criteria = new CDbCriteria(array(
-                    'join' => ' INNER JOIN ' . Project::tableName() . ' proj ON t.project_id = proj.id 
-                                INNER JOIN ' . User::tableName() . ' us ON t.user_id = us.id 
-                                INNER JOIN ' . Company::tableName() . ' com ON proj.company_id = com.id',
-                    'order' => 'com.name asc, proj.name, us.name',
-                    'select' => '*, 
+        $criteria = ProjectExpense::find();
+        $criteria->innerJoin(Project::tableName().' proj','user_project_cost.project_id = proj.id')
+                 ->innerJoin(User::tableName().' us','user_project_cost.user_id = us.id')
+                ->innerJoin(Company::tableName().' com','proj.company_id = com.id');
+        $criteria->orderBy('com.name asc, proj.name, us.name');
+        $criteria->select('*, 
                          com.name as companyName,
                          proj.name as projectName,
-                         us.name as workerName'
-                ));
-
+                         us.name as workerName');
+       
         if ($onlyBillable) {
             //$criteria->where("t.status = '" . TaskStatus::TS_APPROVED . "'");
         }
         if ($iCustomer != "") {
-            $criteria->where("proj.company_id = " . $iCustomer);
+            $criteria->andWhere("proj.company_id = " . $iCustomer);
         }
         if ($iProject != "") {
-            $criteria->where("t.project_id = " . $iProject);
+            $criteria->andWhere("user_project_cost.project_id = " . $iProject);
         }
 
         if (!empty($sStartDate) && !empty($sEndDate)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
 
-            $criteria->where("
-                            (:start_open <= t.date_ini) and   
-                            (:end_open >= t.date_ini)");
+            $criteria->andWhere("
+                            (:start_open <= user_project_cost.date_ini) and   
+                            (:end_open >= user_project_cost.date_ini)");
 
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
             $criteria->params[':end_open'] = PhpUtils::convertStringToDBDateTime($sEndFilter);
         } else
         if (!empty($sStartDate)) {
             $sStartDate = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
-            $criteria->where("
-                            (:start_open <= t.date_ini)");
+            $criteria->andWhere("
+                            (:start_open <= user_project_cost.date_ini)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
         } else
         if (!empty($sEndDate)) {
             $sEndDate = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
-            $criteria->compare('t.date_ini', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
+            $criteria->andWhere('user_project_cost.date_ini', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
         }
 
-        return ProjectExpense::findAll($criteria);
+        return $criteria->all();
     }
 
     const TIME_PRECISION = 4;

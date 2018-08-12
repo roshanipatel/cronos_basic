@@ -1,16 +1,19 @@
 <h1>Report: Gastos Proyecto</h1>
 <?php /* * ********** SEARCH FORM  ****************** */ ?>
 <?php
+use app\services\ServiceFactory;
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use app\models\enums\ExpenseType;
 // Required fields
 $showManager = Yii::$app->user->hasDirectorPrivileges();
 $onlyManagedByUser = !$showManager;
 
 $managersProvider = ServiceFactory::createUserService()->findProjectWorkers(true);
 
-$form = $this->beginWidget('CActiveForm', array(
-    //'action' => $actionURL,
-    'method' => 'get',
-        ));
+ $form = ActiveForm::begin([
+            'method' => 'get',
+        ]);
 
 $aDiaActual = split("/", date("d/m/Y"));
 $beginDay = mktime(0,0,0,$aDiaActual[1], 1, $aDiaActual[2]);
@@ -83,7 +86,8 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
                 </script>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <?php
-    echo CHtml::submitButton('Make report', array(
+    echo Html::submitButton('Make report', array(
+        'class'=>'btn btn-success',
         'onClick' => 'return makeReport( this.form );',
     ));
     ?>
@@ -129,6 +133,4 @@ $this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
         defineAutocompleteCustomers( options );
     });
 </script>
-<?php
-$this->endWidget();
-?>
+ <?php ActiveForm::end(); ?>

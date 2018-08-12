@@ -22,10 +22,10 @@ class CompanyService implements CronosService
      */
     public function getCompaniesBySubstring( $substr )
     {
-        $criteria = new yii\db\Query();
+        $criteria = Company::find();
         $criteria->addSearchCondition('name', $substr);
         $criteria->order = 'id desc';
-        return Company::findAll($criteria);
+        return $criteria->all();
     }
     
     
@@ -38,9 +38,9 @@ class CompanyService implements CronosService
             return array();
         }
         // Build search criteria depending on the user
-        $criteria = new CDbCriteria;
+        $criteria = Company::find();
         $criteria->order = 't.name asc';
-        $models = Company::findAll($criteria);
+        $models = $criteria->all();
         $result = array();
         foreach ($models as $company)
             $result[$company->id] = $company->name;

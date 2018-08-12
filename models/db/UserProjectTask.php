@@ -2,7 +2,7 @@
 namespace app\models\db;
 
 use Yii;
-use yii\base\Model;
+use yii\db\ActiveRecord;
 use yii\data\ActiveDataProvider;
 
 
@@ -43,7 +43,7 @@ use app\models\enums\WorkerProfiles;
  * @property Project $project
  * @property Imputetype $imputetype
  */
-class UserProjectTask extends Model {
+class UserProjectTask extends ActiveRecord {
     
      public $id;
      public $user_id;

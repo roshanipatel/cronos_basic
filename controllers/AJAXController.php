@@ -97,9 +97,8 @@ class AJAXController extends CronosController {
         
         //Filtering by operational status.
         if( ProjectStatus::isValidValue( $projectStatus ) ) {
-            $projectCriteria = new CDbCriteria( array(
-                        'condition' => 't.status =: status',
-                        'params' => array( 'status' => $projectStatus ) ) );
+            $projectCriteria = new \yii\db\Query();
+            $projectCriteria->where('t.status =: status')->params([ 'status' => $projectStatus ]);
         }
         else {
             $projectCriteria = null;
