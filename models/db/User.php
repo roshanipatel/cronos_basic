@@ -289,7 +289,7 @@ class User extends ActiveRecord {
     /**
      * Before saving, if new record generate a random salt
      */
-    public function beforeSave() {
+    public function beforeSave($insert) {
         // Let's do some aggressive optimizing:
         // If new password is empty, it means it's an update with blank password,
         // so we leave it untouched
@@ -307,7 +307,6 @@ class User extends ActiveRecord {
         } else {
             $this->endcontract = null;
         }
-
         return parent::beforeSave();
     }
 

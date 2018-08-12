@@ -331,13 +331,13 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         } else {
             $this->endcontract = null;
         }
-        if (parent::beforeSave($insert)) {
+        return true;
+/*        if (parent::beforeSave($insert)) {
             // Place your custom code here
-
             return true;
         } else {
             return false;
-        }
+        }*/
     }
     
 
