@@ -5,7 +5,6 @@ use Yii;
 use app\components\CronosController;
 use app\models\db\UserProjectTask;
 use app\models\db\User;
-use app\models\db\Calendar;
 use app\models\db\Company;
 use app\models\LoginForm;
 use app\models\form\TaskSearch;
