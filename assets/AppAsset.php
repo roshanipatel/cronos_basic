@@ -40,5 +40,7 @@ class AppAsset extends AssetBundle
        
        
     ];
-    public $depends = [];
+    public $depends = [
+    'fedemotta\datatables\DataTablesAsset',
+    ];
 }
