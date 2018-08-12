@@ -219,13 +219,13 @@ class ProjectService implements CronosService {
      * @return array List of Projects (models) which customer has access to
      */
     public function findProjectsCustomerHasAccessTo($cust_id) {
-        $criteria = new CDbCriteria(array(
-                    'join' => 'INNER JOIN ' . ProjectCustomer::model()->tableName() . ' customers ON customers.project_id = t.id',
-                    'condition' => 'customers.user_id=:cust_id',
-                    'params' => array('cust_id' => $cust_id),
-                    'order' => 't.name asc',
-                ));
-        return Project::findAll($criteria);
+        $criteria = Project::find();
+        $criteria->innerJoin(ProjectCustomer::tableName().' customers','customers.project_id = project_customer.id');
+        $criteria->where('customers.user_id=:cust_id');
+        $criteria->params(array('cust_id' => $cust_id));
+        $criteria->orderBy('project.name asc');
+
+        return $criteria->all();
     }
     
     /**
@@ -234,13 +234,20 @@ class ProjectService implements CronosService {
      * @return type
      */
     public function findProjectsCommercialHasAccessTo($cust_id) {
-        $criteria = new CDbCriteria(array(
+        $criteria = Project::find();
+        $criteria->innerJoin(ProjectCommercial::tableName().' commercial','commercial.project_id = project_commercial.id');
+        $criteria->where('commercial.user_id=:cust_id');
+        $criteria->params(array('cust_id' => $cust_id));
+        $criteria->orderBy('project.name asc');
+
+        return $criteria->all();
+       /* $criteria = new CDbCriteria(array(
                     'join' => 'INNER JOIN ' . ProjectCommercial::model()->tableName() . ' commercial ON commercial.project_id = t.id',
                     'condition' => 'commercial.user_id=:cust_id',
                     'params' => array('cust_id' => $cust_id),
                     'order' => 't.name asc',
                 ));
-        return Project::findAll($criteria);
+        return Project::findAll($criteria);*/
     }
 
     /**
@@ -261,8 +268,16 @@ class ProjectService implements CronosService {
                             )";
         }
         
+        $criteria = Project::find();
+        $criteria->innerJoin(Company::tableName().' customers','customers.id = project.company_id');
+        $criteria->where('customers.name=:customerName '.$sQuery);
+        $criteria->params(array('customerName' => $customerName));
+        $criteria->scopes('open')
+        $criteria->orderBy('project.name asc');
+
+        return $criteria->all();
         
-        $criteria = new CDbCriteria(array(
+        /*$criteria = new CDbCriteria(array(
                     'select' => 't.id, t.name',
                     'join' => 'INNER JOIN ' . Company::model()->tableName() . ' customers ON customers.id = t.company_id',
                     'condition' => 'customers.name=:customerName '.$sQuery,
@@ -270,7 +285,7 @@ class ProjectService implements CronosService {
                     'params' => array('customerName' => $customerName),
                     'order' => 't.name',
                 ));
-        return Project::findAll($criteria);
+        return Project::findAll($criteria);*/
     }
 
     /**
@@ -282,7 +297,7 @@ class ProjectService implements CronosService {
      * @param $onlyManagedByUser add a condition to return projects managed by user for the customer
      * @return array List of Projects (models) belonging to a customer in open status
      */
-    public function findProjectsFromCustomerByCustomerId($customerId, CronosUser $user, 
+    public function findProjectsFromCustomerByCustomerId($customerId, $user, 
             $projectCriteria, $onlyManagedByUser, 
             $sStartFilter = "", $sEndFilter = "", 
             $onlyUserEnvolved = false) {
