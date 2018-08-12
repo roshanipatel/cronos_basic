@@ -20,7 +20,7 @@ class ImputetypeService {
     private function findImputetypesFilter($iProject = "") {
         $criteria = new \yii\db\Query();
         if ($iProject != "") {
-            $criteria->addCondition(" exists (select * from " . Project::tableName() . " proj,"
+            $criteria->where(" exists (select * from " . Project::tableName() . " proj,"
                     . " " . ProjectImputetype::tableName() . " projimpute "
                     . " where :projectId = proj.id and projimpute.project_id = proj.id and t.id = projimpute.imputetype_id ) ");
             

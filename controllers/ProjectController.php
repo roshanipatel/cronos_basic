@@ -327,10 +327,10 @@ class ProjectController extends CronosController {
             $model->imputetype = Imputetype::getDefaultImputetypesFilter();
         }
         
-        
         $projectsCriteria = new yii\db\Query();
         $projectsCriteria->select = 't.id, t.name';
         $projectsCriteria->orderBy = 't.id desc';
+      
         if (!empty($model->company_id)) {
             $projectsProvider = ServiceFactory::createProjectService()
                     ->findProjectsFromCustomerByCustomerId($model->company_id, Yii::$app->user, $projectsCriteria, !Yii::$app->user->hasDirectorPrivileges(), $model->open_time, $model->close_time);
@@ -341,8 +341,8 @@ class ProjectController extends CronosController {
         $oImputetypeService = ServiceFactory::createImputetypeService();
         $this->render('projectOverview', array(
             'model' => $model,
-            'projectsProvider' => [], //$projectsProvider,
-            'projectImputetypes' => [] //$oImputetypeService->findImputetypes(),
+            'projectsProvider' => $projectsProvider,
+            'projectImputetypes' => $oImputetypeService->findImputetypes(),
         ));
     }
 

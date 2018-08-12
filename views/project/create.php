@@ -1,4 +1,9 @@
-<h1>Crear Proyecto</h1>
+<div class="row">
+  <div class="col-lg-12">
+	<h1 class="page-header">Crear Proyecto</h1>
+  </div>
+</div>
+
 
 <?php
 echo $this->render( '_form',[

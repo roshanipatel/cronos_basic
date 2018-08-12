@@ -4,6 +4,7 @@ namespace app\controllers;
 use Yii;
 use app\components\CronosController;
 use app\models\db\ProjectExpense;
+use app\models\form\ExpenseSearch;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -59,8 +60,9 @@ class ProjectExpenseController extends CronosController {
     }
 
     private function getProjectExpensesModelForSearchFromRequest() {
-        $expenseSearch = new ExpenseSearch('search');
-        $expenseSearch->unsetAttributes();  // clear any default values
+        $expenseSearch = new ExpenseSearch();
+        $expenseSearch->scenario = 'search';
+        //$expenseSearch->unsetAttributes();  // clear any default values
         if (isset($_GET['ExpenseSearch'])) {
             $expenseSearch->attributes = $_GET['ExpenseSearch'];
         }

@@ -177,13 +177,13 @@ class TaskSearch extends ActiveRecord {
                 // Fields for owners
 		if(User::isValidID($this->owner)) {
                     if ("" == $this->owner && $this->roleSearch == Roles::UT_PROJECT_MANAGER ) {
-                        $criteria->addCondition("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) OR  "
+                        $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) OR  "
                                 . " t.user_id = ".$this->owner.") ");
                     } else if(Yii::$app->user->id != $this->owner && $this->roleSearch == Roles::UT_PROJECT_MANAGER) {
-                        $criteria->addCondition("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) AND  "
+                        $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) AND  "
                                 . " t.user_id = ".Yii::$app->user->id.") ");
                     } else {
-                        $criteria->addCondition("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' )) ");
+                        $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' )) ");
                     }
                 }
                 
@@ -195,7 +195,7 @@ class TaskSearch extends ActiveRecord {
 		}
 
                 if(Imputetype::isValidID($this->imputetype)) {
-                    $criteria->addCondition("t.imputetype_id in (".implode(",", $this->imputetype).") ");
+                    $criteria->where("t.imputetype_id in (".implode(",", $this->imputetype).") ");
                 }
                 
 		// Fields for status

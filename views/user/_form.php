@@ -14,10 +14,6 @@
     $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/jquery-1.6.2.js',['position' => \yii\web\View::POS_HEAD]);
     $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/jquery-ui-1.8.8.custom.js',['position' => \yii\web\View::POS_HEAD]);
 ?>
-<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">Usuarios</h1>
-    </div>
     <div class="row" >
     <div class="col-lg-12">
         <div class="panel panel-default">
@@ -36,11 +32,11 @@
                                 'validateOnSubmit' => true,
                             ]); ?>
                         <?php echo $form->errorSummary( $model , array('class'=>'alert alert-danger'));?>
-                        <?php if( Yii::$app->session->getFlash('success')) { ?>
+                        <!-- <?php if( Yii::$app->session->getFlash('success')) { ?>
                             <div class="alert alert-success">
                                 <?= Yii::$app->session->getFlash('success') ?>
                             </div>
-                        <?php } ?>
+                        <?php } ?> -->
                 <?php
                     /*$form = ActiveForm::begin([
                         'id' => 'user-form',
@@ -202,6 +198,7 @@
                                   (Yii::$app->user->role != Roles::UT_ADMIN && $model->role != Roles::UT_ADMIN)) { ?>
                         <div class="col-lg-12">
                             <?php echo Html::submitButton( $model->isNewRecord ? 'Crear' : 'Guardar' , ['class'=>'btn btn-success']); ?>
+                            <?php echo Html::a( 'Volver',['#'] , ["onclick"=> "history.back();return false;" , "class"=>"btn btn-danger"] ); ?>
                         </div>
                         <?php } ?>
                     </div>

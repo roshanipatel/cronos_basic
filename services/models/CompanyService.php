@@ -71,14 +71,14 @@ class CompanyService implements CronosService
                 ));
 
         if ($worker != "") {
-            $criteria->addCondition(" upt.user_id = ".$worker);
+            $criteria->where(" upt.user_id = ".$worker);
         }
         
         if (!empty($sStartDate) && !empty($sEndDate)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= upt.date_ini AND :start_open <= upt.date_end) and   
                             (:end_open >= upt.date_ini AND :end_open >= upt.date_end)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
@@ -86,7 +86,7 @@ class CompanyService implements CronosService
         } else
         if (!empty($sStartDate)) {
             $sStartDate = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= upt.date_ini AND :start_open <= upt.date_end)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
         } else

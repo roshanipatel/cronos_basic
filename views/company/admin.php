@@ -1,18 +1,14 @@
-
-<h1>Gestionar Empresas</h1>
-
-<!--
-<p>
-You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
-or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.
-</p>
--->
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">Gestionar Empresas</h1>
+  </div>
+</div>
 <?php
 use yii\helpers\Html;
-use yii\grid\GridView;
+use fedemotta\datatables\DataTables;
 use common\components\Common;
 ?>
-<?= GridView::widget([
+<?= DataTables::widget([
     'id' => 'company-grid',
     'dataProvider' => $model,
     'filterModel' => $filter,

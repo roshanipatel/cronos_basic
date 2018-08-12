@@ -3,132 +3,128 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\models\Constants;
 use app\models\enums\ProjectStatus;
+use app\models\enums\ProjectCategories;
 use app\components\utils\PHPUtils;
 use app\models\enums\WorkerProfiles;
 use  app\models\enums\ReportingFreq;
 ?>
-<div class="form">
-
-    <?php
-        $form = ActiveForm::begin([
-            'id' => 'project-form',
-            'fieldConfig' => [
-                'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",
-            ],
-            'enableClientValidation'=>false,
-            'validateOnSubmit' => true,
-        ]); ?>
-
-    <p class="note">Los campos con <span class="required">*</span> son obligatorios.</p>
-
-    <?php //echo $form->errorSummary( $model ); ?>
-    <?php if( Yii::$app->session->hasFlash(Constants::FLASH_OK_MESSAGE) ) { ?>
-        <div class="resultOk"><p><?php echo Yii::$app->session->getFlash(Constants::FLASH_OK_MESSAGE)?></p></div>
-    <?php } 
-    
-    $aAttributes = array();
-    $aAttributes['class'] ="form-control";
-    if( Yii::$app->user->hasCommercialPrivileges() ) { 
-        $aAttributes['readonly'] = "readonly";
-    }
-
-    ?>
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="form-group">
-                <?php 
-                echo $form->field( $model, 'name')->textInput(array_merge($aAttributes, array( 'size' => 45, 'maxlength' => 45 ))); 
-                ?>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Proyecto
             </div>
-        </div>
-        <div class="col-lg-12">
-            <div class="form-group">
-                <?php 
-                if( Yii::$app->user->hasCommercialPrivileges() ) { 
-                        echo $form->hiddenField( $model, 'company_id'); 
-                } else {
-                $aAttributes['prompt'] = 'Choose...' ;
-                ?>
-                    <div class="row">
-                        <?= $form->field($model, 'company_id')->dropDownList( \yii\helpers\ArrayHelper::map($companies, 'id', 'name') ,array_merge($aAttributes, array(  'submit' => '',
-                                        'params' => array( 'new_select' => 1 ))))->label('Empresa *'); ?>
-                    </div>
-                <?php } ?>
-            </div>
-        </div>
-        <div class="col-lg-12">
-            &nbsp;&nbsp;&nbsp;
-            <small>
-                <?php 
-                if( !Yii::$app->user->hasCommercialPrivileges() ) { 
-                echo Html::a( '(Crear nueva empresa)', array( 'company/create' ) ); 
-                } ?>
-            </small>
-        <div>
-        <?php if( !Yii::$app->user->hasCommercialPrivileges() ) {  ?>
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <?= $form->field($model, 'status')->dropDownList( ProjectStatus::getDataForDropDown() ,$aAttributes);//->label('Empresa *'); ?>
-                </div>
-            </div>
-        <?php } else {  
-            echo $form->hiddenField( $model, 'status'); 
-            } ?>
-        <div class="col-lg-12">
-            <div class="form-group">
-                <?= $form->field($model, 'statuscommercial')->dropDownList( ProjectStatus::getDataForDropDown() ,$aAttributes);//->label('Empresa *'); ?>
-            </div>
-        </div>
-        <div class="col-lg-12">
-            <div class="form-group">
-            </div>
-        </div>
-        <?php if( !Yii::$app->user->hasCommercialPrivileges() ) { ?>
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <?= $form->field($model, 'cat_type')->dropDownList( ProjectStatus::getDataForDropDown() ,array_merge($aAttributes, array( 'prompt' => 'Sin categoría' )));//->label('Empresa *'); ?>
-                </div>
-            </div>
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <?php //echo $form->labelEx($model, 'open_time'); ?>
-                    <?php
-                        if ($model->open_time == "") {
-                            $model->open_time = date("d/m/Y");
-                        }
-                        $model->open_time = PHPUtils::removeHourPartFromDate($model->open_time);
-                        echo $form->field($model, 'open_time')->textInput(array(
-                            'maxlength' => 20
-                        ));
-                    ?>
-                    <?php //echo $form->error($model, 'open_time'); ?>
-                </div>
-            </div>
-
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <?php //echo $form->labelEx($model, 'close_time'); ?>
-                    <?php
-                    if ($model->close_time != "") {
-                        $model->close_time = PHPUtils::removeHourPartFromDate($model->close_time);
-                    }
-                    echo $form->field($model, 'close_time')->textInput(array(
-                        'maxlength' => 20
-                    ));
-                    ?>
-                    <?php //echo $form->error($model, 'open_time'); ?>
-                </div>
-            </div>
-            <?php if( Yii::$app->user->isAdmin() ) { ?>
+            <div class="panel-body">
+            <?php
+                $form = ActiveForm::begin([
+                    'id' => 'project-form',
+                    'fieldConfig' => [
+                        'template' => "{label}\n<div class=\"col-12\">{input}</div>\n<div class=\"col-12\">{error}</div>",
+                    ],
+                    'enableClientValidation'=>false,
+                    'validateOnSubmit' => true,
+                ]); ?>
+                <?php echo $form->errorSummary( $model  , array('class' => 'alert alert-danger'));?>
+            <div class="row">
                 <div class="col-lg-12">
                     <div class="form-group">
+                        <p class="note">Los campos con <span class="required">*</span> son obligatorios.</p>
+                    </div>
+                </div>
+                <?php 
+                $aAttributes = array();
+                $aAttributes['class'] ="form-control";
+                if( Yii::$app->user->hasCommercialPrivileges() ) 
+                    { 
+                        $aAttributes['readonly'] = "readonly";
+                    }
+                ?>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <?php  echo $form->field( $model, 'name')->textInput(array_merge($aAttributes, array( 'size' => 45, 'maxlength' => 45 )));  ?>
+                    </div>
+                </div>
+                <?php 
+                    if( Yii::$app->user->hasCommercialPrivileges() ) 
+                    { 
+                        echo $form->hiddenField( $model, 'company_id'); 
+                    }
+                    else
+                    {
+                ?> 
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <?php 
+                            $aAttributes['prompt'] = 'Choose...' ;
+                            echo  $form->field($model, 'company_id')->dropDownList( \yii\helpers\ArrayHelper::map($companies, 'id', 'name') ,array_merge($aAttributes, array(  'submit' => '','params' => array( 'new_select' => 1 ))))->label('Empresa *'); ?>
+                        <small>
+                            <?php echo Html::a( '(Crear nueva empresa)', array( 'company/create' ) ); ?>
+                        </small>
+                    </div>
+                </div>
+                <?php } ?>
+                <?php if( !Yii::$app->user->hasCommercialPrivileges() ) 
+                { ?>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <?php  echo $form->field($model, 'status')->dropDownList( ProjectStatus::getDataForDropDown() ,$aAttributes); ?>
+                    </div>
+                </div>
+                <?php  } 
+                    else
+                    { 
+                        echo $form->hiddenField( $model, 'status'); 
+                    }
+                ?>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <?= $form->field($model, 'statuscommercial')->dropDownList( ProjectStatus::getDataForDropDown() ,$aAttributes); ?>
+                    </div>
+                </div>
+                <?php if( !Yii::$app->user->hasCommercialPrivileges() ) { ?>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <?= $form->field($model, 'cat_type')->dropDownList( ProjectCategories::getDataForDropDown() ,$aAttributes); ?>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <?php
+                            if ($model->open_time == "") {
+                                $model->open_time = date("d/m/Y");
+                            }
+                            $model->open_time = PHPUtils::removeHourPartFromDate($model->open_time);
+                            echo $form->field($model, 'open_time')->textInput(array(
+                                'maxlength' => 20 , 'id'=>'Project_open_time'
+                            ));
+                        ?>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                         <?php
+                            if ($model->close_time != "") {
+                                $model->close_time = PHPUtils::removeHourPartFromDate($model->close_time);
+                            }
+                            echo $form->field($model, 'close_time')->textInput(array(
+                                'maxlength' => 20 , 'id'=>'Project_close_time'
+                            ));
+                            ?>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        &nbsp;&nbsp;&nbsp;
+                    </div>
+                </div>
+                <?php if( Yii::$app->user->isAdmin() ) { ?>
+                 <div class="col-lg-12">
+                    <div class="form-group">
                         <label for="project_profiles_prices" style="margin-bottom: 3px">Precios por perfil
-                                &nbsp;&nbsp;&nbsp;
+                             &nbsp;&nbsp;&nbsp;   
                         <small><?php echo Html::a( '(Modificar precios por defecto)', array( 'workerProfiles/update' ), array('style'=>'font-weight: normal') ); ?></small>
                         </label>
-
-                        <?php //echo $form->error( $model, 'workerProfiles' ); ?>
-                        <table style="padding: 3px;margin: 3px; width: 10%;border-collapse: collapse;">
+                        <table style="padding: 3px;margin: 3px; width: 100%;border-collapse: collapse;">
                             <?php
                             //foreach( $model->workerProfiles as $profilePriceForProject )
                             for( $i = 0; $i < count( $model->workerProfiles ); $i++ )
@@ -142,11 +138,12 @@ use  app\models\enums\ReportingFreq;
                                             <?php echo WorkerProfiles::toString( $profileId ) ?>:
                                         </label>
                                     </td>
-                                    <td style="padding: 0px 0px 0px 2px">
+                                    <td style="padding: 0px 0px 0px 2px;width:100%" >
                                         <?php
                                         echo $form->field( $model, "workerProfiles[$profileId]")->textInput( array(
                                             'class' => 'currency',
                                             'value' => $profilePrice,
+                                            'class' => '',
                                             ) ); ?>
                                     </td>
                                 </tr>
@@ -154,129 +151,65 @@ use  app\models\enums\ReportingFreq;
                         </table>
                     </div>
                 </div>
-            <?php } ?>
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <?php //echo $form->labelEx( $model, 'reporting' ); ?>
-                    <?php echo $form->field( $model, 'reporting')->dropDownList(ReportingFreq::getDataForDropDown() ); ?>
-                    <?php //echo $form->error( $model, 'reporting' ); ?>
-                </div>
-            </div>    
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <?php //echo $form->labelEx( $model, 'reportingtarget' ); ?>
-                    <?php
-                    echo $form->field( $model, 'reportingtarget')->dropDownList(
-                                    \yii\helpers\ArrayHelper::map( $projectTargets, 'id', 'name' ),
-                                    array( 'style' => 'width: 450px; height: 150px;',
-                                        'multiple' => 'multiple',
-                                        'class' => 'multiselect_plugin', ) );
-                    ?>
-                    <?php //echo $form->error( $model, 'reportingtarget' ); ?>
-                </div>
-            </div>
-            <div class="col-lg-12">
-                <div class="form-group">
-                   <?php 
-                    //echo $form->labelEx( $model, 'reportingtargetcustom' ); 
-                    echo $form->field( $model, 'reportingtargetcustom')->textInput(array_merge($aAttributes, array( 'size' => 45, 'maxlength' => 45 ))); 
-                    //echo $form->error( $model, 'reportingtargetcustom' ); 
-                    ?>
-                </div>
-            </div>
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <?php //echo $form->labelEx( $model, 'imputetypes' ); ?>
-                    <?php
-                    echo $form->field( $model, 'imputetypes')->dropDownList(
-                                    \yii\helpers\ArrayHelper::map( $projectImputetypes, 'id', 'name' ),
-                                    array( 'style' => 'width: 450px; height: 150px;',
-                                        'multiple' => 'multiple',
-                                        'class' => 'multiselect_plugin', ) );
-                    ?>
-                    <?php //echo $form->error( $model, 'imputetypes' ); ?>
-                </div>
-            </div>
-            <?php if( !Yii::$app->user->hasCommercialPrivileges() ) { ?>
-                <div class="col-lg-12">
+                <?php } ?>
+                <div class="col-lg-6">
                     <div class="form-group">
-                        <?php //echo $form->labelEx( $model, 'commercials' ); ?>
-                        <?php
-                                echo $form->field( $model, 'commercials')->dropDownList(
-                                        \yii\helpers\ArrayHelper::map( $projectCommercials, 'id', 'name' ),
-                                        array( 'style' => 'width: 450px; height: 150px;',
-                                            'multiple' => 'multiple',
-                                            'class' => 'multiselect_plugin', ) );
-                        ?>
-                        <?php //echo $form->error( $model, 'commercials' ); ?>
+                        <?php echo $form->field( $model, 'reporting')->dropDownList(ReportingFreq::getDataForDropDown() ); ?>
                     </div>
                 </div>
-            
-                <div class="col-lg-12">
+                <div class="col-lg-6">
                     <div class="form-group">
-                        <?php //echo $form->labelEx( $model, 'managers' ); ?>
-                        <?php
-                                echo $form->field( $model, 'managers')->dropDownList(
-                                        \yii\helpers\ArrayHelper::map( $projectManagers, 'id', 'name' ),
-                                        array( 'style' => 'width: 450px; height: 150px;',
-                                            'multiple' => 'multiple',
-                                            'class' => 'multiselect_plugin', ) );
-                        ?>
-                        <?php //echo $form->error( $model, 'managers' ); ?>
+                        <?php echo $form->field( $model, 'reportingtargetcustom')->textInput(array_merge($aAttributes, array( 'size' => 45, 'maxlength' => 45 ))); ?>
                     </div>
                 </div>
-                <div class="col-lg-12">
+                <div class="col-lg-6">
                     <div class="form-group">
-                        <?php //echo $form->labelEx( $model, 'workers' ); ?>
-                        <?php
-                                echo $form->field( $model, 'workers')->dropDownList(
-                                        \yii\helpers\ArrayHelper::map( $projectWorkers, 'id', 'name' ),
-                                        array( 'style' => 'width: 450px; height: 150px;',
-                                            'multiple' => 'multiple',
-                                            'class' => 'multiselect_plugin', ) );
-                        ?>
-                        <?php //echo $form->error( $model, 'workers' ); ?>
+                        <?php echo $form->field( $model, 'reportingtarget')->dropDownList(\yii\helpers\ArrayHelper::map( $projectTargets, 'id', 'name' ),array('style' => 'width: 450px; height: 150px;','multiple' => 'multiple', ) );?>
                     </div>
                 </div>
-                <div class="col-lg-12">
+                <div class="col-lg-6">
                     <div class="form-group">
-                        <?php //echo $form->labelEx( $model, 'customers' ); ?>
-                        <?php
-                                echo $form->field( $model, 'customers')->dropDownList(
-                                        \yii\helpers\ArrayHelper::map( $projectCustomers, 'id', 'name' ),
-                                        array( 'style' => 'width: 450px; height: 150px;',
-                                            'multiple' => 'multiple',
-                                            'class' => 'multiselect_plugin', ) );
-                        ?>
-                        <?php //echo $form->error( $model, 'customers' ); ?>
+                        <?php echo $form->field( $model, 'imputetypes')->dropDownList(\yii\helpers\ArrayHelper::map( $projectImputetypes, 'id', 'name' ),array('style' => 'width: 450px; height: 150px;','multiple' => 'multiple', ) );?>
                     </div>
                 </div>
-                <br>
-            <?php 
-            }
-            ?>
-            <div class="col-lg-12">
-                <div class="form-group">
-                   <label for="project_max_hours" style="margin-bottom: 3px">Máximo de horas
-                    &nbsp;&nbsp;&nbsp;<small style="font-weight:normal">(Dejar vacío ó 0 para no definir máximo)</small>
-                    </label>
-                      <?php echo $form->field($model,'max_hours')->textInput(                            array_merge($aAttributes, array(
-                                'maxlength' => '12',
-                                'class' => 'currency',
-                                ))); ?>
-                      <?php //echo $form->error($model,'max_hours'); ?>
-                </div>    
-            </div>
-            <div class="col-lg-12">
-                <div class="form-group">>
+                <?php if( !Yii::$app->user->hasCommercialPrivileges() ) { ?>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <?php echo $form->field( $model, 'commercials')->dropDownList(\yii\helpers\ArrayHelper::map( $projectCommercials, 'id', 'name' ),array('style' => 'width: 450px; height: 150px;','multiple' => 'multiple', ) );?>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <?php echo $form->field( $model, 'managers')->dropDownList(\yii\helpers\ArrayHelper::map( $projectManagers, 'id', 'name' ),array('style' => 'width: 450px; height: 150px;','multiple' => 'multiple', ) );?>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <?php echo $form->field( $model, 'workers')->dropDownList(\yii\helpers\ArrayHelper::map( $projectWorkers, 'id', 'name' ),array('style' => 'width: 450px; height: 150px;','multiple' => 'multiple', ) );?>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <?php echo $form->field( $model, 'customers')->dropDownList(\yii\helpers\ArrayHelper::map( $projectCustomers, 'id', 'name' ),array('style' => 'width: 450px; height: 150px;','multiple' => 'multiple', ) );?>
+                    </div>
+                </div>
+                <?php } ?>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label for="project_max_hours" style="margin-bottom: 3px">Máximo de horas
+                        &nbsp;&nbsp;&nbsp;
+                        <small style="font-weight:normal">(Dejar vacío ó 0 para no definir máximo)</small>
+                        <?php echo $form->field($model,'max_hours')->textInput(array_merge($aAttributes, array('maxlength' => '12','class' => 'currency',))); ?>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
                        <label for="project_hours_warn_threshold" style="margin-bottom: 3px">Umbral de aviso
-                        &nbsp;&nbsp;&nbsp;<small style="font-weight:normal">(Dejar vacío ó 0 para deshabilitar notificación)</small>
+                        &nbsp;&nbsp;&nbsp;
+                        <small style="font-weight:normal">(Dejar vacío ó 0 para deshabilitar notificación)</small>
                         </label>
-                  <?php echo $form->field($model,'hours_warn_threshold')->textInput(                        array_merge($aAttributes, array(
-                            'maxlength' => '12',
-                            'class' => 'currency',
-                            ))); ?>
-                  <?php //echo $form->error($model,'hours_warn_threshold'); ?>
+                        <?php echo $form->field($model,'hours_warn_threshold')->textInput(array_merge($aAttributes, array('maxlength' => '12','class' => 'currency',))); ?>
+                    </div>
                 </div>
             </div>
             <!-- Multiselect -->
@@ -320,6 +253,7 @@ use  app\models\enums\ReportingFreq;
      <?php } ?>
      <div class="col-lg-12">
         <?php echo Html::submitButton( $model->isNewRecord ? 'Crear' : 'Guardar' , ['class'=>'btn btn-success']); ?>
+        <?php echo Html::a( 'Volver',['#'] , ["onclick"=> "history.back();return false;" , "class"=>"btn btn-danger"] ); ?>
     </div>
 
  <?php ActiveForm::end(); ?>

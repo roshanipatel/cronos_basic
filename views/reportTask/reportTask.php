@@ -1,12 +1,16 @@
 <h1>Report: Actividad</h1>
 <?php /* * ********** SEARCH FORM  ****************** */ ?>
 <?php
+
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+
+
 // Required fields
 $showManager = Yii::$app->user->hasDirectorPrivileges();
-$form = $this->beginWidget('CActiveForm', array(
-    //'action' => $actionURL,
-    'method' => 'get',
-        ));
+ $form = ActiveForm::begin([
+            'method' => 'get',
+        ]);
 
 $aDiaActual = split("/", date("d/m/Y"));
 $beginDay = mktime(0,0,0,$aDiaActual[1], 1, $aDiaActual[2]);
@@ -60,7 +64,8 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
                 </script>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <?php
-    echo CHtml::submitButton('Make report', array(
+    echo Html::submitButton('Make report', array(
+        'class'=>'btn btn-success',
         'onClick' => 'return makeReport( this.form );',
     ));
     ?>
@@ -89,6 +94,4 @@ $endDay = mktime(0,0,0,$aDiaActual[1] + 1, 0, $aDiaActual[2]);
         jQuery( "div.ui-datepicker" ).css("font-size", "80%");
     }));
 </script>
-<?php
-$this->endWidget();
-?>
+<?php ActiveForm::end(); ?>

@@ -29,7 +29,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     // User role
     //public $role = Roles::UT_WORKER;
     public $role = Roles::UT_ADMIN;
-    public $id;
+    //public $id;
     /* public $username;
      public $password;
      public $name;
@@ -227,7 +227,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     }
 
     /**
-     * @return array customized attribute labels (name=>label)
+     *   @return array customized attribute labels (name=>label)
      */
     public function attributeLabels() {
         return array(

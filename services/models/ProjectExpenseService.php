@@ -162,7 +162,7 @@ class ProjectExpenseService implements CronosService {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($model->open_time, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($model->close_time, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (t.open_time <= :start_open AND t.close_time IS NULL) OR                            
                             (t.open_time <= :end_open AND t.close_time IS NULL) OR   
                             (t.open_time <= :start_open AND t.close_time >= :start_open) OR 
@@ -174,7 +174,7 @@ class ProjectExpenseService implements CronosService {
         } else
         if (!empty($model->open_time)) {
             $model->open_time = PHPUtils::addHourToDateIfNotPresent($model->open_time, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open >= t.open_time AND :start_open <= t.close_time) OR 
                             (:start_open >= t.open_time AND t.close_time IS NULL) OR                            
                             (:start_open <= t.open_time)");
@@ -315,20 +315,20 @@ class ProjectExpenseService implements CronosService {
                 ));
 
         if ($onlyBillable) {
-            //$criteria->addCondition("t.status = '" . TaskStatus::TS_APPROVED . "'");
+            //$criteria->where("t.status = '" . TaskStatus::TS_APPROVED . "'");
         }
         if ($iCustomer != "") {
-            $criteria->addCondition("proj.company_id = " . $iCustomer);
+            $criteria->where("proj.company_id = " . $iCustomer);
         }
         if ($iProject != "") {
-            $criteria->addCondition("t.project_id = " . $iProject);
+            $criteria->where("t.project_id = " . $iProject);
         }
 
         if (!empty($sStartDate) && !empty($sEndDate)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= t.date_ini) and   
                             (:end_open >= t.date_ini)");
 
@@ -337,7 +337,7 @@ class ProjectExpenseService implements CronosService {
         } else
         if (!empty($sStartDate)) {
             $sStartDate = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= t.date_ini)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
         } else

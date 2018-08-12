@@ -297,7 +297,7 @@ class ProjectService implements CronosService {
         }
 
         if (!empty($customerId)) {
-            $criteria->addCondition('t.company_id=:companyId');
+            $criteria->where('t.company_id=:companyId');
             $criteria->params['companyId'] = $customerId;
         }
 
@@ -305,7 +305,7 @@ class ProjectService implements CronosService {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartFilter, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndFilter, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (t.open_time <= :start_open AND t.close_time IS NULL) OR                            
                             (t.open_time <= :end_open AND t.close_time IS NULL) OR   
                             (t.open_time <= :start_open AND t.close_time >= :start_open) OR 
@@ -316,14 +316,14 @@ class ProjectService implements CronosService {
             $criteria->params[':end_open'] = PhpUtils::convertStringToDBDateTime($sEndFilter);
         } else if (!empty($sStartFilter)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartFilter, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open >= t.open_time AND :start_open <= t.close_time) OR 
                             (:start_open >= t.open_time AND t.close_time IS NULL) OR                            
                             (:start_open <= t.open_time)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
         } else if (!empty($sEndFilter)) {
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndFilter, "23:59");
-            $criteria->addCondition("
+            $criteria->where("
                             (t.open_time <= :end_open AND :end_open >= t.close_time) OR 
                             (t.open_time <= :end_open AND :end_open <= t.close_time) OR                            
                             (t.open_time <= :end_open AND t.close_time IS NULL)");
@@ -334,13 +334,13 @@ class ProjectService implements CronosService {
         // Project manager
         if ($onlyManagedByUser) {
             $criteria->join = 'INNER JOIN ' . ProjectManager::model()->tableName() . ' managers ON managers.project_id = t.id';
-            $criteria->addCondition('managers.user_id=:user_id');
+            $criteria->where('managers.user_id=:user_id');
             $criteria->params['user_id'] = $user->id;
         }
         
         //Only when the user is involved
         if ($onlyUserEnvolved && !Yii::$app->user->isAdmin()) {
-            $criteria->addCondition('
+            $criteria->where('
                 (exists (select * from ' . ProjectManager::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.') OR 
                 exists (select * from ' . ProjectWorker::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.') OR
                 exists (select * from ' . ProjectCommercial::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.'))');
@@ -510,10 +510,10 @@ class ProjectService implements CronosService {
         }
         // Build search criteria depending on the user
         $criteria = new CDbCriteria;
-        $criteria->addCondition('company_id = :companyId');
+        $criteria->where('company_id = :companyId');
         $criteria->params['companyId'] = $project->company_id;
         if (!$bAllStatus) {
-            $criteria->addCondition('statuscommercial = :status');
+            $criteria->where('statuscommercial = :status');
             $criteria->params['status'] = ProjectStatus::PS_OPEN;
         }
         
@@ -523,17 +523,17 @@ class ProjectService implements CronosService {
 //        } else if ($sessionUser->hasProjectManagerPrivileges()) {
 //            $criteria->join = 'INNER JOIN ' . ProjectManager::model()->tableName()
 //                    . ' managers ON managers.project_id = t.id';
-//            $criteria->addCondition('managers.user_id = :user_id');
+//            $criteria->where('managers.user_id = :user_id');
 //            $criteria->params['user_id'] = $sessionUser->id;
 //        } else if ($sessionUser->hasCommercialPrivileges()) {
 //            $criteria->join = 'INNER JOIN ' . ProjectCommercial::model()->tableName()
 //                    . ' managers ON managers.project_id = t.id';
-//            $criteria->addCondition('managers.user_id = :user_id');
+//            $criteria->where('managers.user_id = :user_id');
 //            $criteria->params['user_id'] = $sessionUser->id;
 //        } else {
 //            $criteria->join = 'INNER JOIN ' . ProjectWorker::model()->tableName()
 //                    . ' managers ON managers.project_id = t.id';
-//            $criteria->addCondition('managers.user_id = :user_id');
+//            $criteria->where('managers.user_id = :user_id');
 //            $criteria->params['user_id'] = $sessionUser->id;
 //        }
         
@@ -680,30 +680,42 @@ class ProjectService implements CronosService {
 //        if (!$isManager) {
 //            $criteria->with[] = 'managers';
 //        }
-        $criteria->where('Like','t.id', $model->id);
+        $criteria->andFilterWhere([
+            'or',
+            ['like', 't.id', $model->id],
+        ]);
         if (isset($model->company_id)) {
-            $criteria->where('Like','t.company_id', $model->company_id);
+            $criteria->andFilterWhere([
+                'or',
+                ['like', 't.company_id', $model->company_id],
+            ]);
         }
         if ((!isset($model->company_id)) && isset($model->company_name)) {
-            $criteria->addSearchCondition('company.name', $model->company_name);
+            $criteria->andFilterWhere([
+                'or',
+                ['like', 'company.name', $model->company_name],
+            ]);
+          //  $criteria->addSearchCondition('company.name', $model->company_name);
         }
-        /*$criteria->where('Like','t.code', $model->code);
-        $criteria->where('Like','t.name', $model->name);
-        $criteria->where('Like','t.status', $model->status);
+        $criteria->andFilterWhere([
+            'or',
+            ['like', 't.code', $model->code],
+            ['like', 't.name', $model->name],
+            ['like', 't.status', $model->status],
+            ['like','t.statuscommercial', $model->statuscommercial],
+            ['like','t.cat_type', $model->cat_type],
+            ['like','managers.id', $model->manager_id],
+        ]);
         if ($model->reporting == "0") {
-            $criteria->addCondition("t.reporting <> 'NONE'");
+            $criteria->where("t.reporting <> 'NONE'");
         } else if ($model->reporting == "1") {
-            $criteria->addCondition("t.reporting = 'NONE'");
+            $criteria->where("t.reporting = 'NONE'");
         }
-        
-        $criteria->where('Like','t.statuscommercial', $model->statuscommercial);
-        $criteria->where('Like','t.cat_type', $model->cat_type);*/
-        //$criteria->compare('managers.id', $model->manager_id);
         if (!empty($model->open_time) && !empty($model->close_time)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($model->open_time, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($model->close_time, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (t.open_time <= :start_open AND t.close_time IS NULL) OR                            
                             (t.open_time <= :end_open AND t.close_time IS NULL) OR   
                             (t.open_time <= :start_open AND t.close_time >= :start_open) OR 
@@ -715,7 +727,7 @@ class ProjectService implements CronosService {
         } else
         if (!empty($model->open_time)) {
             $model->open_time = PHPUtils::addHourToDateIfNotPresent($model->open_time, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open >= t.open_time AND :start_open <= t.close_time) OR 
                             (:start_open >= t.open_time AND t.close_time IS NULL) OR                            
                             (:start_open <= t.open_time)");
@@ -723,10 +735,10 @@ class ProjectService implements CronosService {
         } else
         if (!empty($model->close_time)) {
             $model->close_time = PHPUtils::addHourToDateIfNotPresent($model->close_time, "23:59");
-            $criteria->compare('t.close_time', '<=' . PhpUtils::convertStringToDBDateTime($model->close_time));
+            $criteria->where('t.close_time', '<=' . PhpUtils::convertStringToDBDateTime($model->close_time));
         }
         if (!empty($model->manager_id)) {
-            $criteria->addCondition("
+            $criteria->where("
                             exists (select * from " . ProjectManager::model()->tableName() . " managers where managers.project_id = t.id and managers.user_id = :id_manager )");
             $criteria->params[':id_manager'] = $model->manager_id;
             
@@ -827,7 +839,7 @@ class ProjectService implements CronosService {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= upt.date_ini AND :start_open <= upt.date_end) and   
                             (:end_open >= upt.date_ini AND :end_open >= upt.date_end)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
@@ -835,7 +847,7 @@ class ProjectService implements CronosService {
         } else
         if (!empty($sStartDate)) {
             $sStartDate = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= upt.date_ini AND :start_open <= upt.date_end)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
         } else

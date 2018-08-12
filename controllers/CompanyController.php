@@ -79,7 +79,7 @@ class CompanyController extends CronosController
             $model->attributes = $_POST['Company'];
             if( $model->save() )
             {
-                Yii::$app->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Empresa ' . $model->name . ' guardada con éxito' );
+                Yii::$app->session->setFlash('success', 'Empresa ' . $model->name . ' guardado con éxito');
                 $this->redirect( array( 'update', 'id' => $model->id ) );
             }
         }
@@ -133,7 +133,11 @@ class CompanyController extends CronosController
 
         $query = Company::find();
         if( isset( $_GET['Company']['name'] ) )
-            $query->compare('t.name', $_GET['Company']['name']);
+            $query->andFilterWhere([
+                'or',
+                ['like', 't.name', $_GET['Company']['name']],
+            ]);
+           // $query->compare('t.name', $_GET['Company']['name']);
         
         
         $sort = new Sort();

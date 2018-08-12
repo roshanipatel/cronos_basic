@@ -100,16 +100,22 @@ class Calendar extends ActiveRecord
     {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
-
-        $criteria = new CDbCriteria( array(
+        $criteria =  new Yii\db\Query();
+       /* $criteria = new CDbCriteria( array(
                     'order' => 't.day asc',
-                        ) );
+                        ) );*/
 
-        $criteria->compare( 'day', $this->day, true );
-        $criteria->compare( 'city', $this->city, true );
-
-        return new ActiveDataProvider( get_class( $this ), array(
-            'criteria' => $criteria,
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'city', $this->city],
+            ]);
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'day', $this->day],
+            ]);
+        $criteria->orderBy = 't.day asc';
+        return new ActiveDataProvider( array(
+            'query' => Calender::findAll($criteria),
                 ) );
     }
 

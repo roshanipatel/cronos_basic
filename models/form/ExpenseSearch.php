@@ -150,7 +150,7 @@ class ExpenseSearch extends ActiveRecord {
 
         // Fields for managers
         if (User::isValidID($this->owner)) {
-            $criteria->addCondition("( t.project_id in (select project_id from project_manager where user_id = '" . $this->owner . "') OR "
+            $criteria->where("( t.project_id in (select project_id from project_manager where user_id = '" . $this->owner . "') OR "
                     . " t.user_id = '" . $this->owner . "') ");
         }
 

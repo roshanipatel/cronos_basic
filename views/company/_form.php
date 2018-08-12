@@ -22,11 +22,7 @@ use yii\helpers\ArrayHelper;
                                 'validateOnSubmit' => true,
                             ]); ?>
                         <?php echo $form->errorSummary( $model  , array('class' => 'alert alert-danger'));?>
-                        <?php if( Yii::$app->session->getFlash('success')) { ?>
-                            <div class="alert alert-success">
-                                <?= Yii::$app->session->getFlash('success') ?>
-                            </div>
-                        <?php } ?>
+                        
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="form-group">
@@ -45,6 +41,7 @@ use yii\helpers\ArrayHelper;
                                 </div>
                                 <div class="col-lg-12" style="margin-top: 20px;">
                                         <?php echo Html::submitButton( $model->isNewRecord ? 'Crear' : 'Guardar' , ['class'=>'btn btn-success']); ?>
+                                        <?php echo Html::a( 'Volver',['#'] , ["onclick"=> "history.back();return false;" , "class"=>"btn btn-danger"] ); ?>
                                 </div>
                                 <!-- /.col-lg-6 (nested) -->
                             </div>

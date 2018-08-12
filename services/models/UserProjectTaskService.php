@@ -430,24 +430,24 @@ class UserProjectTaskService implements CronosService {
                 ));
 
         if ($iWorker != "") {
-            $criteria->addCondition(" t.user_id = '".$iWorker."' ");
+            $criteria->where(" t.user_id = '".$iWorker."' ");
         }
         if ($onlyBillable) {
-            $criteria->addCondition("t.is_billable = 1");
-            $criteria->addCondition("t.status = '" . TaskStatus::TS_APPROVED . "'");
+            $criteria->where("t.is_billable = 1");
+            $criteria->where("t.status = '" . TaskStatus::TS_APPROVED . "'");
         }
         if ($iCustomer != "") {
-            $criteria->addCondition("proj.company_id = " . $iCustomer);
+            $criteria->where("proj.company_id = " . $iCustomer);
         }
         if ($iProject != "") {
-            $criteria->addCondition("t.project_id = " . $iProject);
+            $criteria->where("t.project_id = " . $iProject);
         }
 
         if (!empty($sStartDate) && !empty($sEndDate)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
 
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= t.date_ini AND :start_open <= t.date_end) and   
                             (:end_open >= t.date_ini AND :end_open >= t.date_end)");
 
@@ -456,7 +456,7 @@ class UserProjectTaskService implements CronosService {
         } else
         if (!empty($sStartDate)) {
             $sStartDate = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
-            $criteria->addCondition("
+            $criteria->where("
                             (:start_open <= t.date_ini AND :start_open <= t.date_end)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartDate);
         } else
