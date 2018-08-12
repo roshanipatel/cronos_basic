@@ -6,7 +6,7 @@ use app\models\enums\ProjectStatus;
 use app\models\enums\ProjectCategories;
 use app\components\utils\PHPUtils;
 use app\models\enums\WorkerProfiles;
-use  app\models\enums\ReportingFreq;
+use app\models\enums\ReportingFreq;
 ?>
 <div class="row">
     <div class="col-lg-12">
@@ -213,12 +213,16 @@ use  app\models\enums\ReportingFreq;
                 </div>
             </div>
             <!-- Multiselect -->
-            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/plugins/localisation/jquery.localisation-min.js"></script>
-            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/plugins/tmpl/jquery.tmpl.1.1.1.js"></script>
-            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/plugins/blockUI/jquery.blockUI.js"></script>
-            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/ui-multiselect.js"></script>
-            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/multiselect/locale/ui-multiselect-es.js"></script>
-            <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/plugins/jquery.numeric.js"></script>
+            <?php
+            
+                $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/multiselect/plugins/localisation/jquery.localisation.js'/*,['position' => \yii\web\View::POS_HEAD]*/);
+                $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/multiselect/plugins/tmpl/jquery.tmpl.1.1.1.js'/*,['position' => \yii\web\View::POS_HEAD]*/);
+                $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/multiselect/plugins/blockUI/jquery.blockUI.js'/*,['position' => \yii\web\View::POS_HEAD]*/);
+                $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/multiselect/ui-multiselect.js'/*,['position' => \yii\web\View::POS_HEAD]*/);
+                $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/multiselect/locale/ui-multiselect-es.js'/*,['position' => \yii\web\View::POS_HEAD]*/);
+                $this->registerJsFile(Yii::$app->request->BaseUrl .'/js/plugins/jquery.numeric.js'/*,['position' => \yii\web\View::POS_HEAD]*/);
+
+            ?>
             <script type="text/javascript">
                 function makeMultiselect( selector )
                 {
