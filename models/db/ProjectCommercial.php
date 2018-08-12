@@ -73,13 +73,18 @@ class ProjectCommercial extends ActiveRelationalRecord
 	{
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
-		$criteria=new CDbCriteria;
+		$criteria=ProjectCommercial::find();
 
-		$criteria->compare('user_id',$this->user_id);
+		$criteria->andFilterWhere([
+                'or',
+                ['like', 'user_id',$this->user_id],
+                ['like','project_id',$this->project_id],
+            ]);
+		/*$criteria->compare('user_id',$this->user_id);
 		$criteria->compare('project_id',$this->project_id);
-
-		return new ActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
+*/
+		return new ActiveDataProvider(array(
+			'query'=>$criteria,
 		));
 	}
 

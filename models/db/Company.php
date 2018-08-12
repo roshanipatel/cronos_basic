@@ -102,17 +102,26 @@ class Company extends ActiveRecord
     {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
-
+        $criteria = Company::find();
+        $criteria->joinWith(['userCount', 'projectCount']);
+        $criteria->orderBy = 't.name asc';
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'name', $this->name],
+            ]);
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'email', $this->email],
+            ]);
+        /* 
         $criteria = new CDbCriteria( array(
-                    'with' => array( 'userCount', 'projectCount' ),
+                    'with' => array(  ),
                     'order' => 't.name asc',
                         ) );
-
-        $criteria->compare( 'name', $this->name, true );
-        $criteria->compare( 'email', $this->email, true );
-
-        return new ActiveDataProvider( get_class( $this ), array(
-            'criteria' => $criteria,
+*/
+       
+        return new ActiveDataProvider( array(
+            'query' => $criteria,
                 ) );
     }
     

@@ -79,14 +79,19 @@ class PricePerProjectAndProfile extends ActiveRelationalRecord
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
 
-        $criteria = new CDbCriteria;
-
-        $criteria->compare( 'worker_profile_id', $this->worker_profile_id, true );
+        $criteria = PricePerProjectAndProfile::find();
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'worker_profile_id', $this->worker_profile_id],
+                ['like','project_id', $this->project_id],
+                ['like','price', $this->price]
+            ]);
+        /*$criteria->compare( 'worker_profile_id', $this->worker_profile_id, true );
         $criteria->compare( 'project_id', $this->project_id );
-        $criteria->compare( 'price', $this->price, true );
+        $criteria->compare( 'price', $this->price, true );*/
 
-        return new ActiveDataProvider( get_class( $this ), array(
-            'criteria' => $criteria,
+        return new ActiveDataProvider( array(
+            'query' => $criteria,
         ) );
     }
 
