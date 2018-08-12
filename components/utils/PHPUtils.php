@@ -53,7 +53,7 @@ class PHPUtils {
      * @param DateTime $dt
      * @return string
      */
-    public static function convertPHPDateTimeToDBDateTime( DateTime $dt ) {
+    public static function convertPHPDateTimeToDBDateTime( $dt ) {
         return $dt->format( self::MYSQL_DATE_FORMAT_ON_CONVERSION );
     }
 
