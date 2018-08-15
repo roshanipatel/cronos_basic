@@ -251,7 +251,7 @@ class ProjectService implements CronosService {
 
         return $criteria->all();
        /* $criteria = new CDbCriteria(array(
-                    'join' => 'INNER JOIN ' . ProjectCommercial::model()->tableName() . ' commercial ON commercial.project_id = t.id',
+                    'join' => 'INNER JOIN ' . ProjectCommercial::tableName() . ' commercial ON commercial.project_id = t.id',
                     'condition' => 'commercial.user_id=:cust_id',
                     'params' => array('cust_id' => $cust_id),
                     'order' => 't.name asc',
@@ -271,9 +271,9 @@ class ProjectService implements CronosService {
         $sQuery = "";
         if ($iCurrentUser != "") {
             $sQuery = " AND (
-                                exists (select pw.* from " . ProjectWorker::model()->tableName() . " pw where t.id = pw.project_id and pw.user_id = ".$iCurrentUser.") OR
-                                exists (select pw.* from " . ProjectManager::model()->tableName() . " pw where t.id = pw.project_id and pw.user_id = ".$iCurrentUser.") OR
-                                exists (select pw.* from " . ProjectCommercial::model()->tableName() . " pw where t.id = pw.project_id and pw.user_id = ".$iCurrentUser.")
+                                exists (select pw.* from " . ProjectWorker::tableName() . " pw where t.id = pw.project_id and pw.user_id = ".$iCurrentUser.") OR
+                                exists (select pw.* from " . ProjectManager::tableName() . " pw where t.id = pw.project_id and pw.user_id = ".$iCurrentUser.") OR
+                                exists (select pw.* from " . ProjectCommercial::tableName() . " pw where t.id = pw.project_id and pw.user_id = ".$iCurrentUser.")
                             )";
         }
         
@@ -288,7 +288,7 @@ class ProjectService implements CronosService {
         
         /*$criteria = new CDbCriteria(array(
                     'select' => 't.id, t.name',
-                    'join' => 'INNER JOIN ' . Company::model()->tableName() . ' customers ON customers.id = t.company_id',
+                    'join' => 'INNER JOIN ' . Company::tableName() . ' customers ON customers.id = t.company_id',
                     'condition' => 'customers.name=:customerName '.$sQuery,
                     'scopes' => 'open',
                     'params' => array('customerName' => $customerName),
@@ -316,6 +316,7 @@ class ProjectService implements CronosService {
                 empty($sEndFilter)) {
             return array();
         }
+            
         if ($projectCriteria === null) {
             $criteria = Project::find();
         } else {
@@ -359,7 +360,7 @@ class ProjectService implements CronosService {
         
         // Project manager
         if ($onlyManagedByUser) {
-            $criteria->join = 'INNER JOIN ' . ProjectManager::model()->tableName() . ' managers ON managers.project_id = t.id';
+            $criteria->join = 'INNER JOIN ' . ProjectManager::tableName() . ' managers ON managers.project_id = t.id';
             $criteria->where('managers.user_id=:user_id');
             $criteria->params['user_id'] = $user->id;
         }
@@ -367,9 +368,9 @@ class ProjectService implements CronosService {
         //Only when the user is involved
         if ($onlyUserEnvolved && !Yii::$app->user->isAdmin()) {
             $criteria->where('
-                (exists (select * from ' . ProjectManager::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.') OR 
-                exists (select * from ' . ProjectWorker::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.') OR
-                exists (select * from ' . ProjectCommercial::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.'))');
+                (exists (select * from ' . ProjectManager::tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.') OR 
+                exists (select * from ' . ProjectWorker::tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.') OR
+                exists (select * from ' . ProjectCommercial::tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.'))');
         }
         
         $criteria->orderBy('t.name asc');
@@ -382,7 +383,7 @@ class ProjectService implements CronosService {
      * @param type $userId
      */
     public function addCriteriaForProjectManagers( $criteria, $userId) {
-        $criteria->join = 'INNER JOIN ' . ProjectManager::model()->tableName() . ' managers ON managers.project_id = t.id';
+        $criteria->join = 'INNER JOIN ' . ProjectManager::tableName() . ' managers ON managers.project_id = t.id';
         $criteria->addColumnCondition(array('managers.user_id' => $userId));
     }
 
@@ -401,7 +402,7 @@ class ProjectService implements CronosService {
     }
     
     public function addCriteriaForWorker( $criteria, $userId) {
-        $criteria->join = 'INNER JOIN ' . ProjectWorker::model()->tableName() . ' workers ON workers.project_id = t.id';
+        $criteria->join = 'INNER JOIN ' . ProjectWorker::tableName() . ' workers ON workers.project_id = t.id';
         $criteria->addColumnCondition(array('workers.user_id' => $userId));
     }
     
@@ -417,7 +418,7 @@ class ProjectService implements CronosService {
     
     
     public function addCriteriaForCommercial( $criteria, $userId) {
-        $criteria->join = 'INNER JOIN ' . ProjectCommercial::model()->tableName() . ' commercials ON commercials.project_id = t.id';
+        $criteria->join = 'INNER JOIN ' . ProjectCommercial::tableName() . ' commercials ON commercials.project_id = t.id';
         $criteria->addColumnCondition(array('commercials.user_id' => $userId));
     }
 
@@ -547,17 +548,17 @@ class ProjectService implements CronosService {
 //        if ($sessionUser->hasDirectorPrivileges()) {
 //            
 //        } else if ($sessionUser->hasProjectManagerPrivileges()) {
-//            $criteria->join = 'INNER JOIN ' . ProjectManager::model()->tableName()
+//            $criteria->join = 'INNER JOIN ' . ProjectManager::tableName()
 //                    . ' managers ON managers.project_id = t.id';
 //            $criteria->where('managers.user_id = :user_id');
 //            $criteria->params['user_id'] = $sessionUser->id;
 //        } else if ($sessionUser->hasCommercialPrivileges()) {
-//            $criteria->join = 'INNER JOIN ' . ProjectCommercial::model()->tableName()
+//            $criteria->join = 'INNER JOIN ' . ProjectCommercial::tableName()
 //                    . ' managers ON managers.project_id = t.id';
 //            $criteria->where('managers.user_id = :user_id');
 //            $criteria->params['user_id'] = $sessionUser->id;
 //        } else {
-//            $criteria->join = 'INNER JOIN ' . ProjectWorker::model()->tableName()
+//            $criteria->join = 'INNER JOIN ' . ProjectWorker::tableName()
 //                    . ' managers ON managers.project_id = t.id';
 //            $criteria->where('managers.user_id = :user_id');
 //            $criteria->params['user_id'] = $sessionUser->id;
@@ -578,8 +579,8 @@ class ProjectService implements CronosService {
      */
     public function findProjectManagersAndAdminByProject($project_id) {
         $criteria = new CDbCriteria(array(
-                    'join' => 'LEFT JOIN ' . ProjectManager::model()->tableName() . ' managers ON managers.user_id = t.id'
-                    . ' INNER JOIN ' . AuthAssignment::model()->tableName() . ' roles ON roles.userid = t.id',
+                    'join' => 'LEFT JOIN ' . ProjectManager::tableName() . ' managers ON managers.user_id = t.id'
+                    . ' INNER JOIN ' . AuthAssignment::tableName() . ' roles ON roles.userid = t.id',
                     'condition' => 'managers.project_id=:project_id OR roles.itemname = :role',
                     'params' => array(
                         'project_id' => $project_id,
@@ -593,7 +594,7 @@ class ProjectService implements CronosService {
     
     public function findProjectManagersByProject($project_id) {
         $criteria = new CDbCriteria(array(
-                    'join' => 'INNER JOIN ' . ProjectManager::model()->tableName() . ' managers ON managers.user_id = t.id',
+                    'join' => 'INNER JOIN ' . ProjectManager::tableName() . ' managers ON managers.user_id = t.id',
                     'condition' => 'managers.project_id=:project_id',
                     'params' => array(
                         'project_id' => $project_id
@@ -611,7 +612,7 @@ class ProjectService implements CronosService {
      */
     public function findProjectWorkersByProject($project_id) {
         $criteria = new CDbCriteria(array(
-                    'join' => 'INNER JOIN ' . ProjectWorker::model()->tableName() . ' workers ON workers.user_id = t.id',
+                    'join' => 'INNER JOIN ' . ProjectWorker::tableName() . ' workers ON workers.user_id = t.id',
                     'condition' => 'workers.project_id=:project_id',
                     'params' => array(
                         'project_id' => $project_id
@@ -666,7 +667,7 @@ class ProjectService implements CronosService {
     public function findProjectCommercialByProject($project_id) {
         
         $criteria = new CDbCriteria(array(
-                    'join' => 'INNER JOIN ' . ProjectCommercial::model()->tableName() . ' commercials ON commercials.user_id = t.id',
+                    'join' => 'INNER JOIN ' . ProjectCommercial::tableName() . ' commercials ON commercials.user_id = t.id',
                     'condition' => 'commercials.project_id=:project_id',
                     'params' => array(
                         'project_id' => $project_id
@@ -683,7 +684,7 @@ class ProjectService implements CronosService {
      */
     public function findAdministrativeUser() {
         $criteria = new CDbCriteria(array(
-                    'join' => ' INNER JOIN ' . AuthAssignment::model()->tableName() . ' roles ON roles.userid = t.id',
+                    'join' => ' INNER JOIN ' . AuthAssignment::tableName() . ' roles ON roles.userid = t.id',
                     'condition' => 'roles.itemname = :role',
                     'params' => array(
                         'role' => Roles::UT_ADMINISTRATIVE
@@ -765,7 +766,7 @@ class ProjectService implements CronosService {
         }
         if (!empty($model->manager_id)) {
             $criteria->where("
-                            exists (select * from " . ProjectManager::model()->tableName() . " managers where managers.project_id = t.id and managers.user_id = :id_manager )");
+                            exists (select * from " . ProjectManager::tableName() . " managers where managers.project_id = t.id and managers.user_id = :id_manager )");
             $criteria->params[':id_manager'] = $model->manager_id;
             
         }
@@ -860,9 +861,9 @@ class ProjectService implements CronosService {
         $criteria->groupBy('project.name, project.cat_type, co.name, pc.description, it.name');
         /*
         $criteria = new CDbCriteria(array(  
-                    'join' => ' INNER JOIN ' . UserProjectTask::model()->tableName() . ' upt ON upt.project_id = t.id '
-                            . ' INNER JOIN ' . Company::model()->tableName() . ' co ON co.id = t.company_id '
-                            . ' INNER JOIN ' . Imputetype::model()->tableName() . ' it ON it.id = upt.imputetype_id '
+                    'join' => ' INNER JOIN ' . UserProjectTask::tableName() . ' upt ON upt.project_id = t.id '
+                            . ' INNER JOIN ' . Company::tableName() . ' co ON co.id = t.company_id '
+                            . ' INNER JOIN ' . Imputetype::tableName() . ' it ON it.id = upt.imputetype_id '
                             . ' INNER JOIN project_category pc ON pc.name = t.cat_type ' ,
                     'order' => 'totalhours desc',
                     'select' => 't.name, 

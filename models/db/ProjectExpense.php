@@ -85,18 +85,25 @@ class ProjectExpense extends ActiveRecord {
             array(['status', 'origen', 'destino', 'motivo', 'comentario', 'company', 'transporttype'], 'string', 'max' => 1024)
         );
     }
+
+    public function getWorker(){
+        return $this->hasOne(User::className(), ['id' => 'user_id'])->select(['worker.name']);
+    }
+    public function getProject(){
+        return $this->hasOne(Project::className(), ['id' => 'project_id'])->select(['project.name', 'project.company_id', 'project.status']);
+    }
     
     /**
      * @return array relational rules.
      */
-    public function relations() {
+   /* public function relations() {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
             'worker' => array(self::BELONGS_TO, 'User', 'user_id', 'select' => 'worker.name'),
             'project' => array(self::BELONGS_TO, 'Project', 'project_id', 'select' => 'project.name, project.company_id, project.status')
         );
-    }
+    }*/
 
     /**
      * @return array customized attribute labels (name=>label)
