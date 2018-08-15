@@ -149,48 +149,55 @@ class ProjectExpenseService implements CronosService {
     }
 
     public function getCriteriaFromModel($model) {
-
-        $criteria = new CDbCriteria(array(
-                    'with' => array('user'),
-                    'order' => 't.date_ini asc',
-                    'together' => true,
-                ));
+        $criteria = ProjectExpense::find();
+        $criteria->joinWith(['user']);
+        $criteria->orderBy('user_project_cost.date_ini asc');
+        
         $isManager = (!Yii::$app->user->hasDirectorPrivileges()) && (!Yii::$app->user->hasCommercialPrivileges());
 
         if (!$isManager) {
-            $criteria->with[] = 'managers';
+            $criteria->joinWith('managers');
         }
-        $criteria->compare('t.id', $model->id);
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'user_project_cost.id', $model->id],
+            ]);
         if (isset($model->project_id)) {
-            $criteria->compare('t.project_id', $model->project_id);
+            $criteria->andFilterWhere([
+                'or',
+                ['like', 'user_project_cost.project_id', $model->project_id],
+            ]);
         }
-        $criteria->compare('t.manager_id', $model->manager_id);
-        $criteria->compare('t.status', $model->status, false);
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'user_project_cost.manager_id', $model->manager_id],
+                ['like', 'user_project_cost.status', $model->status],
+            ]);
         if (!empty($model->open_time) && !empty($model->close_time)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($model->open_time, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($model->close_time, "23:59");
 
-            $criteria->where("
-                            (t.open_time <= :start_open AND t.close_time IS NULL) OR                            
-                            (t.open_time <= :end_open AND t.close_time IS NULL) OR   
-                            (t.open_time <= :start_open AND t.close_time >= :start_open) OR 
-                            (:start_open <= t.open_time AND t.close_time <= :end_open) OR 
-                            (:start_open <= t.open_time AND t.close_time >= :end_open) OR 
-                            (t.open_time <= :start_open AND t.close_time >= :end_open)");
+            $criteria->andWhere("
+                            (user_project_cost.open_time <= :start_open AND user_project_cost.close_time IS NULL) OR                            
+                            (user_project_cost.open_time <= :end_open AND user_project_cost.close_time IS NULL) OR   
+                            (user_project_cost.open_time <= :start_open AND user_project_cost.close_time >= :start_open) OR 
+                            (:start_open <= user_project_cost.open_time AND user_project_cost.close_time <= :end_open) OR 
+                            (:start_open <= user_project_cost.open_time AND user_project_cost.close_time >= :end_open) OR 
+                            (user_project_cost.open_time <= :start_open AND user_project_cost.close_time >= :end_open)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($sStartFilter);
             $criteria->params[':end_open'] = PhpUtils::convertStringToDBDateTime($sEndFilter);
         } else
         if (!empty($model->open_time)) {
             $model->open_time = PHPUtils::addHourToDateIfNotPresent($model->open_time, "00:00");
-            $criteria->where("
-                            (:start_open >= t.open_time AND :start_open <= t.close_time) OR 
-                            (:start_open >= t.open_time AND t.close_time IS NULL) OR                            
-                            (:start_open <= t.open_time)");
+            $criteria->andWhere("
+                            (:start_open >= user_project_cost.open_time AND :start_open <= user_project_cost.close_time) OR 
+                            (:start_open >= user_project_cost.open_time AND user_project_cost.close_time IS NULL) OR                            
+                            (:start_open <= user_project_cost.open_time)");
             $criteria->params[':start_open'] = PhpUtils::convertStringToDBDateTime($model->open_time);
         } else
         if (!empty($model->close_time)) {
             $model->close_time = PHPUtils::addHourToDateIfNotPresent($model->close_time, "23:59");
-            $criteria->compare('t.close_time', '<=' . PhpUtils::convertStringToDBDateTime($model->close_time));
+            $criteria->andWhere('user_project_cost.close_time', '<=' . PhpUtils::convertStringToDBDateTime($model->close_time));
         }
         if ($isManager) {
             $userId = Yii::$app->user->id;
@@ -205,7 +212,7 @@ class ProjectExpenseService implements CronosService {
      * @param type $userId
      */
     public function addCriteriaForProjectManagers($criteria, $userId) {
-        $criteria->join = 'INNER JOIN ' . ProjectManager::tableName() . ' managers ON managers.project_id = t.project_id';
+        $criteria->join = 'INNER JOIN ' . ProjectManager::tableName() . ' managers ON managers.project_id = user_project_cost.project_id';
         $criteria->addColumnCondition(array('managers.user_id' => $userId));
     }
 

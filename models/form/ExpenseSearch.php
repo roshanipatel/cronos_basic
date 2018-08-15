@@ -123,12 +123,12 @@ class ExpenseSearch extends ActiveRecord {
                 if ($this->projectIdsForSearch === array()) {
                     $criteria->andFilterWhere([
                         'or',   
-                        ['like', 't.project_id', Project::INVALID_ID]
+                        ['like', ProjectExpense::tableName().'.project_id', Project::INVALID_ID]
                     ]);
                 } else {
                     $criteria->andFilterWhere([
                         'or',
-                        ['like', 't.project_id', $this->projectIdsForSearch]
+                        ['like', ProjectExpense::tableName().'.project_id', $this->projectIdsForSearch]
                     ]);
                 }
             }
@@ -138,50 +138,50 @@ class ExpenseSearch extends ActiveRecord {
         if (!empty($this->dateIni)) {
              $criteria->andFilterWhere([
                         'or',
-                        't.date_ini >=' . PHPUtils::convertStringToDBDateTime(PHPUtils::addHourToDateIfNotPresent($this->dateIni, "00:00"))
+                        ProjectExpense::tableName().'.date_ini >=' . PHPUtils::convertStringToDBDateTime(PHPUtils::addHourToDateIfNotPresent($this->dateIni, "00:00"))
                     ]);
            // $criteria->compare('t.date_ini', '>=' . PHPUtils::convertStringToDBDateTime(PHPUtils::addHourToDateIfNotPresent($this->dateIni, "00:00")));
         }
         if (!empty($this->dateEnd)) {
             $criteria->andFilterWhere([
                         'or',
-                        't.date_ini <=' . PHPUtils::convertStringToDBDateTime(PHPUtils::addHourToDateIfNotPresent($this->dateEnd, "23:59"))
+                        ProjectExpense::tableName().'.date_ini <=' . PHPUtils::convertStringToDBDateTime(PHPUtils::addHourToDateIfNotPresent($this->dateEnd, "23:59"))
                     ]);
            // $criteria->compare('t.date_ini', ');
         }
         if (!empty($this->costtype)) {
             $criteria->andWhere([
-                       't.costtype' => $this->costtype
+                       ProjectExpense::tableName().'.costtype' => $this->costtype
                     ]);
         }
         if (!empty($this->paymentMethod)) {
             $criteria->andWhere([
-                       't.paymentMethod' => $this->paymentMethod
+                       ProjectExpense::tableName().'.paymentMethod' => $this->paymentMethod
                     ]);
         }
         if (!empty($this->projectId)) {
             $criteria->andWhere([
-                       't.project_id' => $this->projectId
+                       ProjectExpense::tableName().'.project_id' => $this->projectId
                     ]);
         }
         // Fields for status
         if ($this->status != "" && TaskStatus::isValidValue($this->status)) {
             $criteria->andWhere([
-                       't.status' => $this->status
+                       ProjectExpense::tableName().'.status' => $this->status
                     ]);
         }
 
         // Fields for workers
         if (User::isValidID($this->worker)) {
             $criteria->andWhere([
-                       't.user_id' => $this->worker
+                       ProjectExpense::tableName().'.user_id' => $this->worker
                     ]);
         }
 
         // Fields for managers
         if (User::isValidID($this->owner)) {
-            $criteria->where("( t.project_id in (select project_id from project_manager where user_id = '" . $this->owner . "') OR "
-                    . " t.user_id = '" . $this->owner . "') ");
+            $criteria->where("( ".ProjectExpense::tableName().".project_id in (select project_id from project_manager where user_id = '" . $this->owner . "') OR "
+                    . ProjectExpense::tableName().".user_id = '" . $this->owner . "') ");
         }
 
         // Fields for customers
@@ -200,7 +200,7 @@ class ExpenseSearch extends ActiveRecord {
         }
 
         if (empty($this->sort)) {
-            $criteria->orderBy('t.id desc');
+            $criteria->orderBy(ProjectExpense::tableName().'.id desc');
         }
 
         return $criteria;
