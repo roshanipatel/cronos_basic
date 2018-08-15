@@ -88,11 +88,18 @@ class TaskHistory extends Model
     {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
-        $criteria = new CDbCriteria;
+        $criteria = TaskHistory::find();
+
+//        $criteria->where(['user_id'=>$this->user_id,'project_id'=>$this->project_id]);
+
+        return new ActiveDataProvider(array(
+            'query'=>$criteria,
+        ));
+       /* $criteria = new CDbCriteria;
 
         return new ActiveDataProvider( get_class( $this ), array(
             'criteria' => $criteria,
-                ) );
+                ) );*/
     }
 
     public static function beforeSave()

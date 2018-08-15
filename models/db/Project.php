@@ -66,8 +66,11 @@ class Project extends ActiveRecord {
     public $imputetype;
     public $imputetypes;
     public $workerProfiles;    
-
-
+    public $reportingtarget;
+    public $commercials;
+    public $managers;
+    public $workers;
+    public $customers;
     /**
      * @return string the associated database table name
      */
@@ -101,13 +104,13 @@ class Project extends ActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            [['name', 'company_id'], 'required'],
+            [['name'], 'required'],
             [['company_id', 'fixed_time', 'fix_time_hour_ini'],'integer'],
             [['max_hours','hours_warn_threshold'], 'integer'],
-            ['company_id', 'exist', 'targetClass' => 'Company', 'targetAttribute' => 'id'],
-            ['manager_id', 'exist', 'targetClass' => 'User', 'targetAttribute' => 'id'],
-            ['commercial', 'exist', 'targetClass' => 'User', 'targetAttribute' => 'id'],
-            ['id', 'exist', 'targetClass' => 'Project', 'targetAttribute' => 'id'],
+            //['company_id', 'exist', 'targetClass' => '\app\models\db\Company', 'targetAttribute' => 'id'],
+           ['manager_id', 'exist', 'targetClass' => '\app\models\User', 'targetAttribute' => 'id'],
+            ['commercial', 'exist', 'targetClass' => '\app\models\User', 'targetAttribute' => 'id'],
+            ['id', 'exist', 'targetClass' => '\app\models\db\Project', 'targetAttribute' => 'id'],
             ['status', 'in', 'range' => ProjectStatus::getValidValues()],
             ['statuscommercial', 'in', 'range' => ProjectStatus::getValidValues()],
             ['cat_type', 'in', 'range' => ProjectCategories::getValidValues()],
@@ -129,7 +132,7 @@ class Project extends ActiveRecord {
            // ['workerProfiles', 'unsafe'],
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            [['id', 'code', 'name', 'status', 'manager_custom', 'commercial_custom', 'company_custom', 'totalSeconds', 'company_name', 'open_time', 'close_time', 'manager_id', 'imputetype'],'safe', 'on' => 'search'],
+            [['id', 'code', 'name', 'status', 'manager_custom', 'reportingtarget','commercial_custom', 'company_custom', 'totalSeconds', 'company_name', 'open_time', 'close_time', 'manager_id', 'imputetype'],'safe', 'on' => 'search'],
         ];
     }
 
@@ -139,10 +142,10 @@ class Project extends ActiveRecord {
         //return $this->hasMany(\app\models\db\PricePerProjectAndProfile::className(), ['id' => 'project_id']);
     }
     public function getCompany(){
-         return $this->belongsTo(\app\models\db\Company::className(), ['id' => 'company_id']);
+         return $this->hasOne(\app\models\db\Company::className(), ['id' => 'company_id']);
     }
     public function getCommercial(){
-         return $this->belongsTo(\app\models\User::className(), ['id' => 'company_id']);
+         return $this->hasOne(\app\models\User::className(), ['id' => 'company_id']);
     }
     
     public function getManagers(){
@@ -386,8 +389,8 @@ class Project extends ActiveRecord {
         } else {
             $this->close_time = null;
         }
-        
-        return parent::beforeSave();
+        return true;
+        //return parent::beforeSave();
     }
 
     public function afterFind() {
@@ -445,15 +448,9 @@ class Project extends ActiveRecord {
             return false;
         }
         $id = empty($this->id) ? -1 : (int) $this->id;
-        $projects = Project::find()->where(array(
-            'name' => $this->name,
-            'company_id' => $this->company_id,
-                ),
-                // The project must be different than itself!!
-                'id != :id', array(
-            'id' => $id
-                )
-        )->all();
+        
+        $projects = Project::find()->where(['name' => $this->name,
+            'company_id' => $this->company_id])->andWhere('id != :id')->params(['id' => $id])->all();
         $res = count($projects) == 0;
         if (!$res) {
             $this->addError('name', 'Ya existe un proyecto con este nombre para este cliente');

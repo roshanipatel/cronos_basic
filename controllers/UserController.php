@@ -66,7 +66,7 @@ class UserController extends CronosController {
               }
                 
             } catch (Exception $e) {
-                Yii::log('Error saving User ' . $e, CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+                Yii::error('Error saving User ' . $e, __METHOD__);
                 $transaction->rollback();
             }
         }
@@ -108,23 +108,23 @@ class UserController extends CronosController {
             // we only allow deletion via POST request
             $model = $this->loadModel($id);
             if (!isset($model))
-                throw new CHttpException(404, 'User not found');
+                throw new HttpException(404, 'User not found');
             // Transaction required to delete roles
             $transaction = $model->dbConnection->beginTransaction();
             try {
                 $model->delete();
                 $transaction->commit();
             } catch (Exception $e) {
-                Yii::log('Error deleting user ' . $model->id . ': ' . $e, CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+                Yii::error('Error deleting user ' . $model->id . ': ' . $e, __METHOD__);
                 $transaction->rollback();
-                throw new CHttpException(500, 'Error deleting user');
+                throw new HttpException(500, 'Error deleting user');
             }
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
             if (!isset($_GET['ajax']))
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin') );
         }
         else
-            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            throw new HttpException(400, 'Invalid request. Please do not repeat this request again.');
     }
 
     /**
@@ -204,7 +204,7 @@ class UserController extends CronosController {
     public function loadModel($id) {
         $model = User::findOne((int) $id);
         if ($model === null)
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
         return $model;
     }
 

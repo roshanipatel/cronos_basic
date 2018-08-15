@@ -1,9 +1,11 @@
 <?php
-use app\services\other;
+namespace app\services\other;
 
-use yii;
 use yii\data\Sort;
 use yii\data\ActiveDataProvider;
+use app\models\form\TaskSearch;
+use app\services\ServiceFactory;
+use app\models\enums\TaskStatus;
 
 /**
  * Some help functions for task serach duties
@@ -34,7 +36,7 @@ class TaskSearchService {
 	 * @param int $flags see top of the document
 	 * @return array
 	 */
-        public function getTaskSearchFormProvidersForProfile(TaskSearch $taskSearch, CronosUser $user, $flags = self::DEFAULT_SEARCH) {
+        public function getTaskSearchFormProvidersForProfile( $taskSearch,  $user, $flags = self::DEFAULT_SEARCH) {
             
 		$builder = $this->getBuilderForRole($flags, $taskSearch, $user);
 		$providers = $builder->getProvidersForSearch($taskSearch[TaskSearch::FLD_NAME_DATE_INI], $taskSearch[TaskSearch::FLD_NAME_DATE_END]);
@@ -97,14 +99,14 @@ class TaskSearchService {
 	}
 
 
-	private function getBuilderForRole($flags, TaskSearch $taskSearch, CronosUser $user) {
+	private function getBuilderForRole($flags,  $taskSearch,  $user) {
 		if($flags & self::OP_APPROVE_TASKS) {
 			if($flags & self::SEARCH_AS_ADMIN) {
 				return new TaskSearchProviderBuilderForApproveAdmin($user, $taskSearch);
 			} else if($flags & self::SEARCH_AS_MANAGER) {
 				return new TaskSearchProviderBuilderForApproveManager($user, $taskSearch);
 			} else {
-				throw new CHttpException(403, 'Acceso denegado');
+				throw new HttpException(403, 'Acceso denegado');
 			}
 		} else {
                         //Once it is above x10 it is needed to reverse the sort order.
@@ -119,8 +121,8 @@ class TaskSearchService {
 			} else if($flags == self::SEARCH_AS_WORKER) {
 				return new TaskSearchProviderBuilderForSearchWorker($user, $taskSearch);
 			} else {
-				Yii::log("$flags does not contain a valid search profile", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
-				throw new CHttpException(500, 'Error interno del sevidor');
+				Yii::error("$flags does not contain a valid search profile", __METHOD__);
+				throw new HttpException(500, 'Error interno del sevidor');
 			}
 		}
 	}
@@ -145,7 +147,7 @@ abstract class TaskSearchProviderBuilder implements ITaskSearchProvidersBuilder 
 	private $taskSearch;
 	private $projectsCriteria;
 
-	public function __construct(CronosUser $user, TaskSearch $taskSearch) {
+	public function __construct( $user,  $taskSearch) {
 		$this->userId = $user->id;
 		$this->user = $user;
 		$this->taskSearch = $taskSearch;
@@ -155,9 +157,9 @@ abstract class TaskSearchProviderBuilder implements ITaskSearchProvidersBuilder 
 		  $this->projectsCriteria->addCondition( 't.company_id=:companyId' );
 		  $this->projectsCriteria->params['companyId'] = $this->taskSearch->companyId;
 		  } */
-		$this->projectsCriteria = new yii\db\Query();
+		$this->projectsCriteria = new \yii\db\Query();
 		$this->projectsCriteria->select = 't.id, t.name';
-		$this->projectsCriteria->order = 't.id desc';
+		$this->projectsCriteria->orderBy = 't.id desc';
 	}
 
 	public function getProvidersForSearch($sStartDate = "", $sEndDate = "") {
@@ -249,7 +251,7 @@ abstract class TaskSearchProviderBuilder implements ITaskSearchProvidersBuilder 
 		if(Project::isValidID($this->getTaskSearch()->projectId)) {
 			if(!ServiceFactory::createProjectService()->isManagerOfProject($this->getUserId(),
 							$this->getTaskSearch()->projectId)) {
-				throw new CHttpException(403, 'Acceso denegado');
+				throw new HttpException(403, 'Acceso denegado');
 			}
 			self::tweakTaskSearch();
 		} else {
@@ -277,7 +279,7 @@ abstract class TaskSearchProviderBuilder implements ITaskSearchProvidersBuilder 
 		if(Project::isValidID($this->getTaskSearch()->projectId)) {
 			if(!ServiceFactory::createProjectService()->isCommercialOfProject($this->getUserId(),
 							$this->getTaskSearch()->projectId)) {
-				throw new CHttpException(403, 'Acceso denegado');
+				throw new HttpException(403, 'Acceso denegado');
 			}
 			self::tweakTaskSearch();
 		} else {
@@ -393,7 +395,7 @@ class TaskSearchProviderBuilderForSearchCustomer extends TaskSearchProviderBuild
 		if(Project::isValidID($this->getTaskSearch()->projectId)) {
 			if(!ServiceFactory::createProjectService()->isCustomerOfProject($this->getUserId(),
 							$this->getTaskSearch()->projectId)) {
-				throw new CHttpException(403, 'Acceso denegado');
+				throw new HttpException(403, 'Acceso denegado');
 			}
 			parent::tweakTaskSearch();
 		} else {
@@ -433,9 +435,9 @@ class TaskSearchProviderBuilderForSearchWorker extends TaskSearchProviderBuilder
  */
 abstract class TaskSearchProviderBuilderForApproving extends TaskSearchProviderBuilder {
 
-	public function __construct(CronosUser $user, TaskSearch $taskSearch) {
+	public function __construct( $user,  $taskSearch) {
 		parent::__construct($user, $taskSearch);
-		$this->getProjectsCriteria()->scopes = 'open';
+		$this->getProjectsCriteria()/*->scopes = 'open'*/;
 	}
 
 	protected function tweakTaskSearch() {

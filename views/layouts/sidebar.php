@@ -27,7 +27,7 @@ switch( $userRole )
         $menuToInclude = 'top_menu_comercial.php';
         break;
     default:
-        throw new CHttpException(500, 'Database integrity error' );
+        throw new HttpException(500, 'Database integrity error' );
 }
 ?>
 <div class="navbar-default sidebar" role="navigation">

@@ -79,31 +79,31 @@ class UserProjectTaskService implements CronosService {
         assert(is_numeric($newProject));
         // Throws an exception if not found.
         if (!( $task = UserProjectTask::findOne((int) $taskId) ))
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
 
         if (!WorkerProfiles::isValidValue($newProfile))
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
 
         if (!( Project::findOne((int) $newProject) ))
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
 
         // Check if project belongs to manager!
         if (!$this->isUserManagerOfProject($task->project_id, $sessionUser)) {
-            Yii::log("User $sessionUser->username tried to approve a task FROM project $task->project_id");
-            throw new CHttpException(403, 'No allowed to approve this task');
+            Yii::info("User $sessionUser->username tried to approve a task FROM project $task->project_id",__METHOD__);
+            throw new HttpException(403, 'No allowed to approve this task');
         }
         // Check if new project belongs to manager!
         if (!$this->isUserManagerOfProject($newProject, $sessionUser)) {
-            Yii::log("User $sessionUser->guestName tried to approve a task TO project $newProject");
-            throw new CHttpException(403, 'No allowed to approve this task');
+            Yii::info("User $sessionUser->guestName tried to approve a task TO project $newProject",__METHOD__);
+            throw new HttpException(403, 'No allowed to approve this task');
         }
         // Check TaskStatus
         if ($task->status == TaskStatus::TS_APPROVED) {
-            Yii::log("Can't approve task $taskId. Already approved", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);
+            Yii::warning("Can't approve task $taskId. Already approved", __METHOD__);
             return;
         } else if ($task->status != TaskStatus::TS_NEW) {
-            Yii::log("Cant approve task $taskId. Not NEW!", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
-            throw new CHttpException(403, 'No allowed to approve this task');
+            Yii::error("Cant approve task $taskId. Not NEW!", __METHOD__);
+            throw new HttpException(403, 'No allowed to approve this task');
         }
         $this->doApprove($task, $newProfile, $newProject, $comment, $ticketId, $imputetype);
     }
@@ -114,23 +114,23 @@ class UserProjectTaskService implements CronosService {
         
         // Throws an exception if not found.
         if (!( $task = UserProjectTask::findOne((int) $taskId) ))
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
 
         if (!WorkerProfiles::isValidValue($newProfile))
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
 
         if (!( Project::findOne((int) $newProject) ))
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
 
         //Check if project belongs to manager!
         if (!$this->isUserManagerOfProject($task->project_id, $sessionUser)) {
-            Yii::log("User $sessionUser->guestName tried to update a task FROM project $task->project_id");
-            throw new CHttpException(403, 'No allowed to update this task');
+            Yii::info("User $sessionUser->guestName tried to update a task FROM project $task->project_id",__METHOD__);
+            throw new HttpException(403, 'No allowed to update this task');
         }
         // Check if new project belongs to manager!
         if (!$this->isUserManagerOfProject($newProject, $sessionUser)) {
-            Yii::log("User $sessionUser->guestName tried to update a task TO project $newProject");
-            throw new CHttpException(403, 'No allowed to update this task');
+            Yii::info("User $sessionUser->guestName tried to update a task TO project $newProject",__METHOD__);
+            throw new HttpException(403, 'No allowed to update this task');
         }
         
         $this->doUpdate($task, $newProfile, $newProject, $comment, $ticketId, $imputetype);
@@ -175,7 +175,7 @@ class UserProjectTaskService implements CronosService {
      * @param CronosUser $sessionUser
      * @return boolean
      */
-    private function isUserManagerOfProject($projectId, CronosUser $sessionUser) {
+    private function isUserManagerOfProject($projectId,  $sessionUser) {
         assert(is_numeric($projectId));
         // If admin, then OK
         if ($sessionUser->hasDirectorPrivileges())
@@ -188,7 +188,7 @@ class UserProjectTaskService implements CronosService {
         }
     }
 
-    private function getDateFieldsFromTaskSearch(TaskSearch $taskSearch) {
+    private function getDateFieldsFromTaskSearch( $taskSearch) {
         $result = array();
         if (!empty($taskSearch->dateIni))
             $result[] = "GREATEST(t.date_ini, '" . PHPUtils::convertStringToDBDateTime($taskSearch->dateIni) . "')";
@@ -228,7 +228,7 @@ class UserProjectTaskService implements CronosService {
      * @param TaskSearch $taskSearch
      * @return CDbCriteria
      */
-    public function getCriteriaFromTaskSearch(TaskSearch $taskSearch) {
+    public function getCriteriaFromTaskSearch( $taskSearch) {
         $criteria = $taskSearch->buildCriteria();
         $dates = $this->getDateFieldsFromTaskSearch($taskSearch);
         $criteria->with = array('worker', 'project', 'imputetype', 'project.company');
@@ -325,9 +325,9 @@ class UserProjectTaskService implements CronosService {
             }
             $transaction->commit();
         } catch (Exception $e) {
-            Yii::log('Could not commit transaction ' . $e, CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+            Yii::error('Could not commit transaction ' . $e, __METHOD__);
             $transaction->rollback();
-            throw new CHttpException(500, 'Internal server error');
+            throw new HttpException(500, 'Internal server error');
         }
         return true;
     }
@@ -508,23 +508,23 @@ class UserProjectTaskService implements CronosService {
     private function ensureCustomerCanRefuseTask(CronosUser $user, $task, $taskId) {
         // Check task is valid
         if (!($task instanceof UserProjectTask)) {
-            Yii::log("El usuario {$user->getName()} ha intentado rechazar la tarea $taskId que no existe");
-            throw new CHttpException(404, 'No existe la página solicitada');
+            Yii::info("El usuario {$user->getName()} ha intentado rechazar la tarea $taskId que no existe",__METHOD__);
+            throw new HttpException(404, 'No existe la página solicitada');
         }
         // If not admin nor is a customer with privileges => no access
         if ((!$user->hasDirectorPrivileges() )
                 && (!ServiceFactory::createProjectService()->isCustomerOfProject($user->getId(), $task->project_id) )) {
-            Yii::log("El usuario {$user->getName()} ha intentado rechazar la tarea $task->id y no tiene acceso");
-            throw new CHttpException(403, 'No tiene acceso a la página solicitada.');
+            Yii::info("El usuario {$user->getName()} ha intentado rechazar la tarea $task->id y no tiene acceso",__METHOD__);
+            throw new HttpException(403, 'No tiene acceso a la página solicitada.');
         }
         // Check project open
         if ($task->project->status !== ProjectStatus::PS_OPEN) {
-            Yii::log("El usuario {$user->getName()} ha intentado rechazar la tarea $taskId de un proyecto CERRADO!! ");
-            throw new CHttpException(403, 'No tiene acceso a la página solicitada.');
+            Yii::info("El usuario {$user->getName()} ha intentado rechazar la tarea $taskId de un proyecto CERRADO!! ",__METHOD__);
+            throw new HttpException(403, 'No tiene acceso a la página solicitada.');
         }
         // Check task approved
         if ($task->status !== TaskStatus::TS_APPROVED) {
-            Yii::log("El usuario {$user->getName()} ha intentado rechazar la tarea $task->id que no está aprobada");
+            Yii::info("El usuario {$user->getName()} ha intentado rechazar la tarea $task->id que no está aprobada",__METHOD__);
             return false;
         }
         return true;
@@ -541,7 +541,7 @@ class UserProjectTaskService implements CronosService {
      * @param string $motive
      * @return TaskHistory if everything goes right. If task is not approved
      * then false is returned
-     * @throws CHttpException if:
+     * @throws HttpException if:
      * - $user has no access (customer without access to project, project manager...)
      * - $task does not exist
      * - $motive empty
@@ -559,8 +559,8 @@ class UserProjectTaskService implements CronosService {
             // Save task record
             $task->status = TaskStatus::TS_REJECTED;
             if (!$task->save()) {
-                Yii::log('Error actualizando estado de tarea: ' . print_r($task->getErrors(), true), CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
-                throw new CHttpException(500, 'Error al guardar la tarea');
+                Yii::error('Error actualizando estado de tarea: ' . print_r($task->getErrors(), true), __METHOD__);
+                throw new HttpException(500, 'Error al guardar la tarea');
             }
             // Save task history record
             $taskHistory = new TaskHistory();
@@ -570,8 +570,8 @@ class UserProjectTaskService implements CronosService {
             $taskHistory->status = TaskStatus::TS_REJECTED;
             $taskHistory->timestamp = PHPUtils::getNowAsString(true);
             if (!$taskHistory->save()) {
-                Yii::log('Error guardando histórico de tarea: ' . print_r($taskHistory->getErrors(), true), CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
-                throw new CHttpException(500, 'Error al guardar la tarea');
+                Yii::error('Error guardando histórico de tarea: ' . print_r($taskHistory->getErrors(), true), __METHOD__);
+                throw new HttpException(500, 'Error al guardar la tarea');
             }
             $transaction->commit();
         } catch (Exception $e) {
@@ -620,7 +620,7 @@ class UserProjectTaskService implements CronosService {
         
         // Check thresholds
         if ($hourValues['warnThresholdExceeded']) {
-            Yii::log("Hours warning threshold for project {$task->project->name} exceeded!", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);            
+            Yii::warning("Hours warning threshold for project {$task->project->name} exceeded!", __METHOD__);            
             $as = ServiceFactory::createAlertService();
             $project = Project::findOne($task->project_id);
             $as->notify(Alerts::PROJECT_HOURS_WARNING, array(
@@ -635,7 +635,7 @@ class UserProjectTaskService implements CronosService {
             array_merge($notifierErrors, $as->getNotifierErrors());
         }
         if ($hourValues['maxHoursExceeded']) {
-            Yii::log("Hours assigned for project {$task->project->name} exceeded!", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);
+            Yii::warning("Hours assigned for project {$task->project->name} exceeded!", __METHOD__);
             if (!isset($project)) {
                 $project = Project::findOne($task->project_id);
             }

@@ -11,6 +11,10 @@ use app\models\form\TaskSearch;
 use app\services\ServiceFactory;
 use yii\data\ActiveDataProvider;
 use app\models\db\Calendar;
+use app\models\enums\TaskStatus;
+use app\models\enums\ProjectStatus;
+use app\services\other\TaskSearchService;
+
 class UserProjectTaskController extends CronosController {
    
     const MY_LOG_CATEGORY = 'controllers.UserProjectTaskController';
@@ -97,8 +101,9 @@ class UserProjectTaskController extends CronosController {
         }
         
         
-        $model = new Calendar( );
+        $model = new Calendar();
         $model->scenario = 'search';
+        
         //$model->unsetAttributes();  // clear any default values
         
         $this->render('/UserProjectTask/_calendarUpload', array('model' => $model, 'errorMessage' => $sErrorMessage));
@@ -122,7 +127,7 @@ class UserProjectTaskController extends CronosController {
         $userId = ( isset($_REQUEST['user']) && User::isValidID($_REQUEST['user'])) ? (int) $_REQUEST['user'] : null;
         $isWorker = !Yii::$app->user->hasDirectorPrivileges();
         if ($isWorker && $userId !== NULL && $userId != Yii::$app->user->id) {
-            throw new CHttpException(403, 'No tiene acceso a esta página');
+            throw new HttpException(403, 'No tiene acceso a esta página');
         }
 
        return $this->render('/UserProjectTask/task_calendar',[
@@ -161,7 +166,7 @@ class UserProjectTaskController extends CronosController {
             }
         }
         else
-            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            throw new HttpException(400, 'Invalid request. Please do not repeat this request again.');
     }
 
     /**
@@ -191,7 +196,7 @@ class UserProjectTaskController extends CronosController {
             foreach ($_POST['toApprove'] as $taskId) {
                 if (empty($_POST['pr'][$taskId])
                         || empty($_POST['pj'][$taskId]))
-                    throw new CHttpException(400, 'Invalid request', 400);
+                    throw new HttpException(400, 'Invalid request', 400);
                 $profile = $_POST['pr'][$taskId];
                 $project = $_POST['pj'][$taskId];
                 $company = $_POST['pc'][$taskId];
@@ -275,7 +280,7 @@ class UserProjectTaskController extends CronosController {
             $upts = ServiceFactory::createUserProjectTaskService();
             foreach ($_POST['toApprove'] as $taskId) {
                 if (empty($_POST['pr'][$taskId]) || empty($_POST['pj'][$taskId]))
-                    throw new CHttpException(400, 'Invalid request', 400);
+                    throw new HttpException(400, 'Invalid request', 400);
                 $profile = $_POST['pr'][$taskId];
                 $project = $_POST['pj'][$taskId];
                 $company = $_POST['pc'][$taskId];
@@ -350,7 +355,7 @@ class UserProjectTaskController extends CronosController {
 
     private function getTaskSearchFromRequest() {
         $taskSearch = new TaskSearch();
-        $taskSearch->scenario = 'search';
+       // $taskSearch->scenario = 'search';
         //$taskSearch->unsetAttributes();
 
         if (isset($_REQUEST['TaskSearch'])) {
@@ -367,8 +372,8 @@ class UserProjectTaskController extends CronosController {
             $taskSearch->attributes = $_REQUEST['TaskSearch'];
             // If no validated, then create a new search record
             if (!$taskSearch->validate()) {
-                Yii::log("TaskSearch not validated", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);
-                Yii::log(print_r($_REQUEST['TaskSearch'], true), CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);
+                Yii::error("TaskSearch not validated", __METHOD__);
+                Yii::warning(print_r($_REQUEST['TaskSearch'], true), __METHOD__);
                 $taskSearch = new TaskSearch();
                 $taskSearch->scenario = 'search';
                 //$taskSearch->unsetAttributes();
@@ -601,7 +606,7 @@ class UserProjectTaskController extends CronosController {
      */
     public function actionRefuseTask() {
         if (!Yii::$app->request->isPostRequest)
-            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            throw new HttpException(400, 'Invalid request. Please do not repeat this request again.');
         // Call func
         $taskId = (int) $_POST['taskId'];
         $motive = (string) $_POST['motive'];
@@ -620,11 +625,11 @@ class UserProjectTaskController extends CronosController {
     public function actionAutomaticSaveTask() {
 
         if (!Yii::$app->request->isPostRequest) {
-            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            throw new HttpException(400, 'Invalid request. Please do not repeat this request again.');
         }
         
         if (!isset($_POST['UserProjectTask'])) {
-            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            throw new HttpException(400, 'Invalid request. Please do not repeat this request again.');
         }
         
         $result['code'] = self::OP_RESULT_NOTHING;
@@ -672,7 +677,7 @@ class UserProjectTaskController extends CronosController {
                 }
             }
         } catch (Exception $e) {
-            Yii::log("Exception saving task: " . $e->getMessage(), CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+            Yii::error("Exception saving task: " . $e->getMessage(), __METHOD__);
             $result['code'] = self::OP_RESULT_ERROR;
             if ($e->getCode() == self::ERROR_CODE_TASK_NOT_EDITABLE) {
                 $resultMsg = 'No se puede editar la tarea. Refresque la página para actualizar estado.';
@@ -690,11 +695,11 @@ class UserProjectTaskController extends CronosController {
     public function actionSaveTask() {       
         
         if (!Yii::$app->request->isPostRequest) {
-            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            throw new HttpException(400, 'Invalid request. Please do not repeat this request again.');
         }
         
         if (!isset($_POST['UserProjectTask'])) {
-            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            throw new HttpException(400, 'Invalid request. Please do not repeat this request again.');
         }
         $result['code'] = self::OP_RESULT_NOTHING;
         try {
@@ -770,7 +775,7 @@ class UserProjectTaskController extends CronosController {
                 }
             }
         } catch (Exception $e) {
-            Yii::log("Exception saving task: " . $e->getMessage(), CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+            Yii::error("Exception saving task: " . $e->getMessage(), __METHOD__);
             $result['code'] = self::OP_RESULT_ERROR;
             if ($e->getCode() == self::ERROR_CODE_TASK_NOT_EDITABLE) {
                 $resultMsg = 'No se puede editar la tarea. Refresque la página para actualizar estado.';
@@ -792,12 +797,12 @@ class UserProjectTaskController extends CronosController {
         if ($isWorker) {
             // Access
             if ($model->user_id != $user->id) {
-                Yii::log("$user->id trying to update task $model->id which does not own", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
-                throw new CHttpException(403, 'No tiene acceso');
+                Yii::error("$user->id trying to update task $model->id which does not own", __METHOD__);
+                throw new HttpException(403, 'No tiene acceso');
             }
             // Status
             if ($model->status != TaskStatus::TS_NEW) {
-                Yii::log("$user->id trying to update a not new task", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+                Yii::error("$user->id trying to update a not new task", __METHOD__);
                 throw new Exception('No se puede editar la tarea', self::ERROR_CODE_TASK_NOT_EDITABLE);
             }
         }

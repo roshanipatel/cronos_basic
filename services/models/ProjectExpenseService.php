@@ -8,6 +8,8 @@ use app\models\db\Company;
 use app\models\enums\TaskStatus;
 use app\components\utils\PHPUtils;
 use app\models\db\ProjectExpense;
+use app\models\db\ProjectManager;
+
 /**
  * Description of UserProjectTaskService
  *
@@ -23,25 +25,25 @@ class ProjectExpenseService implements CronosService {
      * @param string $newProfile
      * @param CronosUser $sessionUser
      */
-    public function approveCost($expenseId, CronosUser $sessionUser) {
+    public function approveCost($expenseId, $sessionUser) {
         assert(is_numeric($expenseId));
         // Throws an exception if not found.
         if (!( $oProjectExpense = ProjectExpense::findOne((int) $expenseId) ))
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
 
         // Check if project belongs to manager!
         if (!$this->isUserManagerOfProject($oProjectExpense->project_id, $sessionUser)) {
-            Yii::log("User $sessionUser->username tried to approve a cost FROM project $$oProjectExpense->project_id");
-            throw new CHttpException(403, 'No allowed to approve this cost');
+            Yii::info("User $sessionUser->username tried to approve a cost FROM project $$oProjectExpense->project_id",__METHOD__);
+            throw new HttpException(403, 'No allowed to approve this cost');
         }
 
         // Check TaskStatus
         if ($oProjectExpense->status == TaskStatus::TS_APPROVED) {
-            Yii::log("Can't approve task $expenseId. Already approved", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);
+            Yii::warning("Can't approve task $expenseId. Already approved",__METHOD__);
             return;
         } else if ($oProjectExpense->status != TaskStatus::TS_NEW) {
-            Yii::log("Cant approve task $expenseId. Not NEW!", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
-            throw new CHttpException(403, 'No allowed to approve this task');
+            Yii::error("Cant approve task $expenseId. Not NEW!", __METHOD__);
+            throw new HttpException(403, 'No allowed to approve this task');
         }
         $this->doApprove($oProjectExpense);
     }
@@ -50,7 +52,7 @@ class ProjectExpenseService implements CronosService {
      * @param ProjectExpense $projectExpenseModel
      * @param string $profile
      */
-    private function doApprove(ProjectExpense $projectExpenseModel) {
+    private function doApprove($projectExpenseModel) {
         $projectExpenseModel->status = TaskStatus::TS_APPROVED;
         $projectExpenseModel->save(false);
     }
@@ -61,22 +63,22 @@ class ProjectExpenseService implements CronosService {
      * @param ProjectExpense $oProjectExpense
      * @param type $expenseId
      * @return boolean
-     * @throws CHttpException
+     * @throws HttpException
      */
-    private function ensureCanRefuseCost(CronosUser $user, $oProjectExpense, $expenseId) {
+    private function ensureCanRefuseCost($user, $oProjectExpense, $expenseId) {
         // Check task is valid
         if (!($oProjectExpense instanceof ProjectExpense)) {
-            Yii::log("El usuario {$user->getName()} ha intentado rechazar la tarea $expenseId que no existe");
-            throw new CHttpException(404, 'No existe la página solicitada');
+            Yii::info("El usuario {$user->getName()} ha intentado rechazar la tarea $expenseId que no existe",__METHOD__);
+            throw new HttpException(404, 'No existe la página solicitada');
         }
         // Check project open
         if ($oProjectExpense->project->status !== ProjectStatus::PS_OPEN) {
-            Yii::log("El usuario {$user->getName()} ha intentado rechazar la tarea $expenseId de un proyecto CERRADO!! ");
-            throw new CHttpException(403, 'No tiene acceso a la página solicitada.');
+            Yii::info("El usuario {$user->getName()} ha intentado rechazar la tarea $expenseId de un proyecto CERRADO!! ",__METHOD__);
+            throw new HttpException(403, 'No tiene acceso a la página solicitada.');
         }
         // Check task approved
         if ($oProjectExpense->status !== TaskStatus::TS_APPROVED) {
-            Yii::log("El usuario {$user->getName()} ha intentado rechazar la tarea $oProjectExpense->id que no está aprobada");
+            Yii::info("El usuario {$user->getName()} ha intentado rechazar la tarea $oProjectExpense->id que no está aprobada",__METHOD__);
             return false;
         }
         return true;
@@ -93,13 +95,13 @@ class ProjectExpenseService implements CronosService {
      * @param string $motive
      * @return TaskHistory if everything goes right. If task is not approved
      * then false is returned
-     * @throws CHttpException if:
+     * @throws HttpException if:
      * - $user has no access (customer without access to project, project manager...)
      * - $task does not exist
      * - $motive empty
      * - $user does not exist
      */
-    public function refuseCost(CronosUser $user, $expenseId) {
+    public function refuseCost($user, $expenseId) {
         // Is task approved so it can be refused
         $oProjectExpense = ProjectExpense::findOne($expenseId);
         if ($this->ensureCanRefuseCost($user, $oProjectExpense, $expenseId) === false)
@@ -111,8 +113,8 @@ class ProjectExpenseService implements CronosService {
             // Save task record
             $oProjectExpense->status = TaskStatus::TS_REJECTED;
             if (!$oProjectExpense->save()) {
-                Yii::log('Error actualizando estado de tarea: ' . print_r($oProjectExpense->getErrors(), true), CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
-                throw new CHttpException(500, 'Error al guardar la tarea');
+                Yii::error('Error actualizando estado de tarea: ' . print_r($oProjectExpense->getErrors(), true), __METHOD__);
+                throw new HttpException(500, 'Error al guardar la tarea');
             }
             $transaction->commit();
         } catch (Exception $e) {
@@ -127,7 +129,7 @@ class ProjectExpenseService implements CronosService {
      * @param CronosUser $sessionUser
      * @return boolean
      */
-    private function isUserManagerOfProject($projectId, CronosUser $sessionUser) {
+    private function isUserManagerOfProject($projectId, $sessionUser) {
         assert(is_numeric($projectId));
         // If admin, then OK
         if ($sessionUser->hasDirectorPrivileges())
@@ -137,7 +139,7 @@ class ProjectExpenseService implements CronosService {
                             $sessionUser->id, $projectId) );
     }
 
-    private function getDateFieldsFromExpenseSearch(ExpenseSearch $expenseSearch) {
+    private function getDateFieldsFromExpenseSearch($expenseSearch) {
         $result = array();
         if (!empty($expenseSearch->dateIni))
             $result[] = "GREATEST(t.date_ini, '" . PHPUtils::convertStringToDBDateTime($expenseSearch->dateIni) . "')";
@@ -146,7 +148,7 @@ class ProjectExpenseService implements CronosService {
         return $result;
     }
 
-    public function getCriteriaFromModel(ProjectExpense $model) {
+    public function getCriteriaFromModel($model) {
 
         $criteria = new CDbCriteria(array(
                     'with' => array('user'),
@@ -202,7 +204,7 @@ class ProjectExpenseService implements CronosService {
      * @param CDbCriteria $criteria
      * @param type $userId
      */
-    public function addCriteriaForProjectManagers(CDbCriteria $criteria, $userId) {
+    public function addCriteriaForProjectManagers($criteria, $userId) {
         $criteria->join = 'INNER JOIN ' . ProjectManager::tableName() . ' managers ON managers.project_id = t.project_id';
         $criteria->addColumnCondition(array('managers.user_id' => $userId));
     }
@@ -211,7 +213,7 @@ class ProjectExpenseService implements CronosService {
      * @param ExpenseSearch $expenseSearch
      * @return CDbCriteria
      */
-    public function getCriteriaFromExpenseSearch(ExpenseSearch $expenseSearch) {
+    public function getCriteriaFromExpenseSearch($expenseSearch) {
         $criteria = $expenseSearch->buildCriteria();
         $criteria->with = array('worker', 'project', 'project.company');
         //$criteria->select = "*";
@@ -235,7 +237,7 @@ class ProjectExpenseService implements CronosService {
      * @param array $newData
      * @return type
      */
-    public function createProjectExpense(ProjectExpense $model, array $newData) {
+    public function createProjectExpense($model, $newData) {
 //        $model->unsetAttributes();
         $model->status = TaskStatus::TS_NEW;
         return $this->saveProjectExpense($model, $newData);
@@ -256,7 +258,7 @@ class ProjectExpenseService implements CronosService {
             
             $model->pdffile = file_get_contents($file->tempName);
             if (strtolower($file->getExtensionName()) != "pdf") {
-                Yii::log('File format : ' . $file->getExtensionName() . " Not supported. Only PDF", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+                Yii::error('File format : ' . $file->getExtensionName() . " Not supported. Only PDF", __METHOD__);
                 Yii::$app->user->setFlash(Constants::FLASH_ERROR_MESSAGE, 'File format : ' . $file->getExtensionName() . " Not supported. Only PDF");
                 return false;
             }
@@ -272,14 +274,14 @@ class ProjectExpenseService implements CronosService {
                 $allSavesOK = true;
             }
             if ($allSavesOK) {
-                Yii::log('Expenses from project ' . $model->project->name . ' saved OK', CLogger::LEVEL_INFO, self::MY_LOG_CATEGORY);
+                Yii::info('Expenses from project ' . $model->project->name . ' saved OK',__METHOD__);
                 $transaction->commit();
             } else {
-                Yii::log('Error saving expenses from project : ' . $model->project->name, CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+                Yii::error('Error saving expenses from project : ' . $model->project->name, __METHOD__);
                 $transaction->rollback();
             }
         } catch (Exception $e) {
-            Yii::log('Error saving Project ' . $e, CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+            Yii::error('Error saving Project ' . $e, __METHOD__);
             $transaction->rollback();
             throw $e;
         }
@@ -293,7 +295,7 @@ class ProjectExpenseService implements CronosService {
      * @param array $newData
      * @return boolean
      */
-    public function updateProjectExpense(ProjectExpense $model, array $newData) {
+    public function updateProjectExpense($model, array $newData) {
         return $this->saveProjectExpense($model, $newData);
     }
 

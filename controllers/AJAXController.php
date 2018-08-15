@@ -21,7 +21,7 @@ class AJAXController extends CronosController {
         if( !parent::beforeAction( $action ) )
             return false;
         if( !Yii::$app->request->isAjaxRequest )
-            throw new CHttpException( 403, 'Invalid request' );
+            throw new HttpException( 403, 'Invalid request' );
         return true;
     }
 

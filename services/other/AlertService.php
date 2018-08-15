@@ -36,7 +36,7 @@ class AlertService {
         $this->notifierErrors = array();
     }
     private function addNotifierError($notifierName, $errorMessage){
-		Yii::log( "Unable to notifiy with $notifierName the message: $errorMessage", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY );
+		Yii::warning( "Unable to notifiy with $notifierName the message: $errorMessage", __METHOD__ );
         $this->notifierErrors[] = array(
             'name' => $notifierName,
             'message' => $errorMessage,
@@ -122,7 +122,7 @@ class AlertService {
                     $notifiers[] = $notifier;
             }
             catch( Exception $e ) {
-                Yii::log( "Notifier $notifierClass caused an error at instantiation: {$e->getMessage()}", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY );
+                Yii::error( "Notifier $notifierClass caused an error at instantiation: {$e->getMessage()}", __METHOD__ );
             }
         }
         $this->notifiers = $notifiers;
@@ -142,18 +142,18 @@ class NotifierBuilder {
     public function buildNotifier( $notifierName ) {
         try {
             if( !class_exists( $notifierName ) ) {
-                Yii::log( "($notifierName) class could not be found", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY );
+                Yii::warning( "($notifierName) class could not be found", __METHOD__ );
                 return null;
             }
             $instance = new $notifierName;
             if( !($instance instanceof Notifier ) ) {
-                Yii::log( "($notifierName) class is not an instance of Notifier", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY );
+                Yii::warning( "($notifierName) class is not an instance of Notifier",__METHOD__ );
                 return null;
             }
             return $instance;
         }
         catch( Exception $e ) {
-            Yii::log( "($notifierName) could not be built. Exception: $e", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY );
+            Yii::warning( "($notifierName) could not be built. Exception: $e",__METHOD__ );
             return null;
         }
     }
@@ -181,7 +181,7 @@ class EmailNotifier implements Notifier {
 
     public function notify( $message, array $params = array( ) ) {
         if( !key_exists( self::NOTIFICATION_RECEIVERS, $params ) ) {
-            Yii::log( 'No receivers available for notification', CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY );
+            Yii::warning( 'No receivers available for notification', __METHOD__ );
             return false;
         }
         $mailConfig = $this->getMailConfig();
@@ -232,9 +232,9 @@ class LogNotifier implements Notifier {
     const MY_LOG_CATEGORY = 'LogNotifier';
 
     public function notify( $message, array $params = array( ) ) {
-        Yii::log( 'NOTIFYING ALERT', CLogger::LEVEL_INFO, self::MY_LOG_CATEGORY );
-        Yii::log( "Message: $message", CLogger::LEVEL_INFO, self::MY_LOG_CATEGORY );
-        Yii::log( 'Params: ' . print_r( $params, true ), CLogger::LEVEL_INFO, self::MY_LOG_CATEGORY );
+        Yii::info( 'NOTIFYING ALERT', __METHOD__);
+        Yii::info( "Message: $message", __METHOD__ );
+        Yii::info( 'Params: ' . print_r( $params, true ), __METHOD__ );
     }
 }
 

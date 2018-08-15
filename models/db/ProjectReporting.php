@@ -72,13 +72,14 @@ class ProjectReporting extends ActiveRelationalRecord
 	{
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
-		$criteria=new CDbCriteria;
-                
-		$criteria->compare('project_id',$this->project_id);
+		$criteria = ProjectReporting::find();
 
-		return new ActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
+		$criteria->where(['project_id'=>$this->project_id]);
+
+		return new ActiveDataProvider(array(
+			'query'=>$criteria,
 		));
+
 	}
 
     public function saveProjectReporting( $project, $role, $hasToDeleteBefore = true )

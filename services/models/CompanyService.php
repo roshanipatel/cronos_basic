@@ -34,7 +34,7 @@ class CompanyService implements CronosService
         // Load project to get it's company
         $company = Company::findOne($companyId);
         if (empty($company)) {
-            Yii::log("Company $companyId not found", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+            Yii::error("Company $companyId not found", __METHOD__);
             return array();
         }
         // Build search criteria depending on the user
@@ -62,11 +62,11 @@ class CompanyService implements CronosService
         $criteria = Company::find();
         $criteria->innerJoin(Project::tableName().' proj','company.id = proj.company_id')
                  ->innerJoin(UserProjectTask::tableName() . ' upt','upt.project_id = proj.id');
-        $criteria->orderBy = $sOrder;
-        $criteria->select =  't.name, 
-                                 t.id,
-                                -sum(round((unix_timestamp(upt.date_ini) - unix_timestamp(upt.date_end))/3600,2)) as totalhours';
-        $criteria->groupBy = 't.name, t.id';
+        $criteria->orderBy($sOrder);
+        $criteria->select(['company.name', 
+                                 'company.id',
+                                '-sum(round((unix_timestamp(upt.date_ini) - unix_timestamp(upt.date_end))/3600,2)) as totalhours']);
+        $criteria->groupBy('company.name, company.id');
 
         if ($worker != "") {
             $criteria->andWhere(" upt.user_id = ".$worker);

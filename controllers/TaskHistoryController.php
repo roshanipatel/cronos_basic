@@ -125,7 +125,7 @@ class TaskHistoryController extends Controller
 				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 		}
 		else
-			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+			throw new HttpException(400,'Invalid request. Please do not repeat this request again.');
 	}
 
 	/**
@@ -164,7 +164,7 @@ class TaskHistoryController extends Controller
 	{
 		$model=TaskHistory::findOne((int)$id);
 		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
+			throw new HttpException(404,'The requested page does not exist.');
 		return $model;
 	}
 
