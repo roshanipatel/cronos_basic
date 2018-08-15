@@ -1,12 +1,16 @@
 <h1>Modificar Horas</h1>
 
 <?php
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use fedemotta\datatables\DataTables;
+
 // Required elements
 assert( isset( $tasksProvider ) );
-$form = $this->beginWidget( 'CActiveForm', array(
-            'action' => '',
-            'method' => 'post'
-                ) );
+$form = ActiveForm::begin([
+                   'action' => '',
+                    'method' => 'post'
+                ]); 
 
 /* SEARCH FORM */
 $this->render( '/userProjectTask/_searchForm',
@@ -217,12 +221,12 @@ $this->render( '/userProjectTask/_searchForm',
 
 $columns = array(
 	'worker.name:text:Usuario',
-        'managerName:text:Manager',
+    'managerName:text:Manager',
 	array(
-                'class' => 'DropDownColumn',
+        'class' => 'DropDownColumn',
 		'header' => 'Cliente',
-                'name' =>  '"pc[".$data->id."]"',
-                'selected' => '$data->project->company->id',
+        'name' =>  '"pc[".$data->id."]"',
+        'selected' => '$data->project->company->id',
 		'selectData' => 'ServiceFactory::createCompanyService()->findCustomerForDropdown($data->project->company->id,Yii::$app->user)',
 		'selectClass' => 'company'
 	),
@@ -285,24 +289,25 @@ $columns = array(
 		)
 	)
 );
-
-if( $tasksProvider->itemCount > 0 )
-{
+/*echo("<pre/>");
+print_r($tasksProvider);die;
+if( $tasksProvider->getTotalCount() > 0 )
+{*/
 ?>
 <div style="text-align: center">
-<?php echo CHtml::submitButton( 'Modificar seleccionadas', array(
+<?php echo Html::submitButton( 'Modificar seleccionadas', array(
         'id' => 'update_button',
         'submit' => '',
         'params' => array( 'doApprove' => '1' )
 ) ); 
 echo "&nbsp;";
-    echo CHtml::submitButton( 'Select all', array(
+    echo Html::submitButton( 'Select all', array(
                 'id' => 'select_all' 
         ) ); 
 ?>
 </div>
 <?php
-}
+/*}*/
 /**
  * Add hours column with desired format
  */
@@ -329,15 +334,15 @@ if(Yii::$app->user->hasDirectorPrivileges()) {
 
 array_splice($columns, 4, 0, array($day));
 
-$this->widget( 'zii.widgets.grid.CGridView', array(
+DataTables::widget([
     'id' => 'user-project-task-grid',
-    'ajaxUpdate' => FALSE,
+    //'ajaxUpdate' => FALSE,
     'dataProvider' => $tasksProvider,
-    'filter' => null,
-    'selectableRows' => 2,
+    //'filter' => null,
+    //'selectableRows' => 2,
     'summaryText' => 'Mostrando {end} de {count} resultado(s)',
     'columns' => $columns,
-));
-$this->endWidget();
+]);
 
 ?>
+ <?php ActiveForm::end(); ?>

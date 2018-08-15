@@ -54,6 +54,14 @@ class Company extends ActiveRecord
         );
     }
 
+    public function getProjects(){
+        return $this->hasMany(\app\models\db\Project::className(), ['id' => 'company_id']);
+    }
+
+    public function getUsers(){
+        return $this->hasMany(\app\models\db\User::className(), ['id' => 'company_id']);
+    }
+    
     /**
      * @return array relational rules.
      */
