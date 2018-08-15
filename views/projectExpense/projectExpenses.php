@@ -13,31 +13,16 @@ use yii\data\ActiveDataProvider;
 <?php
 
 //print_r($costsProvider);die; 
-?>
+        assert(isset($projectsProvider));
+        assert(isset($onlyManagedByUser));
+    // Required fields
+        $isProjectManagerRole = Yii::$app->user->hasProjectManagerPrivileges() || Yii::$app->user->hasAdministrativePrivileges();
+                $form = ActiveForm::begin([
+        
+                    //'action' => $actionURL,
+                    'method' => 'get',
+                     ]);
 
-<div class="row">
-  <div class="col-lg-12">
-    <h1 class="page-header">Consultar Gastos Proyectos</h1>
-  </div>
-</div>
-<div class="row">
-    <div class="col-lg-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Imputar Gasto Proyecto
-            </div>
-            <div class="panel-body">
-                <?php
-                    assert(isset($projectsProvider));
-                    assert(isset($onlyManagedByUser));
-                // Required fields
-                    $isProjectManagerRole = Yii::$app->user->hasProjectManagerPrivileges() || Yii::$app->user->hasAdministrativePrivileges();
-                    $form = ActiveForm::begin([
-                        //'action' => $actionURL,
-                        'method' => 'get',
-                         ]);
-
-                //If project manager
                 if (Yii::$app->user->isProjectManager()) {
                     $workersProvider = ServiceFactory::createUserService()->findWorkersByManager(true, Yii::$app->user->id);
                 } else if (Yii::$app->user->hasAdministrativePrivileges()) {
@@ -46,6 +31,8 @@ use yii\data\ActiveDataProvider;
                     $workersProvider = ServiceFactory::createUserService()->findProjectWorkers(true);
                 } else {
                     $workersProvider = array();
+
+                //If project manager
                 }
                 ?>
                 <script type="text/javascript">
@@ -60,6 +47,19 @@ use yii\data\ActiveDataProvider;
                             return true;
                     }
                 </script>
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">Consultar Gastos Proyectos</h1>
+  </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Imputar Gasto Proyecto
+            </div>
+            <div class="panel-body">
+
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="col-lg-3">
@@ -73,7 +73,7 @@ use yii\data\ActiveDataProvider;
                             <div class="form-group">
                                 <?= $form->field($model, 'dateEnd')->textInput([
                                     'class'=>"form-control", 
-                                    array( 'maxlength' => 20 )])->label('Fecha cierre') ?>
+                                       array( 'maxlength' => 20 )])->label('Fecha cierre') ?>
                             </div>
                         </div>
                         <div class="col-lg-3">
@@ -128,14 +128,14 @@ use yii\data\ActiveDataProvider;
                                     return true;
                                 }
                             </script>
-                            <?php echo Html::submitButton('Buscar', array('onClick' => 'return projectSearch( this.form );'));?>
+                            <?php echo Html::submitButton('Buscar', array('onClick' => 'return projectSearch( this.form );','class'=>'btn btn-success'));?>
                             &nbsp;
                             <?php if ($approveCost) 
                                 {
-                                    echo Html::submitButton( 'Aprobar seleccionadas', array('id' => 'approve_button','submit' => '','params' => array( 'doApprove' => '1' )) ); 
+                                    echo Html::submitButton( 'Aprobar seleccionadas', array('id' => 'approve_button','class'=>'btn btn-success','submit' => '','params' => array( 'doApprove' => '1' )) ); 
                                 }?>
                             &nbsp;
-                            <?php echo Html::submitButton( 'Select all', array('id' => 'select_all' ) ); ?>
+                            <?php echo Html::submitButton( 'Select all', array('id' => 'select_all','class'=>'btn btn-success' ) ); ?>
                             <script type="text/javascript">
                                     function exportToCSV( frm )
                                     {
@@ -144,8 +144,8 @@ use yii\data\ActiveDataProvider;
                                             return true;
                                     }
                             </script>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <?php echo Html::submitButton('Exportar a CSV',array('onClick' => 'return exportToCSV( this.form );'));?>
+                            &nbsp;&nbsp;&nbsp;
+                            <?php echo Html::submitButton('Exportar a CSV',array('onClick' => 'return exportToCSV( this.form );','class'=>'btn btn-success'));?>
                             <script type="text/javascript">
                                 jQuery(document).ready((function() {
                                     

@@ -11,6 +11,11 @@
  * @param bool $showExportButton [false]
  * @param CActiveForm $form
  */
+use yii\helpers\Html;
+use app\models\form\TaskSearch;
+use app\models\enums\ProjectCategories;
+use app\models\enums\WorkerProfiles;
+use app\components\utils\PHPUtils;
 ?>
 <?php
 // Required fields
@@ -28,284 +33,179 @@ if(!isset($showExportButton)) {
 
 $hasToDefineForm = !isset($form);
 if($hasToDefineForm) {
-	$form = $this->beginWidget('CActiveForm', array(
+
+	$form = ActiveForm::begin([
                 'action' => Yii::$app->urlManager->createUrl($actionURL),
 		'method' => 'get',
-			));
+			]);
 }
 ?>
-
-<table id="tableTaskSearch">
-    <tr>
-        <?php
-    if(!in_array(TaskSearch::FLD_CUSTOMER, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'companyName');
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_PROJECT_ID, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'projectId');
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_PROJECT_STATUS, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo "<label for=\"projectStatus\">Est. proyecto Op.</label>\n";
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_PROJECT_STATUS_COM, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo "<label for=\"projectStatus\">Est. proyecto Com.</label>\n";
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_PROJECT_CATEGORY, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo "<label for=\"projectCategoryType\">Cat. proyecto</label>\n";
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_PROFILE, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'profile');
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_CREATOR, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'creator');
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_OWNER, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'owner');
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_STATUS, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'status');
-			echo "</td>\n";
-		}
-                ?>
-    </tr>
-    <tr>
-        <?php
-        
-        if(!in_array(TaskSearch::FLD_CUSTOMER, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->hiddenField($taskSearch, 'companyId', array('id' => 'company_id'));
-			echo $form->textField($taskSearch, 'companyName', array('id' => 'company_name'));
-			echo "<span id=\"loadingCustomers\"></span>\n";
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_PROJECT_ID, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->field($taskSearch, 'projectId')->dropDownList(\yii\helpers\ArrayHelper::map($projectsProvider, 'id', 'name'),
-					array(
-				'id' => 'company_projects',
-				'prompt' => 'Todos',
-				'style' => 'width: 110px'
-			));
-			echo "<span id=\"loadingProjects\"></span>\n";
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_PROJECT_STATUS, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->field($taskSearch, 'projectStatus')->dropDownList(ProjectStatus::getDataForDropDown(),
-					array(
-				'prompt' => 'Todos',
-				'style' => 'width: 60px'
-			));
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_PROJECT_STATUS_COM, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->field($taskSearch, 'projectStatusCom')->dropDownList(ProjectStatus::getDataForDropDown(),
-					array(
-				'prompt' => 'Todos',
-				'style' => 'width: 60px'
-			));
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_PROJECT_CATEGORY, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->field($taskSearch, 'projectCategoryType')->dropDownList(ProjectCategories::getDataForDropDown(),
-					array(
-				'prompt' => 'Todas',
-				'style' => 'width: 80px'
-			));
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_PROFILE, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->field($taskSearch, 'profile')->dropDownList(WorkerProfiles::getDataForDropDown(),
-					array(
-				'prompt' => 'Todos',
-				'style' => 'width: 60px'
-			));
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_CREATOR, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->field($taskSearch, 'creator')->dropDownList(\yii\helpers\ArrayHelper::map($usersProvider, 'id', 'name'),
-					array(
-				'prompt' => 'Todos',
-				'style' => 'width: 90px'
-			));
-                        echo "<span id=\"loadingWorkers\"></span>\n";
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_OWNER, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->field($taskSearch, 'owner')->dropDownList(\yii\helpers\ArrayHelper::map($managersProvider, 'id', 'name'),
-					array(
-				'prompt' => 'Todos',
-				'style' => 'width: 90px'
-			));
-                        echo "<span id=\"loadingWorkers\"></span>\n";
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_STATUS, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->field($taskSearch, 'status')->dropDownList(TaskStatus::getDataForDropDown(),
-					array(
-				'prompt' => 'Todos',
-				'style' => 'width: 60px'
-			));
-			echo "</td>\n";
-		}
-                ?>
-    </tr>
-    <tr>
-		<?php
-		if(!in_array(TaskSearch::FLD_DATE_INI, $searchFieldsToHide)) {
-			$taskSearch->dateIni = PHPUtils::removeHourPartFromDate($taskSearch->dateIni);
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'dateIni');
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_DATE_END, $searchFieldsToHide)) {
-			$taskSearch->dateEnd = PHPUtils::removeHourPartFromDate($taskSearch->dateEnd);
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'dateEnd');
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_TICKET, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'tickedId');
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_DESCRIPTION, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'description');
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_IS_EXTRA, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'isExtra');
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_IS_BILLABLE, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'isBillable');
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_IMPUTE_TYPE, $searchFieldsToHide)) {
-			echo "<td class=\"title_search_field\">\n";
-			echo $form->labelEx($taskSearch, 'imputetype');
-			echo "</td>\n";
-		}
-		?>
-	</tr>
-	<tr>
-		<?php
-		if(!in_array(TaskSearch::FLD_DATE_INI, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->textField($taskSearch, 'dateIni', array(
-				'maxlength' => 16,
-			));
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_DATE_END, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->textField($taskSearch, 'dateEnd', array(
-				'maxlength' => 16,
-			));
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_TICKET, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->textField($taskSearch, TaskSearch::FLD_NAME_TICKET);
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_DESCRIPTION, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->textField($taskSearch, TaskSearch::FLD_NAME_DESCRIPTION);
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_IS_EXTRA, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->field($taskSearch, 'isExtra')->dropDownList(TaskSearch::getDropdownForFlags(),
-					array(
-				'prompt' => 'Todos',
-				'style' => 'width: 60px'
-			));
-			echo "</td>\n";
-		}
-		if(!in_array(TaskSearch::FLD_IS_BILLABLE, $searchFieldsToHide)) {
-			echo "<td>\n";
-			echo $form->field($taskSearch, 'isBillable')->dropDownList(TaskSearch::getDropdownForFlags(),
-					array(
-				'prompt' => 'Todos',
-				'style' => 'width: 60px'
-			));
-			echo "</td>\n";
-		}
-                if(!in_array(TaskSearch::FLD_IMPUTE_TYPE, $searchFieldsToHide)) {
-			echo "<td>\n";
-                        echo $form->field($taskSearch, 'imputetype')->dropDownList(\yii\helpers\ArrayHelper::map($projectImputetypes, 'id', 'name'),
-                                        array(
-                                'style' => 'width: 120px',
-                                'multiple' => 'multiple',
-                                'id' => 'imputetype_projects',
-                        ));
-			echo "</td>\n";
-		}
-		?>
-	</tr>
-	<tr>
-		<td colspan="12" align="center">
-			<br>
+<div class="row">
+	<?php if(!in_array(TaskSearch::FLD_CUSTOMER, $searchFieldsToHide)) {?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'companyName')->label('companyName'); ?>
+			<?= $form->field($taskSearch, 'companyId')->hiddenInput(['id'=>'company_id'])->label(false); ?>
+			<?= $form->field($taskSearch, 'companyName')->textInput(['class'=>"form-control col-lg-6",'id' => 'company_name']) ;?>
+			<span id="loadingCustomers"></span>
+		</div>
+	</div>
+	<?php } ?>
+	<?php if(!in_array(TaskSearch::FLD_PROJECT_ID, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'projectId')->label('projectId'); ?>
+			<?= $form->field($taskSearch, 'projectId')->dropDownList(\yii\helpers\ArrayHelper::map($projectsProvider, 'id', 'name'),array('id' => 'company_projects','prompt' => 'Todos',)); ?>
+			<span id="loadingProjects"></span>
+		</div>
+	</div>
+	<?php }?>
+	<?php if(!in_array(TaskSearch::FLD_PROJECT_STATUS, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<label for="projectStatus">Est. proyecto Op.</label>
+			 <?= $form->field($taskSearch, 'projectStatus')->dropDownList(ProjectStatus::getDataForDropDown(),array('prompt' => 'Todos')); ?>
+		</div>
+	</div> 
+	<?php } ?>
+	<?php if(!in_array(TaskSearch::FLD_PROJECT_STATUS_COM, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<label for="projectStatus">Est. proyecto Com.</label>
+			<?= $form->field($taskSearch, 'projectStatusCom')->dropDownList(ProjectStatus::getDataForDropDown(),array('prompt' => 'Todos'));?>
+		</div>
+	</div>
+	<?php } ?>
+	<?php if(!in_array(TaskSearch::FLD_PROJECT_CATEGORY, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<label for="projectCategoryType">Cat. proyecto</label>
+			<?= $form->field($taskSearch, 'projectCategoryType')->dropDownList(ProjectCategories::getDataForDropDown(),
+					array('prompt' => 'Todas'));?>
+		</div>
+	</div>
+	<?php } ?>
+	<?php  if(!in_array(TaskSearch::FLD_PROFILE, $searchFieldsToHide)) {?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'profile')->label('profile'); ?>
+			<?= $form->field($taskSearch, 'profile')->dropDownList(WorkerProfiles::getDataForDropDown(),array('prompt' => 'Todos'));?>
+		</div>
+	</div>
+	<?php } ?>
+	<?php if(!in_array(TaskSearch::FLD_CREATOR, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'creator')->label('creator'); ?>
+			<?= $form->field($taskSearch, 'creator')->dropDownList(\yii\helpers\ArrayHelper::map($usersProvider, 'id', 'name'),array('prompt' => 'Todos'));?>
+            <span id="loadingWorkers"></span>
+		</div>
+	</div>
+	<?php } ?>
+	<?php if(!in_array(TaskSearch::FLD_OWNER, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'owner')->label('owner'); ?>
+			<?= $form->field($taskSearch, 'owner')->dropDownList(\yii\helpers\ArrayHelper::map($managersProvider, 'id', 'name'),array('prompt' => 'Todos'));?>
+            <span id="loadingWorkers"></span>
+		</div>
+	</div>
+	<?php } ?>
+	<?php if(!in_array(TaskSearch::FLD_STATUS, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'status')->label('status'); ?>
+			<?= $form->field($taskSearch, 'status')->dropDownList(TaskStatus::getDataForDropDown(),array('prompt' => 'Todos'));?>
+		</div>
+	</div>
+	<?php } ?>
+</div>
+<div class="row">
+	<?php  if(!in_array(TaskSearch::FLD_DATE_INI, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?php $taskSearch->dateIni = PHPUtils::removeHourPartFromDate($taskSearch->dateIni); ?>
+			<?= $form->field($taskSearch, 'dateIni')->label('dateIni'); ?>
+			<?= $form->field($taskSearch, 'dateIni')->textInput(array('maxlength' => 16 , 'id'=>'TaskSearch_dateIni'));?>
+		</div>
+	</div>
+	<?php } ?>
+	<?php  if(!in_array(TaskSearch::FLD_DATE_END, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?php $taskSearch->dateEnd = PHPUtils::removeHourPartFromDate($taskSearch->dateEnd);?>
+			<?= $form->field($taskSearch, 'dateEnd')->label('dateEnd'); ?>
+			<?= $form->field($taskSearch, 'dateEnd')->textInput(array('maxlength' => 16 , 'id'=>'TaskSearch_dateEnd'));?>
+		</div>
+	</div>
+	<?php } ?>
+	<?php  if(!in_array(TaskSearch::FLD_TICKET, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'tickedId')->label('tickedId'); ?>
+			<?= $form->field($taskSearch, TaskSearch::FLD_NAME_TICKET)->textInput(['class'=>"form-control col-lg-6"]) ;?>
+		</div>
+	</div>
+	<?php } ?>
+	<?php  if(!in_array(TaskSearch::FLD_DESCRIPTION, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'description')->label('description'); ?>
+			<?= $form->field($taskSearch, TaskSearch::FLD_NAME_DESCRIPTION)->textInput(['class'=>"form-control col-lg-6"]) ;?>
+		</div>
+	</div>
+	<?php } ?>
+	<?php  if(!in_array(TaskSearch::FLD_IS_EXTRA, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'isExtra')->label('isExtra'); ?>
+			<?= $form->field($taskSearch, 'isExtra')->dropDownList(TaskSearch::getDropdownForFlags(),array('prompt' => 'Todos'));?>
+		</div>
+	</div>
+	<?php } ?>
+	<?php  if(!in_array(TaskSearch::FLD_IS_BILLABLE, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'isBillable')->label('isBillable'); ?>
+			<?= $form->field($taskSearch, 'isBillable')->dropDownList(TaskSearch::getDropdownForFlags(),array('prompt' => 'Todos'));?>
+		</div>
+	</div>
+	<?php } ?>
+	<?php  if(!in_array(TaskSearch::FLD_IMPUTE_TYPE, $searchFieldsToHide)) { ?>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<?= $form->field($taskSearch, 'imputetype')->label('imputetype'); ?>
+			<?= $form->field($taskSearch, 'imputetype')->dropDownList(\yii\helpers\ArrayHelper::map($projectImputetypes, 'id', 'name'),array( 'multiple' => 'multiple',
+                    'id' => 'imputetype_projects'));?>
+		</div>
+	</div>
+	<?php } ?>
+</div>
+<div class="row">
+	<div class="col-lg-12">
+		<script type="text/javascript">
+			function taskSearch( frm )
+			{
+				frm.action = '';
+				frm.target = '_self';
+				return true;
+			}
+		</script>
+		<?php echo Html::submitButton('Buscar', array('onClick' => 'return taskSearch( this.form );'));?>
+		<?php if($showExportButton) { ?>
 			<script type="text/javascript">
-				function taskSearch( frm )
+				function exportToCSV( frm )
 				{
-					frm.action = '';
-					frm.target = '_self';
+					frm.action = '<?php echo Yii::$app->urlManager->createUrl('user-project-task/export-toCSV'); ?>';
+					frm.target = '_blank';
 					return true;
 				}
 			</script>
-			<?php
-			echo CHtml::submitButton('Buscar', array(
-				'onClick' => 'return taskSearch( this.form );',
-			));
-			?>
-			<?php if($showExportButton) { ?>
-				<script type="text/javascript">
-					function exportToCSV( frm )
-					{
-						frm.action = '<?php echo Yii::$app->urlManager->createUrl('user-project-task/export-toCSV'); ?>';
-						frm.target = '_blank';
-						return true;
-					}
-				</script>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<?php
-				echo CHtml::submitButton('Exportar a CSV',
-						array(
-					'onClick' => 'return exportToCSV( this.form );',
-				));
-				?>
-			<?php } ?>
-		</td>
-	</tr>
-</table>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<?php echo Html::submitButton('Exportar a CSV',array('onClick' => 'return exportToCSV( this.form );'));?>
+		<?php } ?>
+	</div>
+</div>
 <script type="text/javascript">
 	jQuery(document).ready((function() {
 		var dtSelector = 'input[id^="TaskSearch_date"]';
