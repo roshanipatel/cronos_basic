@@ -5,6 +5,8 @@ use yii\db\ActiveRecord;
 use app\models\db\Project;
 use app\models\User;
 use app\models\db\Company;
+use app\models\enums\TaskStatus;
+use app\models\db\ProjectExpense;
 
 /**
  * Model for making Expense Search
@@ -111,7 +113,7 @@ class ExpenseSearch extends ActiveRecord {
 
         $criteria = new \yii\db\Query();
         $addJoinProject = false;
-
+        
         // Fields for project: if not defined project field => all projects OK
         if ((!isset($this->projectIdsForSearch) ) && ( Project::isValidID($this->projectId) )) {
             $this->projectIdsForSearch = $this->projectId;
@@ -119,37 +121,61 @@ class ExpenseSearch extends ActiveRecord {
         if (isset($this->projectIdsForSearch)) {
             if (is_array($this->projectIdsForSearch) || Project::isValidID($this->projectIdsForSearch)) {
                 if ($this->projectIdsForSearch === array()) {
-                    $criteria->compare('t.project_id', Project::INVALID_ID);
+                    $criteria->andFilterWhere([
+                        'or',   
+                        ['like', 't.project_id', Project::INVALID_ID]
+                    ]);
                 } else {
-                    $criteria->compare('t.project_id', $this->projectIdsForSearch);
+                    $criteria->andFilterWhere([
+                        'or',
+                        ['like', 't.project_id', $this->projectIdsForSearch]
+                    ]);
                 }
             }
         }
 
         // Fields for dates
         if (!empty($this->dateIni)) {
-            $criteria->compare('t.date_ini', '>=' . PHPUtils::convertStringToDBDateTime(PHPUtils::addHourToDateIfNotPresent($this->dateIni, "00:00")));
+             $criteria->andFilterWhere([
+                        'or',
+                        't.date_ini >=' . PHPUtils::convertStringToDBDateTime(PHPUtils::addHourToDateIfNotPresent($this->dateIni, "00:00"))
+                    ]);
+           // $criteria->compare('t.date_ini', '>=' . PHPUtils::convertStringToDBDateTime(PHPUtils::addHourToDateIfNotPresent($this->dateIni, "00:00")));
         }
         if (!empty($this->dateEnd)) {
-            $criteria->compare('t.date_ini', '<=' . PHPUtils::convertStringToDBDateTime(PHPUtils::addHourToDateIfNotPresent($this->dateEnd, "23:59")));
+            $criteria->andFilterWhere([
+                        'or',
+                        't.date_ini <=' . PHPUtils::convertStringToDBDateTime(PHPUtils::addHourToDateIfNotPresent($this->dateEnd, "23:59"))
+                    ]);
+           // $criteria->compare('t.date_ini', ');
         }
         if (!empty($this->costtype)) {
-            $criteria->compare('t.costtype', '=' . $this->costtype);
+            $criteria->andWhere([
+                       't.costtype' => $this->costtype
+                    ]);
         }
         if (!empty($this->paymentMethod)) {
-            $criteria->compare('t.paymentMethod', '=' . $this->paymentMethod);
+            $criteria->andWhere([
+                       't.paymentMethod' => $this->paymentMethod
+                    ]);
         }
         if (!empty($this->projectId)) {
-            $criteria->compare('t.project_id', '=' . $this->projectId);
+            $criteria->andWhere([
+                       't.project_id' => $this->projectId
+                    ]);
         }
         // Fields for status
         if ($this->status != "" && TaskStatus::isValidValue($this->status)) {
-            $criteria->compare('t.status', $this->status);
+            $criteria->andWhere([
+                       't.status' => $this->status
+                    ]);
         }
 
         // Fields for workers
         if (User::isValidID($this->worker)) {
-            $criteria->compare('t.user_id', $this->worker);
+            $criteria->andWhere([
+                       't.user_id' => $this->worker
+                    ]);
         }
 
         // Fields for managers
