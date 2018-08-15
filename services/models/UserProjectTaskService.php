@@ -231,7 +231,7 @@ class UserProjectTaskService implements CronosService {
     public function getCriteriaFromTaskSearch( $taskSearch) {
         $criteria = $taskSearch->buildCriteria();
         $dates = $this->getDateFieldsFromTaskSearch($taskSearch);
-        $criteria->with = array('worker', 'project', 'imputetype', 'project.company');
+        $criteria->join = array('worker', 'project', 'imputetype', 'project.company');
         $criteria->select = array(
             'id',
             'user_id',
@@ -252,7 +252,7 @@ class UserProjectTaskService implements CronosService {
                     ( select user.name from " . Project::TABLE_PROJECT_MANAGER . " inner join " . User::TABLE_USER . " on "
                  . "" . User::TABLE_USER . ".id = " . Project::TABLE_PROJECT_MANAGER . ".user_id "
                  . "where " . Project::TABLE_PROJECT_MANAGER . ".project_id = t.project_id order by user.name limit 1 ) as managerName";
-        $criteria->order = "date_ini desc, date_end";
+        $criteria->orderBy = "date_ini desc, date_end";
         return $criteria;
     }
     

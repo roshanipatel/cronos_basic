@@ -301,7 +301,7 @@ class Project extends ActiveRecord {
         return new ActiveDataProvider(array(
                     'query' => $criteria,
                     'pagination' => array(
-                        'pageSize' => Yii::$app->params['default_page_size'],
+                        'pageSize' => \Yii::$app->params['default_page_size'],
                     ),
                     'sort' => $this->getSort(),
                 ));

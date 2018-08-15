@@ -489,12 +489,12 @@ if( $showExtendedFields ) {
 '.
     (! $isWorker ? ('var userSelector = jQuery("#user_selector");
                 if( userSelector.length == 0 ) {
-                    var users = '.preg_replace( '/\n+/', '', Html::dropDownList("user_selector",($showUser == NULL) ? Yii::$app->user->id : $showUser, ArrayHelper::map( $workers, 'id', 'name' ), array(
+                    var users = "'.str_replace('"',"'",preg_replace( '/\n+/', '', Html::dropDownList("user_selector",($showUser == NULL) ? Yii::$app->user->id : $showUser, ArrayHelper::map( $workers, 'id', 'name' ), array(
                                 'onchange' => 'updateTasks()',
                                 'style' => 'font-size: 1.2em',
                                 'id' => 'user_selector',
                                 'name' => 'user_selector'
-                        ))).'}
+                        )))).'"; }
                     jQuery("div.wc-nav").after("<div style=\'float:right;margin-top:2px\'>" + users + "</div>");
                     ') : '').'
 				var companySelector = jQuery("#company_selector");

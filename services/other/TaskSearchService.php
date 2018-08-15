@@ -49,7 +49,7 @@ class TaskSearchService {
 						array(
 							'query' => $tasksCriteria,
 							'pagination' => array(
-								'pageSize' => Yii::$app->params['default_page_size'],
+								'pageSize' => \Yii::$app->params['default_page_size'],
 							),
 							'sort' => $this->getSort(),
 				));
