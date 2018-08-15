@@ -12,6 +12,7 @@
  * @param CActiveForm $form
  */
 use yii\helpers\Html;
+use app\models\enums\TaskStatus;
 use app\models\form\TaskSearch;
 use app\models\enums\ProjectCategories;
 use app\models\enums\WorkerProfiles;
