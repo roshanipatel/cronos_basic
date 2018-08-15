@@ -88,7 +88,6 @@ class ReportTaskController extends CronosController {
      * Export the cost into a Excel file.
      */
     public function actionExportCosts() {
-
         $aTypes = ExpenseType::getDataForDropDown();
         $aUserProjectTasks = ServiceFactory::createUserProjectTaskService()->findUserProjectTasksInTime($_GET['ExpenseSearch_dateIni'], $_GET['ExpenseSearch_dateEnd'], true, $_GET['ReportCost_companyId'], $_GET['ReportCost_projectId'], $_GET['ReportCost_worker']);
 
@@ -185,15 +184,19 @@ class ReportTaskController extends CronosController {
         $oCurrentSheet->SetCellValue('G' . $iFilaActual, "Total");
         $oCurrentSheet->getStyle('G' . $iFilaActual . ":H" . $iFilaActual)->applyFromArray($this->getStyleHeader());
         $oCurrentSheet->SetCellValue('H' . $iFilaActual, "=SUBTOTAL(9, H" . $iPrimeraFila . ":H" . ($iFilaActual - 1) . ")");
-        $oCurrentSheet->setTitle('Informe costes');
-
+       // $oCurrentSheet->setTitle('Informe costes');
         // Redirect output to a clientâ€™s web browser (Excel5)
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="costes.xls"');
+        $filename = "MyExcelReport_".date("d-m-Y-His").".xls";
+        header('Content-Disposition: attachment;filename='.$filename .' ');
         header('Cache-Control: max-age=0');
-
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save('php://output');
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save('php://output');     
+        //header('Content-Type: application/vnd.ms-excel');
+        //header('Content-Disposition: attachment;filename="actividad.xls"');
+        //header('Cache-Control: max-age=0');
+        //$objWriter = PHPExcel_IOFactory::createWriter($oCurrentSheet, 'Excel2007');
+        //$objWriter->save('php://output');
         exit;
     }
 
@@ -468,7 +471,7 @@ class ReportTaskController extends CronosController {
         header('Content-Disposition: attachment;filename="actividad.xls"');
         header('Cache-Control: max-age=0');
 
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
         exit;
     }

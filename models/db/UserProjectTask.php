@@ -348,8 +348,7 @@ class UserProjectTask extends ActiveRecord {
     }
 
     public function canRefuse() {
-        return ($this->status === TaskStatus::TS_APPROVED)
-                && ($this->project->status === ProjectStatus::PS_OPEN);
+        return ($this->status === TaskStatus::TS_APPROVED) && ($this->project->status === ProjectStatus::PS_OPEN);
     }
 
 }
