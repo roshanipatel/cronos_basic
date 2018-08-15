@@ -215,19 +215,19 @@ class ProjectExpenseService implements CronosService {
      */
     public function getCriteriaFromExpenseSearch($expenseSearch) {
         $criteria = $expenseSearch->buildCriteria();
-        $criteria->join = array('worker', 'project', 'project.company');
+        $criteria->joinWith(array('worker', 'project', 'project.company'));
         //$criteria->select = "*";
-        $criteria->join = ' INNER JOIN ' . Project::tableName() . ' proj ON t.project_id = proj.id 
-                                INNER JOIN ' . User::tableName() . ' us ON t.user_id = us.id 
-                                INNER JOIN ' . Company::tableName() . ' com ON proj.company_id = com.id';
+        $criteria->join('INNER JOIN', Project::tableName() . ' proj', ' user_project_cost.project_id = proj.id')
+                ->join('INNER JOIN',User::tableName(). ' us','user_project_cost.user_id = us.id') 
+                ->join('INNER JOIN',Company::tableName(). ' com','proj.company_id = com.id') ;
 
         if ($expenseSearch->sort == "") {
-            $criteria->orderBy = 'com.name asc, proj.name, us.name';
+            $criteria->orderBy('com.name asc, proj.name, us.name');
         }
-        $criteria->select = 't.*, 
+        $criteria->select('user_project_cost.*, 
                          com.name as companyName,
                          proj.name as projectName,
-                         us.name as workerName';
+                         us.name as workerName');
         return $criteria;
     }
 

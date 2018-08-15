@@ -71,6 +71,8 @@ class Project extends ActiveRecord {
     public $managers;
     public $workers;
     public $customers;
+    
+    public $id;
     /**
      * @return string the associated database table name
      */
