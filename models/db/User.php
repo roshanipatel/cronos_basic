@@ -229,23 +229,33 @@ class User extends ActiveRecord {
      */
     public function search() {
         
-        $criteria = new CDbCriteria(array(
+        $criteria = User::find();
+       
+        $criteria->joinWith(['company','taskCount','roles'])->orderBy('user.name asc');
+       
+        /*$criteria = new CDbCriteria(array(
                     'with' => array('company', 'taskCount', 'roles'),
                     'order' => 't.name asc',
                     'together' => true,
-                ));
+                ));*/
 
-        $criteria->compare('t.username', $this->username, true);
-        $criteria->compare('t.name', $this->name, true);
-        $criteria->compare('t.email', $this->email, true);
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'user.username', $this->username],
+                ['like', 'user.name', $this->name],
+                ['like', 'user.email', $this->email],
+                ['like','user.worker_dflt_profile', $this->worker_dflt_profile]
+            ]);
+       
         if (isset($this->company_name)) {
-            $criteria->compare('company.name', $this->company_name, true);
+            $criteria->andFilterWhere([
+                'or',
+                ['like', 'company.name', $this->company_name]);
         }
-        $criteria->compare('t.worker_dflt_profile', $this->worker_dflt_profile, true);
 
-        return new ActiveDataProvider(get_class($this), array(
-                    'criteria' => $criteria,
-                ));
+        return new ActiveDataProvider(array(
+            'query'=>$criteria,
+        ));
     }
 
     public function hasTasks() {

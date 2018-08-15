@@ -44,7 +44,7 @@ class ProjectExpenseController extends CronosController {
         $providers = $expenseSearchService->getExpenseSearchFormProviders($expenseSearch);
         $projectsCriteria = new yii\db\Query();
         $projectsCriteria->select = 't.id, t.name';
-        $projectsCriteria->order = 't.id desc';
+        $projectsCriteria->orderBy = 't.id desc';
         if (!empty($expenseSearch->companyId)) {
             $projectsProvider = ServiceFactory::createProjectService()
                     ->findProjectsFromCustomerByCustomerId($expenseSearch->companyId, Yii::$app->user, $projectsCriteria, true, $expenseSearch->dateIni, $expenseSearch->dateEnd);
@@ -52,7 +52,7 @@ class ProjectExpenseController extends CronosController {
             $projectsProvider = array();
         }
 
-        $this->render('projectExpenses', CMap::mergeArray($providers, array(
+        $this->render('/projectExpenses', \yii\helpers\ArrayHelper::merge($providers, array(
                     'model' => $expenseSearch,
                     'projectsProvider' => $projectsProvider,
                     'approveCost' => true,
@@ -196,14 +196,15 @@ class ProjectExpenseController extends CronosController {
         $providers = $expenseSearchService->getExpenseSearchFormProviders($expenseSearch, Yii::$app->user);
         $projectsCriteria = new yii\db\Query();
         $projectsCriteria->select = 't.id, t.name';
-        $projectsCriteria->order = 't.id desc';
+        $projectsCriteria->orderBy = 't.id desc';
         if (!empty($expenseSearch->companyId)) {
             $projectsProvider = ServiceFactory::createProjectService()
                     ->findProjectsFromCustomerByCustomerId($expenseSearch->companyId, Yii::$app->user, $projectsCriteria, false, $expenseSearch->dateIni, $expenseSearch->dateEnd);
         } else {
             $projectsProvider = array();
         }
-        $this->render('projectExpenses', CMap::mergeArray($providers, array(
+        
+        $this->render('/projectExpense/projectExpenses', \yii\helpers\ArrayHelper::merge($providers, array(
                     'model' => $expenseSearch,
                     'projectsProvider' => $projectsProvider,
                     'approveCost' => false,

@@ -256,7 +256,7 @@ class UserProjectTaskController extends CronosController {
                 ->getTaskSearchFormProvidersForProfile($taskSearch, Yii::$app->user, $searchFlags, true);
         $oImputetypeService = ServiceFactory::createImputetypeService();
         
-        $this->render('approveTasks', CMap::mergeArray($providers, array(
+        $this->render('approveTasks',\yii\helpers\ArrayHelper::merge($providers, array(
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
                     'actionURL' => Yii::$app->urlManager->createUrl($this->route),
@@ -344,7 +344,7 @@ class UserProjectTaskController extends CronosController {
         
         $oImputetypeService = ServiceFactory::createImputetypeService();
         
-        $this->render('updateTasks', CMap::mergeArray($providers, array(
+        $this->render('updateTasks', \yii\helpers\ArrayHelper::merge($providers, array(
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
                     'actionURL' => Yii::$app->urlManager->createUrl($this->route),
@@ -432,7 +432,7 @@ class UserProjectTaskController extends CronosController {
         }
         
         $renderView = 'searchTasksOfProjects';
-        $this->render($renderView, CMap::mergeArray($providers, array(
+        $this->render($renderView, \yii\helpers\ArrayHelper::merge($providers, array(
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
                     'projectImputetypes' => $oImputetypeService->findImputetypes(),
@@ -496,7 +496,7 @@ class UserProjectTaskController extends CronosController {
         );
         $renderView = 'searchCustomer';
         $projectCost = ServiceFactory::createUserProjectTaskService()->getTasksCost($taskSearch);
-        $this->render($renderView, CMap::mergeArray($providers, array(
+        $this->render($renderView, \yii\helpers\ArrayHelper::merge($providers, array(
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
                     'projectHours' => $projectCost['hours'],

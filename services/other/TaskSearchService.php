@@ -6,6 +6,7 @@ use yii\data\ActiveDataProvider;
 use app\models\form\TaskSearch;
 use app\services\ServiceFactory;
 use app\models\enums\TaskStatus;
+use app\models\db\UserProjectTask;
 
 /**
  * Some help functions for task serach duties
@@ -42,12 +43,13 @@ class TaskSearchService {
 		$providers = $builder->getProvidersForSearch($taskSearch[TaskSearch::FLD_NAME_DATE_INI], $taskSearch[TaskSearch::FLD_NAME_DATE_END]);
 
 		$tasksCriteria = ServiceFactory::createUserProjectTaskService()->getCriteriaFromTaskSearch($taskSearch);
+		$tasksCriteria->from = UserProjectTask::tableName();
+       
 		$providers["tasksProvider"] = new ActiveDataProvider(
-						'UserProjectTask',
 						array(
-							'criteria' => $tasksCriteria,
+							'query' => $tasksCriteria,
 							'pagination' => array(
-								'pageSize' => Yii::$app->params->default_page_size,
+								'pageSize' => Yii::$app->params['default_page_size'],
 							),
 							'sort' => $this->getSort(),
 				));

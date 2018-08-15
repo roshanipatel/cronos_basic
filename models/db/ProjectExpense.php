@@ -128,12 +128,13 @@ class ProjectExpense extends ActiveRecord {
      */
     public function search() {
         $criteria = ServiceFactory::createProjectExpenseService()->getCriteriaFromModel($this);
-        $criteria->order = "";
+        $criteria->orderBy = "";
         $criteria->select = "*";
-        return new ActiveDataProvider(get_class($this), array(
-                    'criteria' => $criteria,
+        $criteria->from = ProjectExpense::TABLE_USER_PROJECT_COST;
+        return new ActiveDataProvider(array(
+                    'query' => $criteria,
                     'pagination' => array(
-                        'pageSize' => Yii::$app->params->default_page_size,
+                        'pageSize' => Yii::$app->params['default_page_size'],
                     ),
                     'sort' => $this->getSort(),
                 ));

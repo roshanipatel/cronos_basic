@@ -317,7 +317,7 @@ class ProjectService implements CronosService {
             return array();
         }
         if ($projectCriteria === null) {
-            $criteria = new yii\db\Query();
+            $criteria = Project::find();
         } else {
             $criteria = $projectCriteria;
         }
@@ -372,8 +372,8 @@ class ProjectService implements CronosService {
                 exists (select * from ' . ProjectCommercial::model()->tableName() . ' m where m.project_id = t.id and m.user_id= '. $user->id.'))');
         }
         
-        $criteria->order = 't.name asc';
-        return Project::findAll($criteria);
+        $criteria->orderBy('t.name asc');
+        return $criteria->all();
     }
 
     /**
