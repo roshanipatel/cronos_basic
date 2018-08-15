@@ -215,14 +215,14 @@ class ProjectExpenseService implements CronosService {
      */
     public function getCriteriaFromExpenseSearch($expenseSearch) {
         $criteria = $expenseSearch->buildCriteria();
-        $criteria->with = array('worker', 'project', 'project.company');
+        $criteria->join = array('worker', 'project', 'project.company');
         //$criteria->select = "*";
         $criteria->join = ' INNER JOIN ' . Project::tableName() . ' proj ON t.project_id = proj.id 
                                 INNER JOIN ' . User::tableName() . ' us ON t.user_id = us.id 
                                 INNER JOIN ' . Company::tableName() . ' com ON proj.company_id = com.id';
 
         if ($expenseSearch->sort == "") {
-            $criteria->order = 'com.name asc, proj.name, us.name';
+            $criteria->orderBy = 'com.name asc, proj.name, us.name';
         }
         $criteria->select = 't.*, 
                          com.name as companyName,

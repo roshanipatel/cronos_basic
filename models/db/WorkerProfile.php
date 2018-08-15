@@ -82,14 +82,16 @@ class WorkerProfile extends ActiveRecord
     {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
-
-        $criteria = new CDbCriteria;
-
-        $criteria->compare( 'id', $this->id, true );
-        $criteria->compare( 'dflt_price', $this->dflt_price, true );
-
-        return new ActiveDataProvider( get_class( $this ), array(
-            'criteria' => $criteria,
+        $criteria = WorkerProfiles::find();
+        $criteria->andFilterWhere([
+                'or',
+                ['like', 'id', $this->id],
+                ['like', 'dflt_price', $this->dflt_price]
+            ]
+            );
+        
+        return new ActiveDataProvider(array(
+            'query' => $criteria,
         ) );
     }
 

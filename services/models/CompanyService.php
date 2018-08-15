@@ -24,7 +24,7 @@ class CompanyService implements CronosService
     {
         $criteria = Company::find();
         $criteria->addSearchCondition('name', $substr);
-        $criteria->order = 'id desc';
+        $criteria->orderBy = 'id desc';
         return $criteria->all();
     }
     
@@ -39,7 +39,7 @@ class CompanyService implements CronosService
         }
         // Build search criteria depending on the user
         $criteria = Company::find();
-        $criteria->order = 't.name asc';
+        $criteria->orderBy = 't.name asc';
         $models = $criteria->all();
         $result = array();
         foreach ($models as $company)

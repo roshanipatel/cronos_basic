@@ -2,6 +2,9 @@
 namespace app\models\form;
 
 use yii\db\ActiveRecord;
+use app\models\db\Project;
+use app\models\User;
+use app\models\db\Company;
 
 /**
  * Model for making Expense Search
@@ -105,7 +108,8 @@ class ExpenseSearch extends ActiveRecord {
      * @return CDbCriteria
      */
     public function buildCriteria() {
-        $criteria = new CDbCriteria;
+
+        $criteria = new \yii\db\Query();
         $addJoinProject = false;
 
         // Fields for project: if not defined project field => all projects OK
@@ -156,18 +160,21 @@ class ExpenseSearch extends ActiveRecord {
 
         // Fields for customers
         if (Company::isValidID($this->companyId)) {
-            $criteria->compare('project.company_id', $this->companyId);
-            $criteria->compare('company.id', $this->companyId);
+            $criteria->andFilterWhere([
+                'or',
+                ['like', 'project.company_id', $this->companyId],
+                ['like', 'company.id', $this->companyId]
+                ] );
             $addJoinProject = true;
         }
 
         if ($addJoinProject) {
             $criteria->together = true;
-            $criteria->with = array('project', 'company');
+            $criteria->joinWith = array('project', 'company');
         }
 
         if (empty($this->sort)) {
-            $criteria->order = 't.id desc';
+            $criteria->orderBy = 't.id desc';
         }
 
         return $criteria;

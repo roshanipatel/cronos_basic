@@ -5,6 +5,8 @@ use yii;
 use yii\data\Sort;
 use yii\data\ActiveDataProvider;
 use app\services\ServiceFactory;
+use app\models\db\ProjectExpense;
+
 /**
  * Some help functions for task search duties
  *
@@ -26,11 +28,12 @@ class ExpenseSearchService {
     public function getExpenseSearchFormProviders($expenseSearch) {
         $providers = array();
         $tasksCriteria = ServiceFactory::createProjectExpenseService()->getCriteriaFromExpenseSearch($expenseSearch);
+        $tasksCriteria->from = ProjectExpense::TABLE_USER_PROJECT_COST;
         $providers["costsProvider"] = new ActiveDataProvider(
-                'ProjectExpense', array(
-            'criteria' => $tasksCriteria,
+                array(
+            'query' => $tasksCriteria,
             'pagination' => array(
-                'pageSize' => Yii::$app->params->default_page_size,
+                'pageSize' => Yii::$app->params['default_page_size'],
             ),
             'sort' => $this->getSort(),
         ));

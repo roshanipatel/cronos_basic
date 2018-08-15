@@ -260,16 +260,21 @@ class UserProjectTask extends ActiveRecord {
      * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search() {
-        $criteria = new CDbCriteria(array(
-                    'with' => array('worker', 'project', 'imputetype'),
-                ));
-        $criteria->select = "*, 
+
+        $criteria = UserProjectTask::find();
+       
+        $criteria->joinWith(['worker','project','imputetype']);
+       
+        
+        $criteria->select ("*, 
                     ( select user.name from " . Project::TABLE_PROJECT_MANAGER . " inner join " . User::TABLE_USER . " on "
                  . "" . User::TABLE_USER . ".id = " . Project::TABLE_PROJECT_MANAGER . ".user_id "
-                 . "where " . Project::TABLE_PROJECT_MANAGER . ".project_id = t.project_id order by user.name limit 1 ) as managerName";
-        return new ActiveDataProvider(get_class($this), array(
-                    'criteria' => $criteria,
+                 . "where " . Project::TABLE_PROJECT_MANAGER . ".project_id = t.project_id order by user.name limit 1 ) as managerName");
+
+        return new ActiveDataProvider(array(
+                    'query' => $criteria,
                 ));
+
     }
 
     public function refreshHoursFromTimestamps() {
