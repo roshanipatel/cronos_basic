@@ -6,6 +6,7 @@ use app\components\CronosController;
 use app\models\db\ProjectExpense;
 use app\models\form\ExpenseSearch;
 use app\services\ServiceFactory;
+use app\models\enums\TaskStatus;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -52,7 +53,7 @@ class ProjectExpenseController extends CronosController {
             $projectsProvider = array();
         }
 
-        $this->render('/projectExpenses', \yii\helpers\ArrayHelper::merge($providers, array(
+        $this->render('/projectExpense/projectExpenses', \yii\helpers\ArrayHelper::merge($providers, array(
                     'model' => $expenseSearch,
                     'projectsProvider' => $projectsProvider,
                     'approveCost' => true,
