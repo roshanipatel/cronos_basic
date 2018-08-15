@@ -72,7 +72,7 @@ abstract class PHPExcel_Writer_Excel2007_WriterPart
 	 * @param PHPExcel_Writer_IWriter	$pWriter
 	 * @throws Exception
 	 */
-	public function __construct(PHPExcel_Writer_IWriter $pWriter = null) {
+	public function __construct($pWriter = null) {
 		if (!is_null($pWriter)) {
 			$this->_parentWriter = $pWriter;
 		}

@@ -184,20 +184,23 @@ class ReportTaskController extends CronosController {
         $oCurrentSheet->SetCellValue('G' . $iFilaActual, "Total");
         $oCurrentSheet->getStyle('G' . $iFilaActual . ":H" . $iFilaActual)->applyFromArray($this->getStyleHeader());
         $oCurrentSheet->SetCellValue('H' . $iFilaActual, "=SUBTOTAL(9, H" . $iPrimeraFila . ":H" . ($iFilaActual - 1) . ")");
+
        // $oCurrentSheet->setTitle('Informe costes');
         // Redirect output to a clientâ€™s web browser (Excel5)
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         header('Content-Type: application/vnd.ms-excel');
         $filename = "MyExcelReport_".date("d-m-Y-His").".xls";
+
         header('Content-Disposition: attachment;filename='.$filename .' ');
         header('Cache-Control: max-age=0');
-        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save('php://output');     
         //header('Content-Type: application/vnd.ms-excel');
         //header('Content-Disposition: attachment;filename="actividad.xls"');
         //header('Cache-Control: max-age=0');
         //$objWriter = PHPExcel_IOFactory::createWriter($oCurrentSheet, 'Excel2007');
         //$objWriter->save('php://output');
-        exit;
+       die;
+        
     }
 
     /**

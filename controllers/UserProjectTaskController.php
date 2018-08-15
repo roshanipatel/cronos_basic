@@ -32,7 +32,7 @@ class UserProjectTaskController extends CronosController {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id) {
-        $this->render('view', array(
+        $this->render('/UserProjectTask/view', array(
             'model' => $this->loadModel($id),
         ));
     }
@@ -256,7 +256,7 @@ class UserProjectTaskController extends CronosController {
                 ->getTaskSearchFormProvidersForProfile($taskSearch, Yii::$app->user, $searchFlags, true);
         $oImputetypeService = ServiceFactory::createImputetypeService();
         
-        $this->render('approveTasks',\yii\helpers\ArrayHelper::merge($providers, array(
+        $this->render('/UserProjectTask/approveTasks',\yii\helpers\ArrayHelper::merge($providers, array(
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
                     'actionURL' => Yii::$app->urlManager->createUrl($this->route),
@@ -344,7 +344,7 @@ class UserProjectTaskController extends CronosController {
         
         $oImputetypeService = ServiceFactory::createImputetypeService();
         
-        $this->render('updateTasks', \yii\helpers\ArrayHelper::merge($providers, array(
+        $this->render('/UserProjectTask/updateTasks', \yii\helpers\ArrayHelper::merge($providers, array(
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
                     'actionURL' => Yii::$app->urlManager->createUrl($this->route),
@@ -431,7 +431,7 @@ class UserProjectTaskController extends CronosController {
             $aProjectSummarized[Project::findOne($oProjectSummary->project_id)->name] = $oProjectSummary;
         }
         
-        $renderView = 'searchTasksOfProjects';
+        $renderView = '/UserProjectTask/searchTasksOfProjects';
         $this->render($renderView, \yii\helpers\ArrayHelper::merge($providers, array(
                     'taskSearch' => $taskSearch,
                     'searchFieldsToHide' => $searchFieldsToHide,
@@ -494,7 +494,7 @@ class UserProjectTaskController extends CronosController {
             TaskSearch::FLD_IS_EXTRA,
             TaskSearch::FLD_IS_BILLABLE,
         );
-        $renderView = 'searchCustomer';
+        $renderView = '/UserProjectTask/searchCustomer';
         $projectCost = ServiceFactory::createUserProjectTaskService()->getTasksCost($taskSearch);
         $this->render($renderView, \yii\helpers\ArrayHelper::merge($providers, array(
                     'taskSearch' => $taskSearch,
@@ -566,7 +566,7 @@ class UserProjectTaskController extends CronosController {
         if (isset($_GET['UserProjectTask']))
             $model->attributes = $_GET['UserProjectTask'];
 
-        $this->render('admin', array(
+        $this->render('/UserProjectTask/admin', array(
             'model' => $model,
         ));
     }

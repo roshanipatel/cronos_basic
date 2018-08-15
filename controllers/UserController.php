@@ -186,7 +186,7 @@ class UserController extends CronosController {
         $oModel = new ActiveDataProvider([
                                 'query' =>$query,
                                 'pagination' => array(
-                                    'pageSize' => Yii::$app->params['default_page_size'],
+                                    'pageSize' => \Yii::$app->params['default_page_size'],
                                 ),
                                 'sort' => $sort,
                                 ]); 
