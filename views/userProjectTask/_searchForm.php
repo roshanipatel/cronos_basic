@@ -17,6 +17,9 @@ use app\models\form\TaskSearch;
 use app\models\enums\ProjectCategories;
 use app\models\enums\WorkerProfiles;
 use app\components\utils\PHPUtils;
+use yii\widgets\ActiveForm;
+use app\models\enums\ProjectStatus;
+use app\models\enums\TaskStatus;
 ?>
 <?php
 // Required fields
@@ -175,7 +178,7 @@ if($hasToDefineForm) {
 	<?php  if(!in_array(TaskSearch::FLD_IMPUTE_TYPE, $searchFieldsToHide)) { ?>
 	<div class="col-lg-3">
 		<div class="form-group">
-			<?= $form->field($taskSearch, 'imputetype')->label('imputetype'); ?>
+			<?php // $form->field($taskSearch, 'imputetype')->label('imputetype'); ?>
 			<?= $form->field($taskSearch, 'imputetype')->dropDownList(\yii\helpers\ArrayHelper::map($projectImputetypes, 'id', 'name'),array( 'multiple' => 'multiple',
                     'id' => 'imputetype_projects'));?>
 		</div>
@@ -281,6 +284,8 @@ $this->render('/userProjectTask/_projectsFromCustomerAutocomplete', [
     
 </script>
 <?php
-if($hasToDefineForm) $this->endWidget();
+if($hasToDefineForm)
+  ActiveForm::end(); 
+
 ?>
 <?php /* * ********** END SEARCH FORM  ****************** */ ?>

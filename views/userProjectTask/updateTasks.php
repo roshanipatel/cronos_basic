@@ -2,6 +2,8 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
+use fedemotta\datatables\DataTables;
+
 
 ?>
 <div class="row">
@@ -211,19 +213,19 @@ use yii\helpers\ArrayHelper;
                                 });
                              });
                         });
-                        function isAnyChecked()
-                        {
-                            if( jQuery("input:checkbox:checked").length == 0 )
-                            {
-                                alert( "Seleccione alguna tarea para aprobar" );
-                                return false;
-                            }
-                            else
-                                return true;
-                        }
-                        
-                        
-                    </script>
+    function isAnyChecked()
+    {
+        if( jQuery("input:checkbox:checked").length == 0 )
+        {
+            alert( "Seleccione alguna tarea para aprobar" );
+            return false;
+        }
+        else
+            return true;
+    }
+    
+    
+</script>
                     <?php
                     $columns = [
                         ['class' => 'yii\grid\SerialColumn'],
@@ -284,8 +286,6 @@ use yii\helpers\ArrayHelper;
                         ],
                     ];
 
-if( $tasksProvider->itemCount > 0 )
-{
 ?>
 <div style="text-align: center">
 <?php echo Html::submitButton( 'Modificar seleccionadas', array(
@@ -300,7 +300,7 @@ echo "&nbsp;";
 ?>
 </div>
 <?php
-}
+/*}*/
 /**
  * Add hours column with desired format
  */
@@ -323,7 +323,6 @@ if(Yii::$app->user->hasDirectorPrivileges()) {
 array_splice($columns, 4, 0, array($day));
 
 echo DataTables::widget([
-    'id' => 'dataTables-example',
     //'ajaxUpdate' => FALSE,
     'dataProvider' => $tasksProvider,
     //'filter' => null,
@@ -338,3 +337,5 @@ $this->endWidget();
         </div>    
     </div>
 </div>
+?>
+ <?php ActiveForm::end(); ?>
