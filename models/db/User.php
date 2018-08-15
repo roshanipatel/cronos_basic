@@ -250,7 +250,7 @@ class User extends ActiveRecord {
         if (isset($this->company_name)) {
             $criteria->andFilterWhere([
                 'or',
-                ['like', 'company.name', $this->company_name]);
+                ['like', 'company.name', $this->company_name]]);
         }
 
         return new ActiveDataProvider(array(
