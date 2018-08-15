@@ -1,313 +1,287 @@
-<h1>Consultar Gastos Proyectos</h1>
-<?php /* * ********** SEARCH FORM  ****************** */ ?>
 <?php
-assert(isset($projectsProvider));
-assert(isset($onlyManagedByUser));
-// Required fields
-$isProjectManagerRole = Yii::$app->user->hasProjectManagerPrivileges() || Yii::$app->user->hasAdministrativePrivileges();
-$form = $this->beginWidget('CActiveForm', array(
-    //'action' => $actionURL,
-    'method' => 'get',
-        ));
-
-//If project manager
-if (Yii::$app->user->isProjectManager()) {
-    $workersProvider = ServiceFactory::createUserService()->findWorkersByManager(true, Yii::$app->user->id);
-} else if (Yii::$app->user->hasAdministrativePrivileges()) {
-    $workersProvider = ServiceFactory::createUserService()->findAllWorkers(true);
-} else if ($isProjectManagerRole) {
-    $workersProvider = ServiceFactory::createUserService()->findProjectWorkers(true);
-} else {
-    $workersProvider = array();
-}
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use app\models\Constants;
+use app\models\enums\ExpenseType;
+use app\components\utils\PHPUtils;
+use app\models\enums\ExpensePaymentMethod;
+use app\services\ServiceFactory;
+use fedemotta\datatables\DataTables;
 ?>
-<script type="text/javascript">
-    function isAnyChecked()
-    {
-        if( jQuery("input:checkbox:checked").length == 0 )
-        {
-            alert( "Seleccione algun cost para aprobar" );
-            return false;
-        }
-        else
-            return true;
-    }
-</script>
-<table id="tableTaskSearch">
-    <tr>
-        <td class="title_search_field">Fecha apertura</td>
-        <td class="title_search_field">Fecha cierre</td>
-        <td class="title_search_field">Cliente</td>
-        <td class="title_search_field">Proyecto</td>
-        <?php
-        if ($isProjectManagerRole) {
-            ?>
-            <td class="title_search_field">Imputador</td>
-            <?php
-        }
-        ?>
-        <td class="title_search_field">Tipo gasto</td>
-        <td class="title_search_field">Forma de pago</td>
-    </tr>
-    <tr>
-        <?php
-        echo "<td>\n";
-        echo $form->textField($model, 'dateIni', array(
-            'maxlength' => 20,
-        ));
-        echo "</td>\n";
-        echo "<td>\n";
-        echo $form->textField($model, 'dateEnd', array(
-            'maxlength' => 20,
-        ));
-        echo "</td>\n";
-        echo "<td>\n";
-        echo $form->hiddenField($model, 'companyId', array('id' => 'company_id'));
-        echo $form->textField($model, 'companyName', array(
-            'id' => 'company_name',
-            'style' => 'width: 200px'
-        ));
-        echo "<span id=\"loadingCustomers\"></span>\n";
-        echo "</td>\n";
-        echo "<td>\n";
-        echo $form->field($model, 'projectId')->dropdownList( \yii\helpers\ArrayHelper::map($projectsProvider, 'id', 'name'), array(
-            'prompt' => 'Todos',
-            'style' => 'width: 200px'
-        ));
-        echo "<span id=\"loadingProjects\"></span>\n";
-        echo "</td>\n";
-        if ($isProjectManagerRole) {
-            echo "<td>\n";
-            echo $form->field($model, 'worker')->dropdownList( \yii\helpers\ArrayHelper::map($workersProvider, 'id', 'name'), array(
-                'prompt' => 'Todos',
-                'style' => 'width: 120px'
-            ));
-            echo "<span id=\"loadingWorkers\"></span>\n";
-            echo "</td>\n";
-        }
-        echo "<td>\n";
-        echo $form->field($model, 'costtype')->dropdownList( ExpenseType::getDataForDropDown(), array(
-            'prompt' => 'Todos',
-            'style' => 'width: 100px'
-        ));
-        echo "</td>\n";
-        echo "<td>\n";
-        echo $form->field($model, 'paymentMethod')->dropdownList( ExpensePaymentMethod::getDataForDropDown(), array(
-            'prompt' => 'Todos',
-            'style' => 'width: 100px'
-        ));
-        echo "</td>\n";
-        ?>
-    </tr>
-    <tr>
-        <td colspan="9" align="center">
-            <br>
-            <script type="text/javascript">
-                function projectSearch( frm )
-                {
-                    frm.action = '';
-                    frm.target = '_self';
-                    return true;
+
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">Consultar Gastos Proyectos</h1>
+  </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Imputar Gasto Proyecto
+            </div>
+            <div class="panel-body">
+                <?php
+                    assert(isset($projectsProvider));
+                    assert(isset($onlyManagedByUser));
+                // Required fields
+                    $isProjectManagerRole = Yii::$app->user->hasProjectManagerPrivileges() || Yii::$app->user->hasAdministrativePrivileges();
+                    $form = ActiveForm::begin([
+                        //'action' => $actionURL,
+                        'method' => 'get',
+                         ]);
+
+                //If project manager
+                if (Yii::$app->user->isProjectManager()) {
+                    $workersProvider = ServiceFactory::createUserService()->findWorkersByManager(true, Yii::$app->user->id);
+                } else if (Yii::$app->user->hasAdministrativePrivileges()) {
+                    $workersProvider = ServiceFactory::createUserService()->findAllWorkers(true);
+                } else if ($isProjectManagerRole) {
+                    $workersProvider = ServiceFactory::createUserService()->findProjectWorkers(true);
+                } else {
+                    $workersProvider = array();
                 }
-            </script>
-            <?php
-            echo CHtml::submitButton('Buscar', array(
-                'onClick' => 'return projectSearch( this.form );',
-            ));
-            ?>
-            &nbsp;
-<?php 
-    if ($approveCost) {
-        echo CHtml::submitButton( 'Aprobar seleccionadas', array(
-                'id' => 'approve_button',
-                'submit' => '',
-                'params' => array( 'doApprove' => '1' )
-        ) ); 
-    }
-    echo "&nbsp;";
-    echo CHtml::submitButton( 'Select all', array(
-                'id' => 'select_all' 
-        ) ); 
-    ?>
-            <script type="text/javascript">
-                    function exportToCSV( frm )
+                ?>
+                <script type="text/javascript">
+                    function isAnyChecked()
                     {
-                            frm.action = '<?php echo Yii::$app->urlManager->createUrl(['project-expense/exportToCSV']); ?>';
-                            frm.target = '_blank';
+                        if( jQuery("input:checkbox:checked").length == 0 )
+                        {
+                            alert( "Seleccione algun cost para aprobar" );
+                            return false;
+                        }
+                        else
                             return true;
                     }
-            </script>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <?php
-            echo CHtml::submitButton('Exportar a CSV',
-                            array(
-                    'onClick' => 'return exportToCSV( this.form );',
-            ));
-            ?>
-            
-        
-        </td>
-    </tr>
-</table>
-<script type="text/javascript">
-    jQuery(document).ready((function() {
-        
-        $('#approve_button').click(function() {
-            return isAnyChecked();
-        });
-        
-        $('#select_all').click(function() {
-            $('input[type=checkbox]').each(function () {
-                this.checked = !this.checked;
-             });
-            return false;
-        });
-        
-        jQuery( 'input[id^="ExpenseSearch_dateIni"],input[id^="ExpenseSearch_dateEnd"]' )
-        .attr('readonly', 'readonly')
-        .datepicker(
-        {
-            'dateFormat': 'dd/mm/yy',
-            'timeFormat': 'hh:mm',
-            'monthNames': [ 'Enero', 'Febrero', 'Marzo', 'Abril',
-                'Mayo', 'Junio', 'Julio', 'Agosto',
-                'Setiembre', 'Octubre', 'Noviembre', 'Diciembre' ],
-            'showAnim': 'fold',
-            'type' : 'date',
-            'dayNamesMin' : ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa' ],
-            'firstDay' : 1,
-            'currentText' : 'Hoy',
-            'closeText' : 'Listo',
-            'showButtonPanel' : true
-        });
-        jQuery( "div.ui-datepicker" ).css("font-size", "80%");
-    }));
-</script>
-<?php
-$this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
-    'onlyManagedByUser' => $onlyManagedByUser,
-    'onlyUserEnvolved' => true
-]);
-?>
-<script type="text/javascript">
-    jQuery(document).ready(function(){
-        var options = new Object();
-        options['companyIdInputSelector'] = '#company_id';
-        options['companyNameInputSelector'] = '#company_name';
-        options['projectSelectSelector'] = '#ExpenseSearch_projectId';
-        options['workerSelectSelector'] = '#ExpenseSearch_worker';
-        
-        defineAutocompleteCustomers( options );
-    });
-</script>
-<?php
+                </script>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <?= $form->field($model, 'dateIni')->textInput([
+                                    'class'=>"form-control", 
+                                    array( 'maxlength' => 20 )])->label('Fecha apertura') ?>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <?= $form->field($model, 'dateEnd')->textInput([
+                                    'class'=>"form-control", 
+                                    array( 'maxlength' => 20 )])->label('Fecha cierre') ?>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <?= $form->field($model, 'companyId')->hiddenInput(array('id' => 'company_id'))->hiddenInput()->label(false);?>
+                                <?= $form->field($model, 'companyName')->textInput([
+                                    'class'=>"form-control", 
+                                    array( 'id' => 'company_name')])->label('Cliente') ?>
+                                    <span id="loadingCustomers"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <?php echo $form->field($model, 'projectId')->dropdownList( \yii\helpers\ArrayHelper::map($projectsProvider, 'id', 'name'), array('prompt' => 'Todos'));?>
+                            </div>
+                            <span id="loadingProjects"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <?= $form->field($model, 'costtype')->dropdownList( ExpenseType::getDataForDropDown(), array('prompt' => 'Todos'));?>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <?=  $form->field($model, 'paymentMethod')->dropdownList( ExpensePaymentMethod::getDataForDropDown(), array('prompt' => 'Todos'));?>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <?php if ($isProjectManagerRole) { ?>
+                            <div class="form-group"> 
+                                <?php echo $form->field($model, 'worker')->dropdownList( \yii\helpers\ArrayHelper::map($workersProvider, 'id', 'name'), array('prompt' => 'Todos')); ?>
+                            </div>
+                            <span id="loadingWorkers"></span>
+                            <?php } ?>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-8">
+                            <script type="text/javascript">
+                                function projectSearch( frm )
+                                {
+                                    frm.action = '';
+                                    frm.target = '_self';
+                                    return true;
+                                }
+                            </script>
+                            <?php echo Html::submitButton('Buscar', array('onClick' => 'return projectSearch( this.form );'));?>
+                            &nbsp;
+                            <?php if ($approveCost) 
+                                {
+                                    echo Html::submitButton( 'Aprobar seleccionadas', array('id' => 'approve_button','submit' => '','params' => array( 'doApprove' => '1' )) ); 
+                                }?>
+                            &nbsp;
+                            <?php echo Html::submitButton( 'Select all', array('id' => 'select_all' ) ); ?>
+                            <script type="text/javascript">
+                                    function exportToCSV( frm )
+                                    {
+                                            frm.action = '<?php echo Yii::$app->urlManager->createUrl(['project-expense/exportToCSV']); ?>';
+                                            frm.target = '_blank';
+                                            return true;
+                                    }
+                            </script>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php echo Html::submitButton('Exportar a CSV',array('onClick' => 'return exportToCSV( this.form );'));?>
+                            <script type="text/javascript">
+                                jQuery(document).ready((function() {
+                                    
+                                    $('#approve_button').click(function() {
+                                        return isAnyChecked();
+                                    });
+                                    
+                                    $('#select_all').click(function() {
+                                        $('input[type=checkbox]').each(function () {
+                                            this.checked = !this.checked;
+                                         });
+                                        return false;
+                                    });
+                                    
+                                    jQuery( 'input[id^="ExpenseSearch_dateIni"],input[id^="ExpenseSearch_dateEnd"]' )
+                                    .attr('readonly', 'readonly')
+                                    .datepicker(
+                                    {
+                                        'dateFormat': 'dd/mm/yy',
+                                        'timeFormat': 'hh:mm',
+                                        'monthNames': [ 'Enero', 'Febrero', 'Marzo', 'Abril',
+                                            'Mayo', 'Junio', 'Julio', 'Agosto',
+                                            'Setiembre', 'Octubre', 'Noviembre', 'Diciembre' ],
+                                        'showAnim': 'fold',
+                                        'type' : 'date',
+                                        'dayNamesMin' : ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa' ],
+                                        'firstDay' : 1,
+                                        'currentText' : 'Hoy',
+                                        'closeText' : 'Listo',
+                                        'showButtonPanel' : true
+                                    });
+                                    jQuery( "div.ui-datepicker" ).css("font-size", "80%");
+                                }));
+                            </script>
+                                <?php
+                                $this->render('../userProjectTask/_projectsFromCustomerAutocomplete', [
+                                    'onlyManagedByUser' => $onlyManagedByUser,
+                                    'onlyUserEnvolved' => true
+                                ]);
+                                ?>
+                                <script type="text/javascript">
+                                    jQuery(document).ready(function(){
+                                        var options = new Object();
+                                        options['companyIdInputSelector'] = '#company_id';
+                                        options['companyNameInputSelector'] = '#company_name';
+                                        options['projectSelectSelector'] = '#ExpenseSearch_projectId';
+                                        options['workerSelectSelector'] = '#ExpenseSearch_worker';
+                                        
+                                        defineAutocompleteCustomers( options );
+                                    });
+                                </script>
+                                <?php
 
-$aExpenses = array(
-        array(
-            'header' => "Fecha Gasto",
-            'name' => 'dateIni',
-            'value' => 'PHPUtils::removeHourPartFromDate($data->date_ini)',
-            'htmlOptions' => array(
-                'style' => 'width: 100px'
-            )
-        ),
-        array(
-            'header' => 'Cliente',
-            'name' => 'companyName',
-            'value' => '$data->companyName',
-            'htmlOptions' => array(
-                'style' => 'width: 200px'
-            )
-        ),
-        array(
-            'header' => 'Proyecto',
-            'name' => 'projectName',
-            'value' => '$data->projectName',
-            'htmlOptions' => array(
-                'style' => 'width: 200px'
-            )
-        ),
-        array(
-            'name' => 'costtype',
-            'value' => 'ExpenseType::toString($data->costtype)',
-            'htmlOptions' => array(
-                'style' => 'width: 100px'
-            )
-        ),
-        array(
-            'name' => 'paymentMethod',
-            'value' => 'ExpensePaymentMethod::toString($data->paymentMethod)',
-            'htmlOptions' => array(
-                'style' => 'width: 100px'
-            )
-        ),
-        array(
-            'header' => 'Imputador',
-            'name' => 'workerName',
-            'value' => '$data->workerName',
-            'htmlOptions' => array(
-                'style' => 'width: 100px'
-            ),
-            'visible' => 'Yii::$app->user->hasDirectorPrivileges()',
-        ),
-        array(
-            'header' => 'Importe',
-            'name' => 'importe',
-            'value' => '$data->importe',
-            'htmlOptions' => array(
-                'style' => 'width: 100px'
-            )
-        ),
-        array(
-            'class' => 'CButtonColumn',
-            'template'=>'{update}{delete}{pdf}',
-            'buttons' => array(
-                'view' => array(
-                    'visible' => 'false'
-                ),
-                'delete' => array(
-                    'visible' => '$data->project->statuscommercial != ProjectStatus::PS_CLOSED',
-                ),
-                'pdf' => array(
-                    'label'=>'Download PDF',
-                    'visible' => '$data->pdffile != ""',
-                    'imageUrl'=>Yii::$app->request->baseUrl.'/images/pdf.png',
-                    'url'=>'$this->grid->controller->createUrl("/project-expense/download-pdf/$data->id")',
-                    ),
-                'print' => array(
-                    'visible' => 'false',
-                ),
-            ),
-            'htmlOptions' => array(
-                'style' => 'text-align: left',
-            ),
-            'headerHtmlOptions' => array(
-                'style' => 'width: 50px',
-            ),
-        )
-    );
+                                $aExpenses = [
+                                        ['class' => 'yii\grid\SerialColumn'],
+                                        [
+                                            'class' => 'yii\grid\DataColumn',
+                                            'label' => 'Fecha Gasto',
+                                            'value' => 'PHPUtils::removeHourPartFromDate($data->date_ini)',
+                                        ],
+                                        [
+                                            'class' => 'yii\grid\DataColumn',
+                                            'label' => 'Cliente',
+                                            'value' => '$data->companyName',
+                                        ],
+                                        [
+                                            'class' => 'yii\grid\DataColumn',
+                                            'label' => 'projectName',
+                                            'value' => '$data->projectName',
+                                        ],
+                                        [
+                                            'class' => 'yii\grid\DataColumn',
+                                            'label' => 'costtype',
+                                            'value' => 'ExpenseType::toString($data->costtype)',
+                                        ],
+                                        [
+                                            'class' => 'yii\grid\DataColumn',
+                                            'label' => 'paymentMethod',
+                                            'value' => 'ExpensePaymentMethod::toString($data->paymentMethod)',
+                                        ],
+                                        [   
+                                            'class' => 'yii\grid\DataColumn',
+                                            'label' => 'Imputador',
+                                            'value' => '$data->workerName',
+                                        ],
+                                        [
+                                            'class' => 'yii\grid\DataColumn',
+                                            'label' => 'Importe',
+                                            'value' => '$data->importe',
+                                        ],
+                                        [
+                                            'class' => 'yii\grid\ActionColumn',
+                                            'template'=>'{update}{delete}{pdf}',
+                                            'buttons' => [
+                                                'view' => [
+                                                       'visible' => 'false'
+                                                        ],
+                                                'delete' => [
+                                                      'visible' => '$data->project->statuscommercial != ProjectStatus::PS_CLOSED',
+                                                        ],      
+                                                'pdf' =>[
+                                                        'label'=>'Download PDF',
+                                                        'visible' => '$data->pdffile != ""',
+                                                        'imageUrl'=>Yii::$app->request->baseUrl.'/images/pdf.png',
+                                                        'url'=>'$this->grid->controller->createUrl("/project-expense/download-pdf/$data->id")',
+                                                    ],
+                                                'print' =>[
+                                                    'visible' => 'false',
+                                                ],
+                                            ],
+                                        ],
+                                    ];
 
-if ($approveCost) {
-    $aExpenses[] = array(
-            'class' => 'CCheckBoxColumn',
-            'checked' => 'false',
-            'id' => 'toApprove',
-            'htmlOptions' => array(
-                'style' => 'text-align: center',
-            )
-        );
-}
+                                if ($approveCost) {
+                                    $aExpenses[] = array(
+                                            'class' => 'CCheckBoxColumn',
+                                            'checked' => 'false',
+                                            'id' => 'toApprove',
+                                            'htmlOptions' => array(
+                                                'style' => 'text-align: center',
+                                            )
+                                        );
+                                }
+                                ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?= DataTables::widget([
 
-$this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'project-grid',
     'dataProvider' => $costsProvider,
     //'filter' => $model,
-    'filter' => null,
-    'selectableRows' => 0,
-    'summaryText' => 'Mostrando {end} de {count} resultado(s)',
-    'ajaxUpdate' => FALSE,
+    //'filter' => null,
+    //'selectableRows' => 0,
+    //'summaryText' => 'Mostrando {end} de {count} resultado(s)',
+   // 'ajaxUpdate' => FALSE,
     'columns' => $aExpenses
-));
+]);
 
 $this->endWidget();
 ?>

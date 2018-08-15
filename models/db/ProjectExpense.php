@@ -168,7 +168,7 @@ class ProjectExpense extends ActiveRecord {
         return parent::afterFind();
     }
 
-    public function beforeSave() {
+    public function beforeSave($insert) {
         $this->date_ini = PHPUtils::convertStringToDBDateTime($this->date_ini);
         
         if (!parent::beforeSave()) {
