@@ -7,6 +7,9 @@ use app\models\db\ProjectExpense;
 use app\models\form\ExpenseSearch;
 use app\services\ServiceFactory;
 use app\models\enums\TaskStatus;
+use app\models\db\Project;
+use yii\data\ActiveDataProvider;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -63,18 +66,18 @@ class ProjectExpenseController extends CronosController {
 
     private function getProjectExpensesModelForSearchFromRequest() {
         $expenseSearch = new ExpenseSearch();
-//        $expenseSearch->scenario = 'search';
         //$expenseSearch->unsetAttributes();  // clear any default values
         if (isset($_GET['ExpenseSearch'])) {
             $expenseSearch->attributes = $_GET['ExpenseSearch'];
         }
+
         //If it not a project manager or administrative
-        if (!Yii::$app->user->hasProjectManagerPrivileges() && !Yii::$app->user->hasAdministrativePrivileges()) {
-            $expenseSearch->worker = Yii::$app->user->id;
+        if (!Yii::$app->User->hasProjectManagerPrivileges() && !Yii::$app->User->hasAdministrativePrivileges()) {
+            $expenseSearch->worker = Yii::$app->User->identity->id;
         }
         
-        if (Yii::$app->user->isProjectManager()) {
-            $expenseSearch->owner = Yii::$app->user->id;
+        if (Yii::$app->User->isProjectManager()) {
+            $expenseSearch->owner = Yii::$app->User->identity->id;
         }
         
         // Add sort if it's in the request
@@ -202,12 +205,12 @@ class ProjectExpenseController extends CronosController {
             $projectsProvider = ServiceFactory::createProjectService()
                     ->findProjectsFromCustomerByCustomerId($expenseSearch->companyId, Yii::$app->user, $projectsCriteria, false, $expenseSearch->dateIni, $expenseSearch->dateEnd);
         } else {
-            $projectsProvider = array();
+            $projectsProvider = Project::find();
         }
         
         $this->render('/projectExpense/projectExpenses', \yii\helpers\ArrayHelper::merge($providers, array(
                     'model' => $expenseSearch,
-                    'projectsProvider' => $projectsProvider,
+                    'projectsProvider' =>$projectsProvider,
                     'approveCost' => false,
                     'onlyManagedByUser' => false)
                 ));

@@ -111,7 +111,7 @@ class ExpenseSearch extends ActiveRecord {
      */
     public function buildCriteria() {
 
-        $criteria = new \yii\db\Query();
+        $criteria = ProjectExpense::find();
         $addJoinProject = false;
         
         // Fields for project: if not defined project field => all projects OK
@@ -195,12 +195,12 @@ class ExpenseSearch extends ActiveRecord {
         }
 
         if ($addJoinProject) {
-            $criteria->together = true;
-            $criteria->joinWith = array('project', 'company');
+          //  $criteria->together = true;
+            $criteria->joinWith(array('project', 'company'));
         }
 
         if (empty($this->sort)) {
-            $criteria->orderBy = 't.id desc';
+            $criteria->orderBy('t.id desc');
         }
 
         return $criteria;

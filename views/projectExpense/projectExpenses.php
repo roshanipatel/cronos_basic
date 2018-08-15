@@ -7,6 +7,12 @@ use app\components\utils\PHPUtils;
 use app\models\enums\ExpensePaymentMethod;
 use app\services\ServiceFactory;
 use fedemotta\datatables\DataTables;
+use yii\data\ActiveDataProvider;
+
+?>
+<?php
+
+//print_r($costsProvider);die; 
 ?>
 
 <div class="row">
@@ -195,40 +201,54 @@ use fedemotta\datatables\DataTables;
 
                                 $aExpenses = [
                                         ['class' => 'yii\grid\SerialColumn'],
-                                        [
+                                       [
                                             'class' => 'yii\grid\DataColumn',
                                             'label' => 'Fecha Gasto',
-                                            'value' => 'PHPUtils::removeHourPartFromDate($data->date_ini)',
+                                            'value' => function ($data) {
+                                                 return PHPUtils::removeHourPartFromDate($data->date_ini);
+                                              },
                                         ],
                                         [
                                             'class' => 'yii\grid\DataColumn',
                                             'label' => 'Cliente',
-                                            'value' => '$data->companyName',
+                                            'value' => function ($data) {
+                                                 return $data->companyName;
+                                              },
                                         ],
                                         [
                                             'class' => 'yii\grid\DataColumn',
                                             'label' => 'projectName',
-                                            'value' => '$data->projectName',
+                                            'value' => function ($data) {
+                                                 return $data->projectName;
+                                              },
                                         ],
                                         [
                                             'class' => 'yii\grid\DataColumn',
                                             'label' => 'costtype',
-                                            'value' => 'ExpenseType::toString($data->costtype)',
+                                            'value' => function ($data) {
+                                                 return ExpenseType::toString($data->costtype);
+                                              },
                                         ],
                                         [
                                             'class' => 'yii\grid\DataColumn',
                                             'label' => 'paymentMethod',
-                                            'value' => 'ExpensePaymentMethod::toString($data->paymentMethod)',
+                                            'value' => function ($data) {
+                                                 return ExpensePaymentMethod::toString($data->paymentMethod);
+                                              },
                                         ],
                                         [   
                                             'class' => 'yii\grid\DataColumn',
                                             'label' => 'Imputador',
-                                            'value' => '$data->workerName',
+                                            'value' => function ($data) {
+                                                 return $data->workerName;
+                                              },
                                         ],
                                         [
                                             'class' => 'yii\grid\DataColumn',
                                             'label' => 'Importe',
-                                            'value' => '$data->importe',
+                                            'value' => function ($data) {
+                                                 return $data->importe;
+                                              },
                                         ],
                                         [
                                             'class' => 'yii\grid\ActionColumn',
@@ -274,7 +294,7 @@ use fedemotta\datatables\DataTables;
 <?= DataTables::widget([
 
     'id' => 'project-grid',
-    'dataProvider' => $costsProvider,
+    'dataProvider' =>$costsProvider,
     //'filter' => $model,
     //'filter' => null,
     //'selectableRows' => 0,
@@ -283,5 +303,4 @@ use fedemotta\datatables\DataTables;
     'columns' => $aExpenses
 ]);
 
-$this->endWidget();
 ?>

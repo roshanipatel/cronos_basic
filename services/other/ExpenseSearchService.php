@@ -28,7 +28,7 @@ class ExpenseSearchService {
     public function getExpenseSearchFormProviders($expenseSearch) {
         $providers = array();
         $tasksCriteria = ServiceFactory::createProjectExpenseService()->getCriteriaFromExpenseSearch($expenseSearch);
-        $tasksCriteria->from = ProjectExpense::TABLE_USER_PROJECT_COST;
+        //$tasksCriteria->from = ProjectExpense::TABLE_USER_PROJECT_COST;
         $providers["costsProvider"] = new ActiveDataProvider(
                 array(
             'query' => $tasksCriteria,
