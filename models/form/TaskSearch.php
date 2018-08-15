@@ -10,6 +10,7 @@ use app\models\enums\WorkerProfiles;
 use app\models\db\Company;
 use app\models\db\Imputetype;
 use app\models\enums\TaskStatus;
+use app\models\db\UserProjectTask;
 /**
  * Model for making task searchs
  *
@@ -130,34 +131,34 @@ class TaskSearch extends ActiveRecord {
 	 * @return CDbCriteria
 	 */
 	public function buildCriteria($criteria = null) {
-                
                 if ($criteria == null) {
-                    $criteria = new \yii\db\Query();
+                    $criteria = UserProjectTask::find();
                 }
-		
+		    
 		$addJoinProject = false;
                 
 		// Fields for project: if not defined project field => all projects OK
 		if((!isset($this->projectIdsForSearch) ) && ( Project::isValidID($this->projectId) )) {
 			$this->projectIdsForSearch = $this->projectId;
 		}
+
 		if(isset($this->projectIdsForSearch)) {
 			if(is_array($this->projectIdsForSearch) || Project::isValidID($this->projectIdsForSearch)) {
 				if($this->projectIdsForSearch === array()) {
 					$criteria->andFilterWhere([
 		                'or',
-		                ['like', 't.project_id', Project::INVALID_ID],
+		                ['like',UserProjectTask::tableName().'.project_id', Project::INVALID_ID],
 		            ]);
 				} else {
 					$criteria->andFilterWhere([
 		                'or',
-		                ['like', 't.project_id', $this->projectIdsForSearch],
+		                ['like', UserProjectTask::tableName().'.project_id', $this->projectIdsForSearch],
 		            ]);
 					
 				}
 			}
 		}
-                
+            
 		if(ProjectStatus::isValidValue($this->projectStatus)) {
 			$criteria->andFilterWhere([
 		                'or',
@@ -192,21 +193,22 @@ class TaskSearch extends ActiveRecord {
 		}
 
 		// Fields for workers
-		if(User::isValidID($this->creator)) $criteria->compare('t.user_id', $this->creator);
+		if(User::isValidID($this->creator)) 
+			$criteria->andWhere(UserProjectTask::tableName().'.user_id', $this->creator);
 		else if(WorkerProfiles::isValidValue($this->profile)) {
-			$criteria->compare('t.profile_id', $this->profile);
+			$criteria->andWhere(UserProjectTask::tableName().'.profile_id', $this->profile);
 		}
-                
+           
                 // Fields for owners
 		if(User::isValidID($this->owner)) {
                     if ("" == $this->owner && $this->roleSearch == Roles::UT_PROJECT_MANAGER ) {
-                        $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) OR  "
-                                . " t.user_id = ".$this->owner.") ");
+                        $criteria->where("( ".UserProjectTask::tableName().".project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) OR  "
+                                . UserProjectTask::tableName().".user_id = ".$this->owner.") ");
                     } else if(\Yii::$app->user->id != $this->owner && $this->roleSearch == Roles::UT_PROJECT_MANAGER) {
-                        $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) AND  "
-                                . " t.user_id = ".Yii::$app->user->id.") ");
+                        $criteria->where("( ".UserProjectTask::tableName().".project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) AND  "
+                                . UserProjectTask::tableName().".user_id = ".Yii::$app->user->id.") ");
                     } else {
-                        $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' )) ");
+                        $criteria->where("( ".UserProjectTask::tableName().".project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' )) ");
                     }
                 }
                 
@@ -222,14 +224,14 @@ class TaskSearch extends ActiveRecord {
 
         if(Imputetype::isValidID($this->imputetype)) {
 
-            $criteria->andWhere("t.imputetype_id in (".implode(",", $this->imputetype).") ");
+            $criteria->andWhere(UserProjectTask::tableName().".imputetype_id in (".implode(",", $this->imputetype).") ");
         }
                 
 		// Fields for status
 		if(TaskStatus::isValidValue($this->status)) {
 			$criteria->andFilterWhere([
                 'or',
-                ['like', 't.status', $this->status],
+                ['like', UserProjectTask::tableName().'.status', $this->status],
             ]);
 			
 		}
@@ -237,7 +239,7 @@ class TaskSearch extends ActiveRecord {
 		if(!empty($this->tickedId)) {
 			$criteria->andFilterWhere([
                 'or',
-                ['like', 't.ticket_id', $this->tickedId],
+                ['like', UserProjectTask::tableName().'.ticket_id', $this->tickedId],
             ]);
 			
 		}
@@ -245,7 +247,7 @@ class TaskSearch extends ActiveRecord {
 		if(!empty($this->description)) {
 			$criteria->andFilterWhere([
                 'or',
-                ['like', 't.task_description', $this->description],
+                ['like', UserProjectTask::tableName().'.task_description', $this->description],
             ]);
 			
 		}
@@ -253,7 +255,7 @@ class TaskSearch extends ActiveRecord {
 		if(isset($this->isExtra) && $this->isExtra != self::VALUE_ALL){
 			$criteria->andFilterWhere([
                 'or',
-                ['like', 't.is_extra', $this->isExtra],
+                ['like', UserProjectTask::tableName().'.is_extra', $this->isExtra],
             ]);
 			
 		}
@@ -261,16 +263,16 @@ class TaskSearch extends ActiveRecord {
 		if(isset($this->isBillable) && $this->isBillable != self::VALUE_ALL){
 			$criteria->andFilterWhere([
                 'or',
-                ['like', 't.is_billable', $this->isBillable],
+                ['like',UserProjectTask::tableName().'.is_billable', $this->isBillable],
             ]);
 		}
 
                 if($addJoinProject) {
-                    $criteria->join = ' INNER JOIN ' . Project::tableName() . ' proj ON t.project_id = proj.id ';
+                    $criteria->joinWith(' INNER JOIN ' . Project::tableName() . ' proj ON '.UserProjectTask::tableName().'.project_id = proj.id ');
 		}
                 
 		if(empty($this->sort)) {
-			$criteria->orderBy = 't.id desc';
+			$criteria->orderBy(UserProjectTask::tableName().'.id desc');
 		}
 		return $criteria;
 	}
