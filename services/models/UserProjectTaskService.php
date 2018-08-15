@@ -206,7 +206,7 @@ class UserProjectTaskService implements CronosService {
      * @param TaskSearch $tasksCriteria
      * @return array with the form array( 'hours' => <hours_spent>, 'price' => <cost> )
      */
-    public function getTasksCost(TaskSearch $taskSearch) {
+    public function getTasksCost( $taskSearch) {
         $tasksCriteria = $taskSearch->buildCriteria();
         $dates = $this->getDateFieldsFromTaskSearch($taskSearch);
         $tasksCriteria->select = array(

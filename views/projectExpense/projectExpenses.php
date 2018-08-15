@@ -275,12 +275,15 @@ use yii\data\ActiveDataProvider;
 
                                 if ($approveCost) {
                                     $aExpenses[] = array(
-                                            'class' => 'CCheckBoxColumn',
-                                            'checked' => 'false',
-                                            'id' => 'toApprove',
-                                            'htmlOptions' => array(
+                                            'class' => '\yii\grid\CheckboxColumn',
+                                            'checkboxOptions' => function ($model, $key, $index, $column) {
+                                                    return ['value' => $model->name,'id'=>'toApprove'];
+                                                },
+                                           // 'checked' => 'false',
+                                           // 'id' => 'toApprove',
+                                           /* 'htmlOptions' => array(
                                                 'style' => 'text-align: center',
-                                            )
+                                            )*/
                                         );
                                 }
                                 ?>
