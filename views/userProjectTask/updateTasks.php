@@ -338,4 +338,5 @@ $this->endWidget();
     </div>
 </div>
 ?>
+
  <?php ActiveForm::end(); ?>
