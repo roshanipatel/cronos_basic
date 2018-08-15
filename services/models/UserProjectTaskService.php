@@ -213,7 +213,8 @@ class UserProjectTaskService implements CronosService {
             "sum(round((unix_timestamp($dates[1]) - unix_timestamp($dates[0]))/3600,2)) as custom1",
             "sum(round((unix_timestamp($dates[1]) - unix_timestamp($dates[0]))/3600,2)*price_per_hour) as custom2");
         // $result is a UserProjectTask model
-        $taskModelForSearch = new UserProjectTask(UserProjectTask::SCENARIO_COST_SEARCH);
+        $taskModelForSearch = new UserProjectTask();
+        $taskModelForSearch->scenario = UserProjectTask::SCENARIO_COST_SEARCH;
         $result = $taskModelForSearch->find($tasksCriteria);
         // Create command and execute
         if (empty($result->custom1))
@@ -231,8 +232,8 @@ class UserProjectTaskService implements CronosService {
     public function getCriteriaFromTaskSearch( $taskSearch) {
         $criteria = $taskSearch->buildCriteria();
         $dates = $this->getDateFieldsFromTaskSearch($taskSearch);
-        $criteria->join = array('worker', 'project', 'imputetype', 'project.company');
-        $criteria->select = array(
+        $criteria->joinWith(array('worker', 'project', 'imputetype', 'project.company'));
+        $criteria->select(array(
             'id',
             'user_id',
             'project_id',
@@ -246,13 +247,13 @@ class UserProjectTaskService implements CronosService {
             'price_per_hour',
             'is_extra',
             'is_billable',
-            'imputetype_id'
+            'imputetype_id')
         );
-        $criteria->select = "*, 
+        $criteria->select("*, 
                     ( select user.name from " . Project::TABLE_PROJECT_MANAGER . " inner join " . User::TABLE_USER . " on "
                  . "" . User::TABLE_USER . ".id = " . Project::TABLE_PROJECT_MANAGER . ".user_id "
-                 . "where " . Project::TABLE_PROJECT_MANAGER . ".project_id = t.project_id order by user.name limit 1 ) as managerName";
-        $criteria->orderBy = "date_ini desc, date_end";
+                 . "where " . Project::TABLE_PROJECT_MANAGER . ".project_id = t.project_id order by user.name limit 1 ) as managerName");
+        $criteria->orderBy("date_ini desc, date_end");
         return $criteria;
     }
     
@@ -263,10 +264,9 @@ class UserProjectTaskService implements CronosService {
      */
     public function getCriteriaFromTaskSearchSummaryProject($taskSearch) {
         
-        
-        $criteria = new CDbCriteria(array(
-                    'order' => 'totalhours desc',
-                ));
+        $criteria = UserProjectTask::find();
+        //$criteria->orderBy('totalhours desc');
+       
         $criteria = $taskSearch->buildCriteria($criteria);
         //print_r($criteria);
         //die();
@@ -275,18 +275,14 @@ class UserProjectTaskService implements CronosService {
         
         //$criteria = $taskSearch->buildCriteria();
         //$criteria->with = array('worker', 'project', 'imputetype', 'project.company');
-        $criteria->order = 'totalhours desc';
-        $criteria->select = 't.project_id, 
-                                (SELECT c.name FROM ' .Project::TABLE_PROJECT. ' p, '.Company::TABLE_COMPANY.' c WHERE c.id = p.company_id and p.id = t.project_id limit 1) as companyName,
-                                (SELECT u.name FROM ' .Project::TABLE_PROJECT_MANAGER. ' pm, '.User::TABLE_USER. ' u WHERE u.id = pm.user_id and pm.project_id = t.project_id limit 1) as projectManager,
-                                (SELECT min(upt.date_ini) FROM ' .UserProjectTask::TABLE_USER_PROJECT_TASK. ' upt WHERE upt.project_id = t.project_id limit 1) as firstUserProjectTask,
-                                (SELECT max(upt.date_ini) FROM ' .UserProjectTask::TABLE_USER_PROJECT_TASK. ' upt WHERE upt.project_id = t.project_id limit 1) as lastUserProjectTask,
-                                roundResult(sum( unix_timestamp(date_end) - unix_timestamp(date_ini) ) / 3600) as totalhours';
+        $criteria->orderBy('totalhours desc');
+        $criteria->select([UserProjectTask::tableName().'.project_id',' 
+                                (SELECT c.name FROM ' .Project::TABLE_PROJECT. ' p, '.Company::TABLE_COMPANY.' c WHERE c.id = p.company_id and p.id = '.UserProjectTask::tableName().'.project_id limit 1) as companyName','(SELECT u.name FROM ' .Project::TABLE_PROJECT_MANAGER. ' pm, '.User::TABLE_USER. ' u WHERE u.id = pm.user_id and pm.project_id = '.UserProjectTask::tableName().'.project_id limit 1) as projectManager','(SELECT min(upt.date_ini) FROM ' .UserProjectTask::TABLE_USER_PROJECT_TASK. ' upt WHERE upt.project_id = '.UserProjectTask::tableName().'.project_id limit 1) as firstUserProjectTask','(SELECT max(upt.date_ini) FROM ' .UserProjectTask::TABLE_USER_PROJECT_TASK. ' upt WHERE upt.project_id = '.UserProjectTask::tableName().'.project_id limit 1) as lastUserProjectTask','roundResult(sum( unix_timestamp(date_end) - unix_timestamp(date_ini) ) / 3600) as totalhours']);
                                 
                 
-        $criteria->group = 't.project_id';
-        $criteria->limit = 10;
-        return UserProjectTask::findAll($criteria);
+        $criteria->groupBy(UserProjectTask::tableName().'.project_id');
+        $criteria->limit(10);
+        return $criteria->all();
     }
     
     /**
