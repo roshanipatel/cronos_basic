@@ -74,7 +74,7 @@ abstract class DBEnum extends Enum
         //$enumVals = implode(";",$enumValues);
         if( count( $enumValues ) != count( $dbValues ) )
         {
-            Yii::log( 'Enum "' . $this->_getEnumName() . '" integrity failed. Enum count values mismatch', CLogger::LEVEL_ERROR, self::$MY_LOG_CATEGORY );
+            Yii::error( 'Enum "' . $this->_getEnumName() . '" integrity failed. Enum count values mismatch',__METHOD__ );
             throw new Exception( "Failed integrity check for enum in DB");
         }
         // Check that all constants are inside the DB
@@ -84,7 +84,7 @@ abstract class DBEnum extends Enum
         {
             if( !( $this->_isEnumValueInDBResults( $value, $dbValues ) ) )
             {
-                Yii::log( 'Enum "' . $this->_getEnumName() . '" integrity failed. Value "' . $value . '" not found in DB', CLogger::LEVEL_ERROR, self::$MY_LOG_CATEGORY );
+                Yii::error( 'Enum "' . $this->_getEnumName() . '" integrity failed. Value "' . $value . '" not found in DB', __METHOD__ );
                 throw new Exception( "Failed integrity check for enum in db" );
             }
         }
@@ -93,7 +93,7 @@ abstract class DBEnum extends Enum
         {
             if( !parent::_isValidValue( $value[$this->getDBField()] ) )
             {
-                Yii::log( 'Enum "' . $this->_getEnumName() . '" integrity failed. Value "' . $value . '" not found in Enum', CLogger::LEVEL_ERROR, self::$MY_LOG_CATEGORY );
+                Yii::error( 'Enum "' . $this->_getEnumName() . '" integrity failed. Value "' . $value . '" not found in Enum', __METHOD__ );
                 throw new Exception( "Failed integrity check for enum in db" );
             }
         }

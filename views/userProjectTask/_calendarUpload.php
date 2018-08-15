@@ -27,7 +27,7 @@ use app\models\enums\Roles;
                     'dataProvider' => $model->search(),
                     'filterModel' => $model,
                     //'selectableRows' => 0,
-                    //'summaryText' => 'Mostrando {start}-{end} resultado(s)',
+                    'summary' => 'Mostrando {start}-{end} resultado(s)',
                     'columns' => [
                         [
                           'class' => 'yii\grid\DataColumn', 

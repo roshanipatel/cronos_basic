@@ -7,6 +7,7 @@ use app\services\ServiceFactory;
 use app\models\db\Project;
 use app\models\enums\ExpenseType;
 use app\extensions\PHPExcel\Style\PHPExcel_Style_Border;
+use app\models\db\Company;
 
 class ReportTaskController extends CronosController {
 
@@ -33,16 +34,16 @@ class ReportTaskController extends CronosController {
     private function getStyleBorder() {
         return array(
             'top' => array(
-                'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+                'style' => \PHPExcel_Style_Border::BORDER_MEDIUM
             ),
             'bottom' => array(
-                'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+                'style' => \PHPExcel_Style_Border::BORDER_MEDIUM
             ),
             'left' => array(
-                'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+                'style' => \PHPExcel_Style_Border::BORDER_MEDIUM
             ),
             'right' => array(
-                'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+                'style' => \PHPExcel_Style_Border::BORDER_MEDIUM
             )
         );
     }
@@ -221,7 +222,7 @@ class ReportTaskController extends CronosController {
 
 
         // Create new PHPExcel object
-        $objPHPExcel = new PHPExcel();
+        $objPHPExcel = new \PHPExcel();
 
         // Set properties
         $objPHPExcel->getProperties()->setCreator("Open3s");
@@ -291,7 +292,7 @@ class ReportTaskController extends CronosController {
                 array(
                     'borders' => $this->getStyleBorder(),
                     'fill' => array(
-                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                        'type' => \PHPExcel_Style_Fill::FILL_SOLID,
                         'color' => array('rgb' => 'D3D3D3')
                     )
                 )
@@ -300,7 +301,7 @@ class ReportTaskController extends CronosController {
         $oCurrentSheet->getStyle('I' . $iFilaActual . ":I" . ($iFilaTotal - 1))->applyFromArray(
                 array(
                     'fill' => array(
-                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                        'type' => \PHPExcel_Style_Fill::FILL_SOLID,
                         'color' => array('rgb' => '69F722')
                     )
         ));
@@ -354,7 +355,7 @@ class ReportTaskController extends CronosController {
                 array(
                     'borders' => $this->getStyleBorder(),
                     'fill' => array(
-                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                        'type' => \PHPExcel_Style_Fill::FILL_SOLID,
                         'color' => array('rgb' => 'FFFF00')
                     )
                 )
@@ -399,7 +400,7 @@ class ReportTaskController extends CronosController {
                 array(
                     'borders' => $this->getStyleBorder(),
                     'fill' => array(
-                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                        'type' => \PHPExcel_Style_Fill::FILL_SOLID,
                         'color' => array('rgb' => 'FFFF00')
                     )
                 )
@@ -439,7 +440,7 @@ class ReportTaskController extends CronosController {
                 array(
                     'borders' => $this->getStyleBorder(),
                     'fill' => array(
-                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                        'type' => \PHPExcel_Style_Fill::FILL_SOLID,
                         'color' => array('rgb' => 'FFFF00')
                     )
                 )

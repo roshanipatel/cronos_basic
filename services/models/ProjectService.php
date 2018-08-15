@@ -3,10 +3,15 @@ namespace app\services\models;
 
 use Yii;
 use app\services\CronosService;
+use app\services\ServiceFactory;
 use app\models\enums\ProjectStatus;
 use app\components\utils\PHPUtils;
 use app\models\db\PricePerProjectAndProfile;
 use app\models\enums\WorkerProfiles;
+use app\models\db\Project;
+use app\models\db\UserProjectTask;
+use app\models\db\Company;
+use app\models\db\Imputetype;
 
 /**
  * Description of ProjectService
@@ -42,7 +47,7 @@ class ProjectService implements CronosService {
             // Set a fake project id
             $model->project_id = -1;
             if (!WorkerProfiles::isValidValue($profileId)) {
-                throw new CHttpException(400, 'Invalid request', 400);
+                throw new HttpException(400, 'Invalid request', 400);
             }
             $model->worker_profile_id = $profileId;
             if ((!is_numeric($priceArr) )
@@ -78,7 +83,8 @@ class ProjectService implements CronosService {
             $model->workerProfiles = $this->buildArrayOfPricePerProjectModels($newData['workerProfiles']);
         }
         // Ready to save
-        $transaction = $model->dbConnection->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
+         //= $model->beginTransaction();
         $allSavesOK = false;
         try {
             // Save relationships
@@ -127,14 +133,14 @@ class ProjectService implements CronosService {
                 }
             }
             if ($allSavesOK) {
-                Yii::log('Project ' . $model->name . ' saved OK', CLogger::LEVEL_INFO, self::MY_LOG_CATEGORY);
+                Yii::info('Project ' . $model->name . ' saved OK',  __METHOD__);
                 $transaction->commit();
             } else {
-                Yii::log('Error saving Project: ' . $model->name, CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+                Yii::error('Error saving Project: ' . $model->name,  __METHOD__);
                 $transaction->rollback();
             }
         } catch (Exception $e) {
-            Yii::log('Error saving Project ' . $e, CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+            Yii::error('Error saving Project ' . $e,  __METHOD__);
             $transaction->rollback();
             throw $e;
         }
@@ -442,7 +448,7 @@ class ProjectService implements CronosService {
         }
         
         if ($oProject->reporting != ReportingFreq::FREQ_NONE || $bForce) {
-            Yii::log( 'The frequence for the report is defined for '.$oProject->reporting, CLogger::LEVEL_ERROR);
+            Yii::error( 'The frequence for the report is defined for '.$oProject->reporting, __METHOD__);
             //Calculamos la fecha
             $sCurrentDate = date("d");
             
@@ -507,7 +513,7 @@ class ProjectService implements CronosService {
                 ),
                 EmailNotifier::NOTIFICATION_RECEIVERS => $aMailTarget,
             ));
-            Yii::log( 'E-mail enviado para el proyecto '.$oProject->name." ".implode(",", $aMailTarget), CLogger::LEVEL_ERROR);
+            Yii::error( 'E-mail enviado para el proyecto '.$oProject->name." ".implode(",", $aMailTarget), __METHOD__);
         }
     }
 
@@ -525,7 +531,7 @@ class ProjectService implements CronosService {
         // Load project to get it's company
         $project = Project::findOne($projectId);
         if (empty($project)) {
-            Yii::log("Project $projectId not found", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY);
+            Yii::error("Project $projectId not found", __METHOD__);
             return array();
         }
         // Build search criteria depending on the user
@@ -839,8 +845,21 @@ class ProjectService implements CronosService {
     }
     
     public function findProjectInTime($sStartDate, $sEndDate) {
-            
-        $criteria = new CDbCriteria(array(
+        $criteria = Project::find();
+        $criteria->innerJoin(UserProjectTask::tableName().' upt','upt.project_id = project.id')
+                ->innerJoin(Company::tableName().' co','co.id = project.company_id')
+                ->innerJoin(Imputetype::tableName().' it','it.id = upt.imputetype_id')
+                ->innerJoin('project_category pc','pc.name = project.cat_type');
+        $criteria->orderBy('totalhours desc');
+        $criteria->select(['project.name', 
+                                'project.cat_type',
+                                'co.name as company_name',
+                                'pc.description as category_name',
+                                'it.name as imputetypeName',
+                                '-sum(round((unix_timestamp(upt.date_ini) - unix_timestamp(upt.date_end))/3600,2)) as totalhours']);
+        $criteria->groupBy('project.name, project.cat_type, co.name, pc.description, it.name');
+        /*
+        $criteria = new CDbCriteria(array(  
                     'join' => ' INNER JOIN ' . UserProjectTask::model()->tableName() . ' upt ON upt.project_id = t.id '
                             . ' INNER JOIN ' . Company::model()->tableName() . ' co ON co.id = t.company_id '
                             . ' INNER JOIN ' . Imputetype::model()->tableName() . ' it ON it.id = upt.imputetype_id '
@@ -854,7 +873,7 @@ class ProjectService implements CronosService {
                                 -sum(round((unix_timestamp(upt.date_ini) - unix_timestamp(upt.date_end))/3600,2)) as totalhours',
                     'group' => 't.name, t.cat_type, co.name, pc.description, it.name'
                 ));
-
+*/
         if (!empty($sStartDate) && !empty($sEndDate)) {
             $sStartFilter = PHPUtils::addHourToDateIfNotPresent($sStartDate, "00:00");
             $sEndFilter = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
@@ -873,10 +892,10 @@ class ProjectService implements CronosService {
         } else
         if (!empty($sEndDate)) {
             $sEndDate = PHPUtils::addHourToDateIfNotPresent($sEndDate, "23:59");
-            $criteria->compare('upt.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
+            $criteria->where('upt.date_end', '<=' . PhpUtils::convertStringToDBDateTime($sEndDate));
         }
         
-        return Project::findAll($criteria);
+        return $criteria->all();
     }
 }
 

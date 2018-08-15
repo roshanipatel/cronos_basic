@@ -3,6 +3,8 @@ namespace app\controllers;
 
 use Yii;
 use app\components\CronosController;
+use yii\web\HttpException;
+
 class WorkerProfilesController extends CronosController
 {
 
@@ -10,7 +12,7 @@ class WorkerProfilesController extends CronosController
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
-    public $layout = '//layouts/top_menu';
+    public $layout = 'main';
 
     /**
      * Updates a particular model.
@@ -23,19 +25,18 @@ class WorkerProfilesController extends CronosController
         {
             $profiles = $_POST['Profiles'];
             if( !is_array( $profiles ) )
-                throw new CHttpException( 400, 'Invalid request. Please do not repeat this request again.' );
+                throw new \yii\web\HttpException( 400, 'Invalid request. Please do not repeat this request again.' );
             foreach( $profiles as $profileId => $profilePrice )
             {
                 $model = WorkerProfile::findOne( $profileId );
                 if( $model === null )
-                    throw new CHttpException( 400, 'Invalid request. Please do not repeat this request again.' );
+                    throw new \yii\web\HttpException( 400, 'Invalid request. Please do not repeat this request again.' );
                 $model->dflt_price = (float)$profilePrice;
                 $model->save();
             }
             Yii::$app->user->setFlash( Constants::FLASH_OK_MESSAGE, 'Valores guardados con éxito' );
             $this->refresh();
         }
-
         $dbValues = WorkerProfile::find()->all();
         $profiles = array( );
         foreach( $dbValues as $profile )

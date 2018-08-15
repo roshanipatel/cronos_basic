@@ -66,14 +66,20 @@ class ProjectManager extends ActiveRelationalRecord {
     public function search() {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
+        $criteria = ProjectManager::find();
 
-        $criteria = new CDbCriteria;
+        $criteria->where(['user_id'=>$this->user_id,'project_id'=>$this->project_id]);
+
+        return new ActiveDataProvider(array(
+            'query'=>$criteria,
+        ));
+       /* $criteria = new CDbCriteria;
         $criteria->compare('user_id', $this->user_id);
         $criteria->compare('project_id', $this->project_id);
 
         return new ActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
-                ));
+                ));*/
     }
 
     /**

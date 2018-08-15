@@ -77,14 +77,18 @@ class WorkerProfilesService implements CronosService
     private function internalSaveProfilesToProject( $profiles, $project )
     {
         // First delete all values
-        PricePerProjectAndProfile::find()->where( array( 'project_id' => $project ) )->delete();
+        $PricePerProjectAndProfile = PricePerProjectAndProfile::find()->where( [ 'project_id' => $project ] )->all();
+        foreach ($PricePerProjectAndProfile as $PricePer) {
+            $PricePerProjectAndProfile->delete();
+        }
         // Insert the profiles
         foreach( $profiles as $workerProfileModel )
         {
             assert( $workerProfileModel instanceof PricePerProjectAndProfile );
             $workerProfileModel->project_id = $project;
+
             // Try to save. If can't save, abort
-            if( !$workerProfileModel->save() )
+            if( !$workerProfileModel->save(true) )
                 return false;
         }
         return true;
@@ -94,7 +98,7 @@ class WorkerProfilesService implements CronosService
     {
         if( count( $profilesArray ) != count( WorkerProfiles::getValidValues() ) )
         {
-            Yii::log( "Invalid number of profiles", CLogger::LEVEL_ERROR, self::MY_LOG_CATEGORY );
+            Yii::error( "Invalid number of profiles",__METHOD__ );
             $model->addError( $att, 'Numero incorrecto de perfiles' );
             return false;
         }

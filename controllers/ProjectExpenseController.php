@@ -5,6 +5,7 @@ use Yii;
 use app\components\CronosController;
 use app\models\db\ProjectExpense;
 use app\models\form\ExpenseSearch;
+use app\services\ServiceFactory;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -61,7 +62,7 @@ class ProjectExpenseController extends CronosController {
 
     private function getProjectExpensesModelForSearchFromRequest() {
         $expenseSearch = new ExpenseSearch();
-        $expenseSearch->scenario = 'search';
+//        $expenseSearch->scenario = 'search';
         //$expenseSearch->unsetAttributes();  // clear any default values
         if (isset($_GET['ExpenseSearch'])) {
             $expenseSearch->attributes = $_GET['ExpenseSearch'];
@@ -86,7 +87,7 @@ class ProjectExpenseController extends CronosController {
     public function loadModel($id) {
         $model = ProjectExpense::FindOne((int) $id);
         if ($model === null) {
-            throw new CHttpException(404, 'The requested page does not exist.');
+            throw new HttpException(404, 'The requested page does not exist.');
         }
         return $model;
     }
@@ -160,10 +161,11 @@ class ProjectExpenseController extends CronosController {
             $taskSearch->attributes = $_REQUEST['TaskSearch'];
             // If no validated, then create a new search record
             if (!$taskSearch->validate()) {
-                Yii::log("TaskSearch not validated", CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);
-                Yii::log(print_r($_REQUEST['TaskSearch'], true), CLogger::LEVEL_WARNING, self::MY_LOG_CATEGORY);
-                $taskSearch = new TaskSearch('search');
-                $taskSearch->unsetAttributes();
+                Yii::info("TaskSearch not validated", __METHOD__);
+                Yii::info(print_r($_REQUEST['TaskSearch'], true), __METHOD__);
+                $taskSearch = new TaskSearch();
+                $taskSearch->scenario = 'search';
+               // $taskSearch->unsetAttributes();
             }
         }
         // Add sort if it's in the request
@@ -183,7 +185,7 @@ class ProjectExpenseController extends CronosController {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin') );
             }
         } else {
-            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            throw new HttpException(400, 'Invalid request. Please do not repeat this request again.');
         }
     }
 

@@ -4,7 +4,7 @@ namespace app\services\other;
 use yii;
 use yii\data\Sort;
 use yii\data\ActiveDataProvider;
-
+use app\services\ServiceFactory;
 /**
  * Some help functions for task search duties
  *
@@ -23,7 +23,7 @@ class ExpenseSearchService {
      * @param int $flags see top of the document
      * @return array
      */
-    public function getExpenseSearchFormProviders(ExpenseSearch $expenseSearch) {
+    public function getExpenseSearchFormProviders($expenseSearch) {
         $providers = array();
         $tasksCriteria = ServiceFactory::createProjectExpenseService()->getCriteriaFromExpenseSearch($expenseSearch);
         $providers["costsProvider"] = new ActiveDataProvider(

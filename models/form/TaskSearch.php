@@ -2,8 +2,14 @@
 namespace app\models\form;
 
 use yii\db\ActiveRecord;
-
-
+use app\models\db\Project;
+use app\models\enums\ProjectStatus;
+use app\models\enums\ProjectCategories;
+use app\models\User;
+use app\models\enums\WorkerProfiles;
+use app\models\db\Company;
+use app\models\db\Imputetype;
+use app\models\enums\TaskStatus;
 /**
  * Model for making task searchs
  *
@@ -126,7 +132,7 @@ class TaskSearch extends ActiveRecord {
 	public function buildCriteria($criteria = null) {
                 
                 if ($criteria == null) {
-                    $criteria = new yii\db\Query();
+                    $criteria = new \yii\db\Query();
                 }
 		
 		$addJoinProject = false;
@@ -138,34 +144,51 @@ class TaskSearch extends ActiveRecord {
 		if(isset($this->projectIdsForSearch)) {
 			if(is_array($this->projectIdsForSearch) || Project::isValidID($this->projectIdsForSearch)) {
 				if($this->projectIdsForSearch === array()) {
-					$criteria->compare('t.project_id', Project::INVALID_ID);
+					$criteria->andFilterWhere([
+		                'or',
+		                ['like', 't.project_id', Project::INVALID_ID],
+		            ]);
 				} else {
-					$criteria->compare('t.project_id', $this->projectIdsForSearch);
+					$criteria->andFilterWhere([
+		                'or',
+		                ['like', 't.project_id', $this->projectIdsForSearch],
+		            ]);
+					
 				}
 			}
 		}
                 
 		if(ProjectStatus::isValidValue($this->projectStatus)) {
-			$criteria->compare('proj.status', $this->projectStatus);
+			$criteria->andFilterWhere([
+		                'or',
+		                ['like', 'proj.status', $this->projectStatus],
+		            ]);
+					
 			$addJoinProject = true;
 		}
-                if(ProjectStatus::isValidValue($this->projectStatusCom)) {
-			$criteria->compare('proj.statuscommercial', $this->projectStatusCom);
+        if(ProjectStatus::isValidValue($this->projectStatusCom)) {
+        	$criteria->andFilterWhere([
+		                'or',
+		                ['like', 'proj.statuscommercial', $this->projectStatusCom],
+		            ]);
 			$addJoinProject = true;
 		}
 		if(ProjectCategories::isValidValue($this->projectCategoryType)) {
-			$criteria->compare('proj.cat_type', $this->projectCategoryType);
+			$criteria->andFilterWhere([
+		                'or',
+		                ['like','proj.cat_type', $this->projectCategoryType],
+		            ]);
 			$addJoinProject = true;
 		}
 
 		// Fields for dates
 		if(!empty($this->dateIni)) {
 			$this->dateIni = PHPUtils::addHourToDateIfNotPresent($this->dateIni, "00:00");
-			$criteria->compare('date_end', '>=' . PHPUtils::convertStringToDBDateTime($this->dateIni));
+			$criteria->andWhere('date_end', '>=' . PHPUtils::convertStringToDBDateTime($this->dateIni));
 		}
 		if(!empty($this->dateEnd)) {
 			$this->dateEnd = PHPUtils::addHourToDateIfNotPresent($this->dateEnd, "23:59");
-			$criteria->compare('date_ini', '<=' . PHPUtils::convertStringToDBDateTime($this->dateEnd));
+			$criteria->andWhere('date_ini', '<=' . PHPUtils::convertStringToDBDateTime($this->dateEnd));
 		}
 
 		// Fields for workers
@@ -179,7 +202,7 @@ class TaskSearch extends ActiveRecord {
                     if ("" == $this->owner && $this->roleSearch == Roles::UT_PROJECT_MANAGER ) {
                         $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) OR  "
                                 . " t.user_id = ".$this->owner.") ");
-                    } else if(Yii::$app->user->id != $this->owner && $this->roleSearch == Roles::UT_PROJECT_MANAGER) {
+                    } else if(\Yii::$app->user->id != $this->owner && $this->roleSearch == Roles::UT_PROJECT_MANAGER) {
                         $criteria->where("( t.project_id in (select project_id from ".Project::TABLE_PROJECT_MANAGER." where user_id = '".$this->owner."' ) AND  "
                                 . " t.user_id = ".Yii::$app->user->id.") ");
                     } else {
@@ -190,33 +213,56 @@ class TaskSearch extends ActiveRecord {
                 
 		// Fields for customers
 		if(Company::isValidID($this->companyId)) {
-			$criteria->compare('proj.company_id', $this->companyId);
+			$criteria->andFilterWhere([
+                'or',
+                ['like', 'proj.company_id', $this->companyId],
+            ]);
 			$addJoinProject = true;
 		}
 
-                if(Imputetype::isValidID($this->imputetype)) {
-                    $criteria->where("t.imputetype_id in (".implode(",", $this->imputetype).") ");
-                }
+        if(Imputetype::isValidID($this->imputetype)) {
+
+            $criteria->andWhere("t.imputetype_id in (".implode(",", $this->imputetype).") ");
+        }
                 
 		// Fields for status
 		if(TaskStatus::isValidValue($this->status)) {
-			$criteria->compare('t.status', $this->status);
+			$criteria->andFilterWhere([
+                'or',
+                ['like', 't.status', $this->status],
+            ]);
+			
 		}
                 // Fields for ticketId
 		if(!empty($this->tickedId)) {
-			$criteria->compare('t.ticket_id', $this->tickedId);
+			$criteria->andFilterWhere([
+                'or',
+                ['like', 't.ticket_id', $this->tickedId],
+            ]);
+			
 		}
 		// Field for description
 		if(!empty($this->description)) {
-			$criteria->compare('t.task_description', $this->description, TRUE);
+			$criteria->andFilterWhere([
+                'or',
+                ['like', 't.task_description', $this->description],
+            ]);
+			
 		}
 		// Field for extra
 		if(isset($this->isExtra) && $this->isExtra != self::VALUE_ALL){
-			$criteria->compare('t.is_extra', $this->isExtra);
+			$criteria->andFilterWhere([
+                'or',
+                ['like', 't.is_extra', $this->isExtra],
+            ]);
+			
 		}
 		// Field for billable
 		if(isset($this->isBillable) && $this->isBillable != self::VALUE_ALL){
-			$criteria->compare('t.is_billable', $this->isBillable);
+			$criteria->andFilterWhere([
+                'or',
+                ['like', 't.is_billable', $this->isBillable],
+            ]);
 		}
 
                 if($addJoinProject) {
@@ -224,7 +270,7 @@ class TaskSearch extends ActiveRecord {
 		}
                 
 		if(empty($this->sort)) {
-			$criteria->order = 't.id desc';
+			$criteria->orderBy = 't.id desc';
 		}
 		return $criteria;
 	}

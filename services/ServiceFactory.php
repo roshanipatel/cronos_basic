@@ -1,6 +1,8 @@
 <?php
 namespace app\services;
 
+use app\services\other\TaskSearchService;
+use app\services\other\ExpenseSearchService;
 /**
  * Description of ServiceFactory
  *
@@ -72,7 +74,7 @@ class ServiceFactory
      */
     static public function createExpenseSearchService()
     {
-        return self::createService( 'app\services\models\ExpenseSearchService' );
+        return self::createService( 'app\services\other\ExpenseSearchService' );
     }
 
     /**
@@ -96,7 +98,7 @@ class ServiceFactory
      */
     static public function createTaskSearchService()
     {
-        return self::createService( 'app\services\models\TaskSearchService' );
+        return self::createService( 'app\services\other\TaskSearchService' );
     }
 
     /**

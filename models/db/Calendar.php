@@ -114,7 +114,7 @@ class Calendar extends ActiveRecord
                 'or',
                 ['like', 'day', $this->day],
             ]);
-        $criteria->orderBy = 't.day asc';
+        $criteria->orderBy('calendar.day asc');
         return new ActiveDataProvider( array(
             'query' => $criteria,
                 ) );

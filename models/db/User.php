@@ -228,6 +228,7 @@ class User extends ActiveRecord {
      * @return ActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search() {
+        
         $criteria = new CDbCriteria(array(
                     'with' => array('company', 'taskCount', 'roles'),
                     'order' => 't.name asc',
