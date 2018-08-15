@@ -302,7 +302,7 @@ class UserProjectTask extends ActiveRecord {
         return parent::afterFind();
     }
 
-    public function beforeSave() {
+    public function beforeSave($insert) {
         if (!parent::beforeSave()) {
             return false;
         }

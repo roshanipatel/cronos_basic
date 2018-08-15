@@ -376,7 +376,7 @@ class Project extends ActiveRecord {
         return is_numeric($id) && ( ((int) $id) > 0 );
     }
 
-    public function beforeSave() {
+    public function beforeSave($insert) {
 
         if (!empty($this->open_time)) {
             $this->open_time = PHPUtils::convertStringToDBDateTime($this->open_time);

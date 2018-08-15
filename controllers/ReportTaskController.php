@@ -88,6 +88,7 @@ class ReportTaskController extends CronosController {
      * Export the cost into a Excel file.
      */
     public function actionExportCosts() {
+
         $aTypes = ExpenseType::getDataForDropDown();
         $aUserProjectTasks = ServiceFactory::createUserProjectTaskService()->findUserProjectTasksInTime($_GET['ExpenseSearch_dateIni'], $_GET['ExpenseSearch_dateEnd'], true, $_GET['ReportCost_companyId'], $_GET['ReportCost_projectId'], $_GET['ReportCost_worker']);
 
@@ -140,40 +141,48 @@ class ReportTaskController extends CronosController {
         
         
         //Coste por horas imputadas
-        foreach ($aUserProjectTasks as $oUserProjectTask) {
-            $aCostReport[$oUserProjectTask->companyName][$oUserProjectTask->projectName][$oUserProjectTask->workerName]
-                    [PHPUtils::convertDateToShortString($oUserProjectTask->date_ini)]["Coste horas"]['duration'][] = $oUserProjectTask->getDuration();
-            $aCostReport[$oUserProjectTask->companyName][$oUserProjectTask->projectName][$oUserProjectTask->workerName]
-                    [PHPUtils::convertDateToShortString($oUserProjectTask->date_ini)]["Coste horas"]['cost'][] = $oUserProjectTask->workerCost;
+        if(isset($aUserProjectTasks)  && !empty($aUserProjectTasks))
+        {
+            foreach ($aUserProjectTasks as $oUserProjectTask) {
+                $aCostReport[$oUserProjectTask->companyName][$oUserProjectTask->projectName][$oUserProjectTask->workerName]
+                        [PHPUtils::convertDateToShortString($oUserProjectTask->date_ini)]["Coste horas"]['duration'][] = $oUserProjectTask->getDuration();
+                $aCostReport[$oUserProjectTask->companyName][$oUserProjectTask->projectName][$oUserProjectTask->workerName]
+                        [PHPUtils::convertDateToShortString($oUserProjectTask->date_ini)]["Coste horas"]['cost'][] = $oUserProjectTask->workerCost;
+            }
         }
-        
-        //Coste por gastos del proyecto.
-        foreach ($aUserProjectCosts as $oProjectExpense) {
-            $aCostReport[$oProjectExpense->companyName][$oProjectExpense->projectName][$oProjectExpense->workerName]
-                    [PHPUtils::removeHourPartFromDate($oProjectExpense->date_ini)][$aTypes[$oProjectExpense->costtype]]['duration'][] = '';
-            $aCostReport[$oProjectExpense->companyName][$oProjectExpense->projectName][$oProjectExpense->workerName]
-                    [PHPUtils::removeHourPartFromDate($oProjectExpense->date_ini)][$aTypes[$oProjectExpense->costtype]]['cost'][] = str_replace(",",".",$oProjectExpense->importe);
-        }
+        if(isset($aUserProjectCosts) && !empty($aUserProjectCosts))
+        {
+            foreach ($aUserProjectCosts as $oProjectExpense) {
+                $aCostReport[$oProjectExpense->companyName][$oProjectExpense->projectName][$oProjectExpense->workerName]
+                        [PHPUtils::removeHourPartFromDate($oProjectExpense->date_ini)][$aTypes[$oProjectExpense->costtype]]['duration'][] = '';
+                $aCostReport[$oProjectExpense->companyName][$oProjectExpense->projectName][$oProjectExpense->workerName]
+                        [PHPUtils::removeHourPartFromDate($oProjectExpense->date_ini)][$aTypes[$oProjectExpense->costtype]]['cost'][] = str_replace(",",".",$oProjectExpense->importe);
+            }
+        }        
 
-        foreach ($aCostReport as $sCompanyName => $aCompanyDetail) {
-            foreach ($aCompanyDetail as $sProjectName => $aProjectDetail) {
-                foreach ($aProjectDetail as $sWorkerName => $aWorkerDetail) {
-                    foreach ($aWorkerDetail as $sDateIni => $aDailyDetail) {
-                        foreach ($aDailyDetail as $sCostType => $aCostDetail) {
-                            for($i=0; $i < count($aCostDetail['duration']); $i++) {
-                                $oCurrentSheet->SetCellValue('A' . $iFilaActual, $sCompanyName);
-                                $oCurrentSheet->SetCellValue('B' . $iFilaActual, $sProjectName);
-                                $oCurrentSheet->SetCellValue('C' . $iFilaActual, $sWorkerName);
-                                $oCurrentSheet->SetCellValue('D' . $iFilaActual, $sDateIni);
-                                $oCurrentSheet->SetCellValue('E' . $iFilaActual, $sCostType);
-                                if ($aCostDetail['duration'][$i] != '') {
-                                    $oCurrentSheet->SetCellValue('F' . $iFilaActual, "=ROUND(" . $aCostDetail['duration'][$i] . ", 2)");
-                                    $oCurrentSheet->SetCellValue('G' . $iFilaActual, "=" . $aCostDetail['cost'][$i]);
-                                    $oCurrentSheet->SetCellValue('H' . $iFilaActual, "=ROUND(F" . $iFilaActual . " * G" . $iFilaActual . ", 2)");
-                                } else {
-                                    $oCurrentSheet->SetCellValue('H' . $iFilaActual, "=" . $aCostDetail['cost'][$i]);
+        //Coste por gastos del proyecto.
+        if(isset($aCostReport) && !empty($aCostReport))
+        {
+            foreach ($aCostReport as $sCompanyName => $aCompanyDetail) {
+                foreach ($aCompanyDetail as $sProjectName => $aProjectDetail) {
+                    foreach ($aProjectDetail as $sWorkerName => $aWorkerDetail) {
+                        foreach ($aWorkerDetail as $sDateIni => $aDailyDetail) {
+                            foreach ($aDailyDetail as $sCostType => $aCostDetail) {
+                                for($i=0; $i < count($aCostDetail['duration']); $i++) {
+                                    $oCurrentSheet->SetCellValue('A' . $iFilaActual, $sCompanyName);
+                                    $oCurrentSheet->SetCellValue('B' . $iFilaActual, $sProjectName);
+                                    $oCurrentSheet->SetCellValue('C' . $iFilaActual, $sWorkerName);
+                                    $oCurrentSheet->SetCellValue('D' . $iFilaActual, $sDateIni);
+                                    $oCurrentSheet->SetCellValue('E' . $iFilaActual, $sCostType);
+                                    if ($aCostDetail['duration'][$i] != '') {
+                                        $oCurrentSheet->SetCellValue('F' . $iFilaActual, "=ROUND(" . $aCostDetail['duration'][$i] . ", 2)");
+                                        $oCurrentSheet->SetCellValue('G' . $iFilaActual, "=" . $aCostDetail['cost'][$i]);
+                                        $oCurrentSheet->SetCellValue('H' . $iFilaActual, "=ROUND(F" . $iFilaActual . " * G" . $iFilaActual . ", 2)");
+                                    } else {
+                                        $oCurrentSheet->SetCellValue('H' . $iFilaActual, "=" . $aCostDetail['cost'][$i]);
+                                    }
+                                    $iFilaActual++;
                                 }
-                                $iFilaActual++;
                             }
                         }
                     }
@@ -184,23 +193,15 @@ class ReportTaskController extends CronosController {
         $oCurrentSheet->SetCellValue('G' . $iFilaActual, "Total");
         $oCurrentSheet->getStyle('G' . $iFilaActual . ":H" . $iFilaActual)->applyFromArray($this->getStyleHeader());
         $oCurrentSheet->SetCellValue('H' . $iFilaActual, "=SUBTOTAL(9, H" . $iPrimeraFila . ":H" . ($iFilaActual - 1) . ")");
-
-       // $oCurrentSheet->setTitle('Informe costes');
+        $oCurrentSheet->setTitle('Informe costes');
         // Redirect output to a clientâ€™s web browser (Excel5)
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         header('Content-Type: application/vnd.ms-excel');
-        $filename = "MyExcelReport_".date("d-m-Y-His").".xls";
-
-        header('Content-Disposition: attachment;filename='.$filename .' ');
+        header('Content-Disposition: attachment;filename="costes.xls"');
         header('Cache-Control: max-age=0');
-        $objWriter->save('php://output');     
-        //header('Content-Type: application/vnd.ms-excel');
-        //header('Content-Disposition: attachment;filename="actividad.xls"');
-        //header('Cache-Control: max-age=0');
-        //$objWriter = PHPExcel_IOFactory::createWriter($oCurrentSheet, 'Excel2007');
-        //$objWriter->save('php://output');
-       die;
-        
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');       
+        exit;
     }
 
     /**
