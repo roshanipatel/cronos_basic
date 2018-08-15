@@ -48,7 +48,17 @@ class WorkerProfile extends ActiveRecord
             array( 'id, dflt_price', 'safe', 'on' => 'search' ),
         );
     }
-
+     public function getProjects(){
+        return $this->hasMany(\app\models\Project::className(), ['id' => 'project_id'])
+                ->viaTable(\app\models\db\PricePerProjectAndProfile::tableName(), ['id' => 'worker_profile_id']);
+        //return $this->hasMany(\app\models\db\PricePerProjectAndProfile::className(), ['id' => 'project_id']);
+    }
+    public function getUsers(){
+        return $this->hasOne('\app\models\db\User',['id'=>'worker_dflt_profile']);
+    }
+    public function getUserProjectTasks(){
+        return $this->hasOne('\app\models\db\UserProjectTask',['id'=>'profile_id']);
+    }
     /**
      * @return array relational rules.
      */

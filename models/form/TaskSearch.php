@@ -131,9 +131,9 @@ class TaskSearch extends ActiveRecord {
 	 * @return CDbCriteria
 	 */
 	public function buildCriteria($criteria = null) {
-                if ($criteria == null) {
-                    $criteria = UserProjectTask::find();
-                }
+	    if ($criteria == null) {
+	        $criteria = UserProjectTask::find();
+	    }
 		    
 		$addJoinProject = false;
                 

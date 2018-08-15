@@ -51,7 +51,12 @@ class TaskHistory extends Model
             array( 'id, user_id, user_project_task_id, timestamp, status, comment', 'safe', 'on' => 'search' ),
         );
     }
-
+    public function getUser(){
+        return $this->hasOne('app\models\db\User',['id'=>'user_id']);
+    }
+    public function getUserProjectTask(){
+        return $this->hasOne('app\models\db\UserProjectTask',['id'=>'user_project_task_id']);
+    }
     /**
      * @return array relational rules.
      */

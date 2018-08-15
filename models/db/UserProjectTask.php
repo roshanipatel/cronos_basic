@@ -211,7 +211,18 @@ class UserProjectTask extends ActiveRecord {
         // Everything ok!
         return true;
     }
-
+    public function getWorker(){
+        return $this->hasOne('app\models\db\User',['id'=>'user_id'])->select(['worker.name']);
+    }
+    public function getProject(){
+        return $this->hasOne('app\models\db\Project',['id'=>'project_id'])->select(['project.name',' project.company_id', 'project.status']);
+    }
+    public function getImputetype(){
+        return $this->hasOne('app\models\db\Imputetype',['id'=>'imputetype_id'])->select(['imputetype_id.name']);
+    }
+    public function getTaskHistories(){
+        return $this->hasOne('app\models\db\TaskHistory',['id'=>'user_project_task_id']);
+    }
     /**
      * @return array relational rules.
      */
